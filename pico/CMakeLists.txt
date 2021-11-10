@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.16)
+
+# Pull in SDK (must be before project)
+include(cmake/pico_sdk_import.cmake)
+include(cmake/gitversion.cmake)
+
+project(applevga C CXX)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+pico_sdk_init()
+
+
+add_executable(applevga)
+
+target_sources(applevga PUBLIC
+    main.cxx
+)
+target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(applevga PUBLIC
+    pico_multicore
+    pico_stdlib
+    pico_unique_id
+    hardware_pio
+)
+
+pico_add_extra_outputs(applevga)
