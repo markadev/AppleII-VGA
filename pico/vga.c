@@ -11,10 +11,14 @@
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 30)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
 
+static const uint VGA_HSYNC_SM = 0;
+static const uint VGA_VSYNC_SM = 1;
+static const uint VGA_DATA_SM = 2;
 
-static uint vga_hsync_setup(PIO pio) {
+
+static void vga_hsync_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &vga_hsync_program);
-    uint sm = pio_claim_unused_sm(pio, true);
+    pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_hsync_program_get_default_config(program_offset);
 #if DEBUG_TIMING
@@ -34,13 +38,11 @@ static uint vga_hsync_setup(PIO pio) {
     // Load the configuration and push in the timing loop value
     pio_sm_init(pio, sm, program_offset, &c);
     pio_sm_put_blocking(pio, sm, HSYNC_TIMING_VALUE);
-
-    return sm;
 }
 
-static uint vga_vsync_setup(PIO pio) {
+static void vga_vsync_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &vga_vsync_program);
-    uint sm = pio_claim_unused_sm(pio, true);
+    pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_vsync_program_get_default_config(program_offset);
 #if DEBUG_TIMING
@@ -60,13 +62,11 @@ static uint vga_vsync_setup(PIO pio) {
     // Load the configuration and push in the timing loop value
     pio_sm_init(pio, sm, program_offset, &c);
     pio_sm_put_blocking(pio, sm, VSYNC_TIMING_VALUE);
-
-    return sm;
 }
 
-static uint vga_data_setup(PIO pio) {
+static void vga_data_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &vga_data_program);
-    uint sm = pio_claim_unused_sm(pio, true);
+    pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_data_program_get_default_config(program_offset);
 #if DEBUG_TIMING
@@ -93,17 +93,15 @@ static uint vga_data_setup(PIO pio) {
 
     // Load the configuration, starting execution at 'wait_vsync'
     pio_sm_init(pio, sm, program_offset+vga_data_offset_wait_vsync, &c);
-
-    return sm;
 }
 
 void vga_init() {
-    uint hsync_sm = vga_hsync_setup(pio0);
-    uint vsync_sm = vga_vsync_setup(pio0);
-    uint data_sm = vga_data_setup(pio0);
+    vga_hsync_setup(CONFIG_VGA_PIO, VGA_HSYNC_SM);
+    vga_vsync_setup(CONFIG_VGA_PIO, VGA_VSYNC_SM);
+    vga_data_setup(CONFIG_VGA_PIO, VGA_DATA_SM);
 
     // Enable all state machines in sync to ensure their instruction cycles line up
-    pio_enable_sm_mask_in_sync(pio0, (1 << hsync_sm) | (1 << vsync_sm) | (1 << data_sm));
+    pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 
 #if DEBUG_TIMING
     // output data byte patterns
@@ -112,14 +110,18 @@ void vga_init() {
         const uint THEN_WAIT_HSYNC = (vga_data_offset_wait_hsync << 9);
 
 #if 1
-        pio_sm_put_blocking(pio0, data_sm, 0|THEN_WAIT_VSYNC);
+        pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0|THEN_WAIT_VSYNC);
 #else
-        pio_sm_put_blocking(pio0, data_sm, 0|THEN_WAIT_HSYNC);
+        pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0|THEN_WAIT_HSYNC);
 #endif
         for(int i=0; i < 8; i++) {
-            pio_sm_put_blocking(pio0, data_sm, 0x1ff);
-            pio_sm_put_blocking(pio0, data_sm, 0x000);
+            pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0x1ff);
+            pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0x000);
         }
     }
 #endif
+}
+
+void vga_data_out(uint16_t data) {
+    pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, data);
 }
