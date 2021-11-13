@@ -29,13 +29,15 @@
 .program vga_data
 .origin 0
 
-wait_vsync:
-    wait 0 irq VSYNC_IRQ_NUM
-wait_hsync:
-    wait 0 irq HSYNC_IRQ_NUM [15]  ; TODO verify the time between /hsync and first data bit out
+.wrap_target
 pixel_out:
     out PINS, 9
     out PC, 5
+public wait_vsync:
+    wait 0 irq VSYNC_IRQ_NUM
+public wait_hsync:
+    wait 0 irq HSYNC_IRQ_NUM [14]
+.wrap
 
 
 ; Run at pixel frequency / 8
