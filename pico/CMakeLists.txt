@@ -13,8 +13,12 @@ pico_sdk_init()
 
 add_executable(applevga)
 
+pico_generate_pio_header(applevga
+    ${CMAKE_CURRENT_SOURCE_DIR}/vga.pio)
+
 target_sources(applevga PUBLIC
     main.cxx
+    vga.c
 )
 target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(applevga PUBLIC
