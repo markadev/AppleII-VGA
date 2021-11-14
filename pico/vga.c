@@ -108,6 +108,6 @@ void vga_init() {
 }
 
 void vga_send_scanline(uint16_t *buf, uint len) {
-    dma_channel_transfer_from_buffer_now(vga_dma_channel, buf, len);
     dma_channel_wait_for_finish_blocking(vga_dma_channel);
+    dma_channel_transfer_from_buffer_now(vga_dma_channel, buf, len);
 }
