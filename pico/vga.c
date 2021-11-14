@@ -3,13 +3,14 @@
 #include "vga.pio.h"
 #include "vga.h"
 
-#define DEBUG_TIMING 0
 
+#define PIXEL_FREQ 25.2/*MHz*/
 #define PIXELS_PER_LINE 800
 #define LINES_PER_FRAME 525
 
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 30)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
+
 
 static const uint VGA_HSYNC_SM = 0;
 static const uint VGA_VSYNC_SM = 1;
@@ -21,11 +22,7 @@ static void vga_hsync_setup(PIO pio, uint sm) {
     pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_hsync_program_get_default_config(program_offset);
-#if DEBUG_TIMING
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK*8);  // 1 microsecond per pixel
-#else
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (25.175/8));  // approximate 25.175/8 MHz
-#endif
+    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK * 8 / PIXEL_FREQ);  // 1/8 * PIXEL_FREQ
 
     // Map the state machine's OUT pin group to the sync signal pin
     sm_config_set_out_pins(&c, CONFIG_PIN_HSYNC, 1);
@@ -45,11 +42,7 @@ static void vga_vsync_setup(PIO pio, uint sm) {
     pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_vsync_program_get_default_config(program_offset);
-#if DEBUG_TIMING
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK*8);  // 1 microsecond per pixel
-#else
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (25.175/8));  // approximate 25.175/8 MHz
-#endif
+    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK * 8 / PIXEL_FREQ);  // 1/8 * PIXEL_FREQ
 
     // Map the state machine's OUT pin group to the sync signal pin
     sm_config_set_out_pins(&c, CONFIG_PIN_VSYNC, 1);
@@ -69,11 +62,7 @@ static void vga_data_setup(PIO pio, uint sm) {
     pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_data_program_get_default_config(program_offset);
-#if DEBUG_TIMING
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK/2);  // 1 microsecond per pixel
-#else
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (2*25.175));  // approximate 2*25.175MHz
-#endif
+    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (2*PIXEL_FREQ));  // 2 * PIXEL_FREQ
 
     // Map the state machine's OUT pin group to the data pins
     sm_config_set_out_pins(&c, CONFIG_PIN_RGB_BASE, 9);
@@ -102,26 +91,4 @@ void vga_init() {
 
     // Enable all state machines in sync to ensure their instruction cycles line up
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
-
-#if DEBUG_TIMING
-    // output data byte patterns
-    while(1) {
-        const uint THEN_WAIT_VSYNC = (vga_data_offset_wait_vsync << 9);
-        const uint THEN_WAIT_HSYNC = (vga_data_offset_wait_hsync << 9);
-
-#if 1
-        pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0|THEN_WAIT_VSYNC);
-#else
-        pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0|THEN_WAIT_HSYNC);
-#endif
-        for(int i=0; i < 8; i++) {
-            pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0x1ff);
-            pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, 0x000);
-        }
-    }
-#endif
-}
-
-void vga_data_out(uint16_t data) {
-    pio_sm_put_blocking(CONFIG_VGA_PIO, VGA_DATA_SM, data);
 }

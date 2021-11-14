@@ -1,6 +1,6 @@
 #pragma once
 
-#define CONFIG_SYSCLOCK 133.0 /* MHz */
+#define CONFIG_SYSCLOCK 126.0 /* MHz */
 
 // Pin configuration
 #define CONFIG_PIN_HSYNC 28

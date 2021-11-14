@@ -10,7 +10,6 @@ extern "C" {
 
 
 void vga_init();
-void vga_data_out(uint16_t data);
 
 
 #ifdef __cplusplus

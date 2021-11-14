@@ -24,7 +24,7 @@ target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(applevga PUBLIC
     pico_multicore
     pico_stdlib
-    pico_unique_id
+    hardware_dma
     hardware_pio
 )
 
