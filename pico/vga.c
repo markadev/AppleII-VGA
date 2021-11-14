@@ -1,3 +1,4 @@
+#include <hardware/dma.h>
 #include <hardware/pio.h>
 #include "config.h"
 #include "vga.pio.h"
@@ -12,9 +13,14 @@
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
 
 
-static const uint VGA_HSYNC_SM = 0;
-static const uint VGA_VSYNC_SM = 1;
-static const uint VGA_DATA_SM = 2;
+enum {
+    VGA_HSYNC_SM = 0,
+    VGA_VSYNC_SM = 1,
+    VGA_DATA_SM = 2,
+};
+
+
+static uint vga_dma_channel;
 
 
 static void vga_hsync_setup(PIO pio, uint sm) {
@@ -85,10 +91,23 @@ static void vga_data_setup(PIO pio, uint sm) {
 }
 
 void vga_init() {
+    // Setup the PIO state machines
     vga_hsync_setup(CONFIG_VGA_PIO, VGA_HSYNC_SM);
     vga_vsync_setup(CONFIG_VGA_PIO, VGA_VSYNC_SM);
     vga_data_setup(CONFIG_VGA_PIO, VGA_DATA_SM);
 
+    // Setup the DMA channel for writing to the data PIO state machine
+    vga_dma_channel = dma_claim_unused_channel(true);
+    dma_channel_config c = dma_channel_get_default_config(vga_dma_channel);
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_16);
+    channel_config_set_dreq(&c, pio_get_dreq(CONFIG_VGA_PIO, VGA_DATA_SM, true));
+    dma_channel_configure(vga_dma_channel, &c, &CONFIG_VGA_PIO->txf[VGA_DATA_SM], NULL, 0, false);
+
     // Enable all state machines in sync to ensure their instruction cycles line up
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
+}
+
+void vga_send_scanline(uint16_t *buf, uint len) {
+    dma_channel_transfer_from_buffer_now(vga_dma_channel, buf, len);
+    dma_channel_wait_for_finish_blocking(vga_dma_channel);
 }

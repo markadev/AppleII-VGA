@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,6 +13,7 @@ extern "C" {
 
 
 void vga_init();
+void vga_send_scanline(uint16_t *buf, uint len);
 
 
 #ifdef __cplusplus
