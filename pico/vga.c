@@ -74,8 +74,8 @@ static void vga_data_setup(PIO pio, uint sm) {
     sm_config_set_out_pins(&c, CONFIG_PIN_RGB_BASE, 9);
     sm_config_set_set_pins(&c, CONFIG_PIN_RGB_BASE, 9);
 
-    // Enable autopull every 14 bits  (9 data + 5 jump bits)
-    sm_config_set_out_shift(&c, true, true, 14);
+    // Enable autopull every 16 bits  (9 data + 5 jump bits + 2 pad)
+    sm_config_set_out_shift(&c, true, true, 16);
 
     // Set join the state machine FIFOs to double the TX fifo size
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);

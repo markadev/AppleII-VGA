@@ -32,7 +32,7 @@
 .wrap_target
 pixel_out:
     out PINS, 9
-    out PC, 5
+    out PC, 7
 public wait_vsync:
     wait 0 irq VSYNC_IRQ_NUM
 public wait_hsync:
