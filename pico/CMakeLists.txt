@@ -4,9 +4,8 @@ cmake_minimum_required(VERSION 3.16)
 include(cmake/pico_sdk_import.cmake)
 include(cmake/gitversion.cmake)
 
-project(applevga C CXX)
+project(applevga C)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
@@ -17,7 +16,7 @@ pico_generate_pio_header(applevga
     ${CMAKE_CURRENT_SOURCE_DIR}/vga.pio)
 
 target_sources(applevga PUBLIC
-    main.cxx
+    main.c
     render.c
     vga.c
 )
