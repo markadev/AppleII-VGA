@@ -12,6 +12,7 @@
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 30)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
 
+#define NUM_SCANLINE_BUFFERS 8
 
 enum {
     VGA_HSYNC_SM = 0,
@@ -21,6 +22,12 @@ enum {
 
 
 static uint vga_dma_channel;
+
+// Scanline queue. Scanlines are filled in from the head and are
+// sent to the DMA engine from the tail.
+static uint scanline_queue_head;
+static uint scanline_queue_tail;
+static struct vga_scanline scanline_queue[NUM_SCANLINE_BUFFERS];
 
 
 static void vga_hsync_setup(PIO pio, uint sm) {
@@ -107,7 +114,27 @@ void vga_init() {
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 }
 
-void vga_send_scanline(uint16_t *buf, uint len) {
-    dma_channel_wait_for_finish_blocking(vga_dma_channel);
-    dma_channel_transfer_from_buffer_now(vga_dma_channel, buf, len);
+struct vga_scanline *vga_prepare_scanline(bool vsync) {
+    struct vga_scanline *scanline = &scanline_queue[scanline_queue_head];
+
+    // Reinitialize the scanline struct for reuse
+    scanline->length = 0;
+    scanline->repeat_count = 0;
+    scanline->_sync = vsync ?
+        ((uint32_t)THEN_WAIT_VSYNC << 0) << 16 :
+        ((uint32_t)THEN_WAIT_HSYNC << 0) << 16;
+
+    scanline_queue_head = (scanline_queue_head + 1) % NUM_SCANLINE_BUFFERS;
+
+    return scanline;
+}
+
+void vga_submit_scanline(struct vga_scanline *scanline) {
+    scanline->data[scanline->length] = 0; // ensure beam off at end of line
+
+    for(int i=0; i < scanline->repeat_count+1; i++) {
+        dma_channel_wait_for_finish_blocking(vga_dma_channel);
+        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(scanline->_sync), 2*(scanline->length + 2));
+    }
+    scanline->_flags = 0;
 }
