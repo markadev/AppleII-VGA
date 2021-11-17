@@ -81,8 +81,8 @@ static void vga_data_setup(PIO pio, uint sm) {
     sm_config_set_out_pins(&c, CONFIG_PIN_RGB_BASE, 9);
     sm_config_set_set_pins(&c, CONFIG_PIN_RGB_BASE, 9);
 
-    // Enable autopull every 16 bits  (9 data + 5 jump bits + 2 pad)
-    sm_config_set_out_shift(&c, true, true, 16);
+    // Enable autopull every 32 bits  (2 x (9 data + 5 jump + 2 pad) bits)
+    sm_config_set_out_shift(&c, true, true, 32);
 
     // Set join the state machine FIFOs to double the TX fifo size
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
@@ -106,7 +106,7 @@ void vga_init() {
     // Setup the DMA channel for writing to the data PIO state machine
     vga_dma_channel = dma_claim_unused_channel(true);
     dma_channel_config c = dma_channel_get_default_config(vga_dma_channel);
-    channel_config_set_transfer_data_size(&c, DMA_SIZE_16);
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
     channel_config_set_dreq(&c, pio_get_dreq(CONFIG_VGA_PIO, VGA_DATA_SM, true));
     dma_channel_configure(vga_dma_channel, &c, &CONFIG_VGA_PIO->txf[VGA_DATA_SM], NULL, 0, false);
 
@@ -134,7 +134,7 @@ void vga_submit_scanline(struct vga_scanline *scanline) {
 
     for(int i=0; i < scanline->repeat_count+1; i++) {
         dma_channel_wait_for_finish_blocking(vga_dma_channel);
-        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(scanline->_sync), 2*(scanline->length + 2));
+        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(scanline->_sync), scanline->length + 2);
     }
     scanline->_flags = 0;
 }
