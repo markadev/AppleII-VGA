@@ -9,3 +9,4 @@
 
 // Other resources
 #define CONFIG_VGA_PIO pio0
+#define CONFIG_VGA_SPINLOCK_ID 31

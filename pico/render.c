@@ -56,6 +56,8 @@ void __not_in_flash_func(render_loop)() {
                     sl->data[i] = (uint32_t)0x1ff << 16;
                 }
                 sl->length = VGA_WIDTH/2;
+                sl->repeat_count = 19;
+                line += 19;
             } else {
                 // TODO: make the hsync IRQ shorter so smaller placeholder scanlines can be used
                 // to skip lines.

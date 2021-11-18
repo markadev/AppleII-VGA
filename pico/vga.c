@@ -1,5 +1,7 @@
 #include <hardware/dma.h>
+#include <hardware/irq.h>
 #include <hardware/pio.h>
+#include <hardware/sync.h>
 #include "config.h"
 #include "vga.pio.h"
 #include "vga.h"
@@ -18,6 +20,22 @@ enum {
     VGA_HSYNC_SM = 0,
     VGA_VSYNC_SM = 1,
     VGA_DATA_SM = 2,
+};
+
+// The scanline flags form a simple state machine:
+//    Initial state (0)
+//         \/ prepare()
+//        BUSY
+//         \/ ready()
+//      BUSY|READY
+//         \/ first DMA started
+//  BUSY|READY|STARTED
+//         \/ last DMA completed
+//    READY|STARTED
+enum {
+    FLAG_BUSY = 0x01,
+    FLAG_READY = 0x02,
+    FLAG_STARTED = 0x04,
 };
 
 
@@ -97,7 +115,46 @@ static void vga_data_setup(PIO pio, uint sm) {
     pio_sm_init(pio, sm, program_offset+vga_data_offset_wait_vsync, &c);
 }
 
+// Start the DMA operation of the next scanline if it's ready.
+//
+// Must be called with the VGA spinlock held
+static void trigger_ready_scanline_dma() {
+    struct vga_scanline *active_scanline = &scanline_queue[scanline_queue_tail];
+
+    if((active_scanline->_flags & (FLAG_BUSY|FLAG_READY|FLAG_STARTED)) == (FLAG_BUSY|FLAG_READY)) {
+        active_scanline->_flags |= FLAG_STARTED;
+        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(active_scanline->_sync), active_scanline->length + 2);
+    }
+}
+
+static void vga_dma_irq_handler() {
+    spin_lock_t *lock = spin_lock_instance(CONFIG_VGA_SPINLOCK_ID);
+    struct vga_scanline *active_scanline = &scanline_queue[scanline_queue_tail];
+
+    // Ack the IRQ
+    dma_hw->ints0 = 1u << vga_dma_channel;
+
+    // Repeat the scanline as specified
+    if(active_scanline->repeat_count) {
+        active_scanline->repeat_count--;
+        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(active_scanline->_sync), active_scanline->length + 2);
+        return;
+    }
+
+    // Mark the scanline done
+    active_scanline->_flags &= ~(uint_fast8_t)FLAG_BUSY;
+
+    const uint32_t irq_status = spin_lock_blocking(lock);
+    scanline_queue_tail = (scanline_queue_tail + 1) % NUM_SCANLINE_BUFFERS;
+    trigger_ready_scanline_dma();
+    spin_unlock(lock, irq_status);
+}
+
+
 void vga_init() {
+    spin_lock_claim(CONFIG_VGA_SPINLOCK_ID);
+    spin_lock_init(CONFIG_VGA_SPINLOCK_ID);
+
     // Setup the PIO state machines
     vga_hsync_setup(CONFIG_VGA_PIO, VGA_HSYNC_SM);
     vga_vsync_setup(CONFIG_VGA_PIO, VGA_VSYNC_SM);
@@ -110,6 +167,10 @@ void vga_init() {
     channel_config_set_dreq(&c, pio_get_dreq(CONFIG_VGA_PIO, VGA_DATA_SM, true));
     dma_channel_configure(vga_dma_channel, &c, &CONFIG_VGA_PIO->txf[VGA_DATA_SM], NULL, 0, false);
 
+    dma_channel_set_irq0_enabled(vga_dma_channel, true);
+    irq_set_exclusive_handler(DMA_IRQ_0, vga_dma_irq_handler);
+    irq_set_enabled(DMA_IRQ_0, true);
+
     // Enable all state machines in sync to ensure their instruction cycles line up
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 }
@@ -117,9 +178,14 @@ void vga_init() {
 struct vga_scanline *vga_prepare_scanline(bool vsync) {
     struct vga_scanline *scanline = &scanline_queue[scanline_queue_head];
 
+    // Wait for the scanline buffer to become available again
+    while(scanline->_flags & FLAG_BUSY)
+        tight_loop_contents();
+
     // Reinitialize the scanline struct for reuse
     scanline->length = 0;
     scanline->repeat_count = 0;
+    scanline->_flags = FLAG_BUSY;
     scanline->_sync = vsync ?
         ((uint32_t)THEN_WAIT_VSYNC << 0) << 16 :
         ((uint32_t)THEN_WAIT_HSYNC << 0) << 16;
@@ -130,11 +196,12 @@ struct vga_scanline *vga_prepare_scanline(bool vsync) {
 }
 
 void vga_submit_scanline(struct vga_scanline *scanline) {
+    spin_lock_t *lock = spin_lock_instance(CONFIG_VGA_SPINLOCK_ID);
+
     scanline->data[scanline->length] = 0; // ensure beam off at end of line
 
-    for(int i=0; i < scanline->repeat_count+1; i++) {
-        dma_channel_wait_for_finish_blocking(vga_dma_channel);
-        dma_channel_transfer_from_buffer_now(vga_dma_channel, &(scanline->_sync), scanline->length + 2);
-    }
-    scanline->_flags = 0;
+    const uint32_t irq_status = spin_lock_blocking(lock);
+    scanline->_flags |= FLAG_READY;
+    trigger_ready_scanline_dma();
+    spin_unlock(lock, irq_status);
 }
