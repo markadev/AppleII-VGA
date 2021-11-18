@@ -1,6 +1,7 @@
 #include <string.h>
 #include <pico/stdlib.h>
 #include <hardware/gpio.h>
+#include "textfont.h"
 #include "vga.h"
 
 
@@ -13,7 +14,10 @@
 #define NUM_PRELINES 34 /*XXX*/
 
 
-void __not_in_flash_func(render_testpattern)() {
+static uint8_t text_buffer[24][40];
+
+
+static void __not_in_flash_func(render_testpattern)() {
     // TODO: create one 'scanline' with the vsync and all vertical back porch hsyncs
     // and encapsulate all this frame setup
     struct vga_scanline *sl = vga_prepare_scanline(true);
@@ -67,11 +71,64 @@ void __not_in_flash_func(render_testpattern)() {
     }
 }
 
+
+static void render_text() {
+    struct vga_scanline *sl = vga_prepare_scanline(true);
+    memset(sl->data, 0, 128);
+    sl->length = 128/4;
+    vga_submit_scanline(sl);
+
+    sl = vga_prepare_scanline(false);
+    memset(sl->data, 0, 128);
+    sl->length = 128/4;
+    sl->repeat_count = NUM_PRELINES-2;
+    vga_submit_scanline(sl);
+
+    for(int line=0; line < 24*8; line++) {
+        uint8_t *line_buf = text_buffer[line >> 3];
+        uint glyph_line = line & 0x7;
+
+        sl = vga_prepare_scanline(false);
+        uint sl_pos = 0;
+
+        gpio_put(DEBUG_PIN, 1);
+
+        for(int col=0; col < 40; col+=2) {
+            uint char_a = line_buf[col] & 0x3f;
+            uint char_b = line_buf[col+1] & 0x3f;
+            uint32_t bits = ((uint32_t)default_font[char_a][glyph_line] << 7) | default_font[char_b][glyph_line];
+
+            // Translate each pair of bits into a pair of pixels
+            for(int i=0; i < 7; i++) {
+                uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0|THEN_EXTEND_1);
+                pixeldata |= (bits & 0x1000) ?
+                    ((uint32_t)0x1ff|THEN_EXTEND_1) << 16 :
+                    ((uint32_t)0|THEN_EXTEND_1) << 16;
+                bits <<= 2;
+
+                sl->data[sl_pos] = pixeldata;
+                sl_pos++;
+            }
+        }
+
+        gpio_put(DEBUG_PIN, 0);
+
+        sl->length = sl_pos;
+        sl->repeat_count = 1;
+        vga_submit_scanline(sl);
+    }
+}
+
 void render_loop() {
     gpio_init(DEBUG_PIN);
     gpio_set_dir(DEBUG_PIN, GPIO_OUT);
 
+    memset(text_buffer, 0x20, sizeof(text_buffer));
+    strcpy(text_buffer[0], "APPLE ][+");
+    strcpy(text_buffer[23], "LAST LINE");
+
     while(1) {
-        render_testpattern();
+        //render_testpattern();
+        render_text();
     }
 }

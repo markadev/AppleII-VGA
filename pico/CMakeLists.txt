@@ -18,6 +18,7 @@ pico_generate_pio_header(applevga
 target_sources(applevga PUBLIC
     main.c
     render.c
+    textfont.c
     vga.c
 )
 target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
