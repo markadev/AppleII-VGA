@@ -30,5 +30,6 @@ struct vga_scanline {
 
 void vga_init();
 
-struct vga_scanline *vga_prepare_scanline(bool vsync);
+void vga_prepare_frame();
+struct vga_scanline *vga_prepare_scanline();
 void vga_submit_scanline(struct vga_scanline *scanline);

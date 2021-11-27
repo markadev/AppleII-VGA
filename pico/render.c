@@ -9,26 +9,14 @@
 #define DEBUG_PIN 0
 
 
-// TODO make proper defines in vga.h
-// TODO why is this 34 and not 35?
-#define NUM_PRELINES 34 /*XXX*/
-
-
 static uint8_t text_buffer[24][40];
 
 
 static void __not_in_flash_func(render_testpattern)() {
-    // TODO: create one 'scanline' with the vsync and all vertical back porch hsyncs
-    // and encapsulate all this frame setup
-    struct vga_scanline *sl = vga_prepare_scanline(true);
-    vga_submit_scanline(sl);
-
-    sl = vga_prepare_scanline(false);
-    sl->repeat_count = NUM_PRELINES-2;
-    vga_submit_scanline(sl);
+    vga_prepare_frame();
 
     for(uint line=0; line < VGA_HEIGHT; line++) {
-        struct vga_scanline *sl = vga_prepare_scanline(false);
+        struct vga_scanline *sl = vga_prepare_scanline();
 
         gpio_put(DEBUG_PIN, 1);
 
@@ -64,18 +52,13 @@ static void __not_in_flash_func(render_testpattern)() {
 
 
 static void render_text() {
-    struct vga_scanline *sl = vga_prepare_scanline(true);
-    vga_submit_scanline(sl);
-
-    sl = vga_prepare_scanline(false);
-    sl->repeat_count = NUM_PRELINES-2;
-    vga_submit_scanline(sl);
+    vga_prepare_frame();
 
     for(int line=0; line < 24*8; line++) {
         uint8_t *line_buf = text_buffer[line >> 3];
         uint glyph_line = line & 0x7;
 
-        sl = vga_prepare_scanline(false);
+        struct vga_scanline *sl = vga_prepare_scanline();
         uint sl_pos = 0;
 
         gpio_put(DEBUG_PIN, 1);

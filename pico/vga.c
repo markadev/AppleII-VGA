@@ -10,6 +10,7 @@
 #define PIXEL_FREQ 25.2/*MHz*/
 #define PIXELS_PER_LINE 800
 #define LINES_PER_FRAME 525
+#define LINES_IN_BACK_PORCH 33
 
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 23)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
@@ -175,7 +176,26 @@ void vga_init() {
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 }
 
-struct vga_scanline *vga_prepare_scanline(bool vsync) {
+// Set up for a new display frame
+void vga_prepare_frame() {
+    // Populate a 'scanline' with multiple sync instructions to synchronize with the
+    // vsync and then skip over the vertical back porch.
+    struct vga_scanline *sl = vga_prepare_scanline();
+
+    sl->_sync = (uint32_t)THEN_WAIT_VSYNC << 16;
+    // FIXME: the number of hsyncs we have to wait for seems to be one too few
+    // because the vsync is supposed to last two lines (we wait one) and THEN
+    // the back porch lines need to be skipped.
+    for(int i=0; i < LINES_IN_BACK_PORCH; i++) {
+        sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
+    }
+    sl->length = LINES_IN_BACK_PORCH;
+
+    vga_submit_scanline(sl);
+}
+
+// Set up and return a new display scanline
+struct vga_scanline *vga_prepare_scanline() {
     struct vga_scanline *scanline = &scanline_queue[scanline_queue_head];
 
     // Wait for the scanline buffer to become available again
@@ -186,15 +206,14 @@ struct vga_scanline *vga_prepare_scanline(bool vsync) {
     scanline->length = 0;
     scanline->repeat_count = 0;
     scanline->_flags = FLAG_BUSY;
-    scanline->_sync = vsync ?
-        ((uint32_t)THEN_WAIT_VSYNC << 0) << 16 :
-        ((uint32_t)THEN_WAIT_HSYNC << 0) << 16;
+    scanline->_sync = (uint32_t)THEN_WAIT_HSYNC << 16;
 
     scanline_queue_head = (scanline_queue_head + 1) % NUM_SCANLINE_BUFFERS;
 
     return scanline;
 }
 
+// Mark the scanline as ready so it can be displayed
 void vga_submit_scanline(struct vga_scanline *scanline) {
     spin_lock_t *lock = spin_lock_instance(CONFIG_VGA_SPINLOCK_ID);
 
