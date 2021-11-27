@@ -87,7 +87,7 @@ skip_loop:
 ;
 ; Horizontal timing
 ;
-;    640x480@70Hz and 640x400@60Hz (pulse low)
+;    640x480@60Hz and 640x400@70Hz (pulse low)
 ; Scanline part | Pixels | Time [µs]
 ; ------------------------------------------
 ; Visible area  | 640    | 25.422045680238
