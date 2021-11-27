@@ -21,13 +21,9 @@ static void __not_in_flash_func(render_testpattern)() {
     // TODO: create one 'scanline' with the vsync and all vertical back porch hsyncs
     // and encapsulate all this frame setup
     struct vga_scanline *sl = vga_prepare_scanline(true);
-    memset(sl->data, 0, 128);
-    sl->length = 128/4;
     vga_submit_scanline(sl);
 
     sl = vga_prepare_scanline(false);
-    memset(sl->data, 0, 128);
-    sl->length = 128/4;
     sl->repeat_count = NUM_PRELINES-2;
     vga_submit_scanline(sl);
 
@@ -58,11 +54,6 @@ static void __not_in_flash_func(render_testpattern)() {
             sl->length = VGA_WIDTH/2;
             sl->repeat_count = 19;
             line += 19;
-        } else {
-            // TODO: make the hsync IRQ shorter so smaller placeholder scanlines can be used
-            // to skip lines.
-            memset(sl->data, 0, 128);
-            sl->length = 128/4;
         }
 
         gpio_put(DEBUG_PIN, 0);
@@ -74,13 +65,9 @@ static void __not_in_flash_func(render_testpattern)() {
 
 static void render_text() {
     struct vga_scanline *sl = vga_prepare_scanline(true);
-    memset(sl->data, 0, 128);
-    sl->length = 128/4;
     vga_submit_scanline(sl);
 
     sl = vga_prepare_scanline(false);
-    memset(sl->data, 0, 128);
-    sl->length = 128/4;
     sl->repeat_count = NUM_PRELINES-2;
     vga_submit_scanline(sl);
 

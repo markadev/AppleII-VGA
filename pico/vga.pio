@@ -16,9 +16,9 @@
 ; 144.5 |                         |                                 | 'wait irq vsync' completes
 ;   152 | assert hsync IRQ        |                                 |
 ; 152.5 |                         |                                 | 'wait irq hsync' completes
-;   160 |                         |                                 | first pixel RGB data out
+;   160 | deassert hsync IRQ      |                                 | first pixel RGB data out
 ;   161 |                         |                                 | second pixel RGB data out
-;   216 | deassert hsync IRQ      | deassert vsync IRQ              |
+;   216 |                         | deassert vsync IRQ              |
 
 .define LINECLK_IRQ_NUM 4
 .define HSYNC_IRQ_NUM 5
@@ -53,8 +53,8 @@ public extend_1:
     irq set LINECLK_IRQ_NUM  [1]   ; (0) assert lineclk IRQ
     set PINS, 0  [11]              ; (16) set hsync signal low
     set PINS, 1  [4]               ; (112) set hsync signal high
-    irq clear HSYNC_IRQ_NUM  [7]   ; (152) assert hsync IRQ
-    irq set HSYNC_IRQ_NUM          ; (216) deassert hsync IRQ
+    irq clear HSYNC_IRQ_NUM        ; (152) assert hsync IRQ
+    irq set HSYNC_IRQ_NUM          ; (160) deassert hsync IRQ
 
     ; Wait until the next hsync should be generated
     mov X, OSR
