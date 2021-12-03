@@ -1,0 +1,93 @@
+.define PHI0_GPIO 26
+.define READ_DATA_TRIGGER_IRQ 4
+.define DATA_BUSY_IRQ 5
+
+; Apple II bus interface
+; Ref: Understanding the Apple II, page 4-7
+
+.program abus
+; Prerequisites:
+;  * Bus clock used is PHI0, wired to GPIO 26
+;  * JMP pin is mapped to the R/W signal
+;  * IN pins are mapped to ~DEVSEL, R/W, and Data[7:0]
+;  * SET pins are mapped to the transceiver enable signals
+;  * input shift left & autopush @ 26 bits
+;  * run at least 125MHz (8ns/instruction)
+;
+; SET bits for tranceiver control:
+;  0bxxx
+;    x    - select AddrHi, active low
+;     x   - select AddrLo, active low
+;      x  - select Data, active low
+.wrap_target
+next_bus_cycle:
+    set PINS, 0b011                     ; enable AddrHi tranceiver
+    wait 1 GPIO, PHI0_GPIO              ; wait for PHI0 to rise. Data propagation through the transceiver should
+                                        ; be complete by the time this happens.
+    in PINS, 8                          ; read AddrHi[7:0]
+    set PINS, 0b101  [1]                ; enable AddrLo tranceiver and delay for transceiver propagation delay
+    in PINS, 8                          ; read AddrLo[7:0]
+
+    jmp PIN, read_cycle                 ; jump based on the state of the R/W pin
+
+write_cycle:
+    set PINS, 0b110                     ; enable Data tranceiver
+    wait 0 GPIO, PHI0_GPIO  [1]         ; wait for PHI0 to fall and delay for the transceiver propagation delay
+    in PINS, 10                         ; read ~DEVSEL, R/W, and Data[7:0], then autopush
+    jmp next_bus_cycle
+
+read_cycle:
+    ; the current time is P0+88ns (P0 + 40ns + 6 instructions)
+    in PINS, 10                         ; read ~DEVSEL, R/W, and dontcare[7:0], then autopush
+    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled
+    irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
+    wait 0 GPIO, PHI0_GPIO              ; wait for PHI0 to fall
+    wait 0 irq DATA_BUSY_IRQ            ; wait for the data handling state machine to complete to avoid contention w/transceiver control
+.wrap
+
+
+.program abus_device_read
+; Prerequisites:
+;  * Bus clock used is PHI0, wired to GPIO 26
+;  * JMP pin is the ~DEVSEL signal
+;  * OUT pins are the 8 data signals
+;  * SET pins are the Data transceiver control signals
+;
+; SET bits for tranceiver control:
+;  0bxx
+;    x  - select Data transceiver (active low)
+;     x - Data transceiver direction (0=input, 1=output)
+.wrap_target
+wait_loop:
+    wait 1 irq READ_DATA_TRIGGER_IRQ    ; wait for the data portion of a read cycle (from the main SM)
+    jmp PIN, wait_loop                  ; skip if this device is not being addressed
+
+    ; the current time is P0+128ns (P0 + 40ns + 11 instructions) and
+    ; this read cycle is addressed to this device.
+    ;
+    ; Phase 0 is typically 489 ns long.
+    ;  * Data from peripherals should be valid on the data bus by 45 nanoseconds before the end of phase 0
+    ;  * Data should be held for 40ns after phase 0 ends
+    ;  * Data bus should be tri-stated within 60ns after phase 0 ends
+
+    irq set DATA_BUSY_IRQ
+
+    set PINS, 0b01                      ; enable Data tranceiver with output direction
+    mov OSR, ~NULL
+    out PINDIRS, 8                      ; set data pins as outputs
+
+    pull noblock                        ; early pull is redundant, but can clear out any standing values from the FIFO
+    mov X, OSR  [31]
+    pull noblock                        ; pull value from the FIFO as late as possible
+    out PINS, 8
+
+    ; the current time is P0+440ns (P0 + 40ns + 50 instructions)
+
+    wait 0 GPIO, PHI0_GPIO  [3]         ; wait for PHI0 to fall then hold for 40ns
+    set PINS, 0b10                      ; disable Data tranceiver to tri-state the data bus
+
+    mov OSR, NULL
+    out PINDIRS, 8                      ; reset data pins as inputs
+
+    irq clear DATA_BUSY_IRQ
+.wrap

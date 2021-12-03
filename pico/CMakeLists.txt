@@ -14,9 +14,12 @@ add_executable(applevga)
 
 pico_generate_pio_header(applevga
     ${CMAKE_CURRENT_SOURCE_DIR}/vga.pio)
+pico_generate_pio_header(applevga
+    ${CMAKE_CURRENT_SOURCE_DIR}/abus.pio)
 
 target_sources(applevga PUBLIC
     main.c
+    abus.c
     render.c
     textfont.c
     vga.c
@@ -27,6 +30,7 @@ target_link_libraries(applevga PUBLIC
     pico_stdlib
     hardware_dma
     hardware_pio
+    hardware_pwm
 )
 
 pico_add_extra_outputs(applevga)
