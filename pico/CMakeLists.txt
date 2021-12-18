@@ -20,6 +20,7 @@ pico_generate_pio_header(applevga
 target_sources(applevga PUBLIC
     main.c
     abus.c
+    buffers.c
     render.c
     textfont.c
     vga.c

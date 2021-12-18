@@ -1,15 +1,8 @@
 #include <string.h>
 #include <pico/stdlib.h>
-#include <hardware/gpio.h>
+#include "buffers.h"
 #include "textfont.h"
 #include "vga.h"
-
-
-// XXX
-#define DEBUG_PIN 0
-
-
-static uint8_t text_buffer[24][40];
 
 
 static void __not_in_flash_func(render_testpattern)() {
@@ -17,8 +10,6 @@ static void __not_in_flash_func(render_testpattern)() {
 
     for(uint line=0; line < VGA_HEIGHT; line++) {
         struct vga_scanline *sl = vga_prepare_scanline();
-
-        gpio_put(DEBUG_PIN, 1);
 
         if(line == 0 || line == VGA_HEIGHT-1) {
             for(uint i=0; i < VGA_WIDTH/4; i++) {
@@ -44,24 +35,20 @@ static void __not_in_flash_func(render_testpattern)() {
             line += 19;
         }
 
-        gpio_put(DEBUG_PIN, 0);
-
         vga_submit_scanline(sl);
     }
 }
 
 
-static void render_text() {
+static void render_text(uint8_t *page) {
     vga_prepare_frame();
 
     for(int line=0; line < 24*8; line++) {
-        uint8_t *line_buf = text_buffer[line >> 3];
+        uint8_t *line_buf = &page[(line >> 3) * 40];
         uint glyph_line = line & 0x7;
 
         struct vga_scanline *sl = vga_prepare_scanline();
         uint sl_pos = 0;
-
-        gpio_put(DEBUG_PIN, 1);
 
         for(int col=0; col < 40; col+=2) {
             uint char_a = line_buf[col] & 0x3f;
@@ -81,24 +68,20 @@ static void render_text() {
             }
         }
 
-        gpio_put(DEBUG_PIN, 0);
-
         sl->length = sl_pos;
         sl->repeat_count = 1;
         vga_submit_scanline(sl);
     }
 }
 
-void render_loop() {
-    gpio_init(DEBUG_PIN);
-    gpio_set_dir(DEBUG_PIN, GPIO_OUT);
 
-    memset(text_buffer, 0x20, sizeof(text_buffer));
-    strcpy(text_buffer[0], "APPLE ][+");
-    strcpy(text_buffer[23], "LAST LINE");
+void render_loop() {
+    memset(text_page, 0x20, sizeof(text_page));
+    strcpy(&text_page[0], "APPLE ][+");
+    strcpy(&text_page[23*40], "LAST LINE");
 
     while(1) {
         //render_testpattern();
-        render_text();
+        render_text(text_page);
     }
 }
