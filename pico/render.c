@@ -1,4 +1,3 @@
-#include <string.h>
 #include <pico/stdlib.h>
 #include "buffers.h"
 #include "textfont.h"
@@ -43,43 +42,40 @@ static void __not_in_flash_func(render_testpattern)() {
 static void render_text(uint8_t *page) {
     vga_prepare_frame();
 
-    for(int line=0; line < 24*8; line++) {
-        uint8_t *line_buf = &page[(line >> 3) * 40];
-        uint glyph_line = line & 0x7;
+    for(int line=0; line < 24; line++) {
+        const uint8_t *line_buf = &page[((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40)];
 
-        struct vga_scanline *sl = vga_prepare_scanline();
-        uint sl_pos = 0;
+        for(int glyph_line=0; glyph_line < 8; glyph_line++) {
+            struct vga_scanline *sl = vga_prepare_scanline();
+            uint sl_pos = 0;
 
-        for(int col=0; col < 40; col+=2) {
-            uint char_a = line_buf[col] & 0x3f;
-            uint char_b = line_buf[col+1] & 0x3f;
-            uint32_t bits = ((uint32_t)default_font[char_a][glyph_line] << 7) | default_font[char_b][glyph_line];
+            for(int col=0; col < 40; col+=2) {
+                uint char_a = line_buf[col] & 0x3f;
+                uint char_b = line_buf[col+1] & 0x3f;
+                uint32_t bits = ((uint32_t)default_font[char_a][glyph_line] << 7) | default_font[char_b][glyph_line];
 
-            // Translate each pair of bits into a pair of pixels
-            for(int i=0; i < 7; i++) {
-                uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0|THEN_EXTEND_1);
-                pixeldata |= (bits & 0x1000) ?
-                    ((uint32_t)0x1ff|THEN_EXTEND_1) << 16 :
-                    ((uint32_t)0|THEN_EXTEND_1) << 16;
-                bits <<= 2;
+                // Translate each pair of bits into a pair of pixels
+                for(int i=0; i < 7; i++) {
+                    uint32_t pixeldata = (bits & 0x2000) ? (0x1ff|THEN_EXTEND_1) : (0|THEN_EXTEND_1);
+                    pixeldata |= (bits & 0x1000) ?
+                        ((uint32_t)0x1ff|THEN_EXTEND_1) << 16 :
+                        ((uint32_t)0|THEN_EXTEND_1) << 16;
+                    bits <<= 2;
 
-                sl->data[sl_pos] = pixeldata;
-                sl_pos++;
+                    sl->data[sl_pos] = pixeldata;
+                    sl_pos++;
+                }
             }
-        }
 
-        sl->length = sl_pos;
-        sl->repeat_count = 1;
-        vga_submit_scanline(sl);
+            sl->length = sl_pos;
+            sl->repeat_count = 1;
+            vga_submit_scanline(sl);
+        }
     }
 }
 
 
 void render_loop() {
-    memset(text_page, 0x20, sizeof(text_page));
-    strcpy(&text_page[0], "APPLE ][+");
-    strcpy(&text_page[23*40], "LAST LINE");
-
     while(1) {
         //render_testpattern();
         render_text(text_page);
