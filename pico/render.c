@@ -62,12 +62,26 @@ static inline uint_fast8_t char_text_bits(uint_fast8_t ch, uint_fast8_t glyph_li
 static void render_text(uint8_t *page) {
     vga_prepare_frame();
 
+    // Skip 48 lines to center vertically
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
+    for(int i=0; i < 48; i++) {
+        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
+    }
+    skip_sl->length = 48;
+    vga_submit_scanline(skip_sl);
+
     for(int line=0; line < 24; line++) {
         const uint8_t *line_buf = &page[((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40)];
 
         for(int glyph_line=0; glyph_line < 8; glyph_line++) {
             struct vga_scanline *sl = vga_prepare_scanline();
             uint sl_pos = 0;
+
+            // Pad 40 pixels on the left to center horizontally
+            while(sl_pos < 40/8) {
+                sl->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
+                sl_pos++;
+            }
 
             for(int col=0; col < 40; ) {
                 uint32_t bits_a = char_text_bits(line_buf[col], glyph_line);
