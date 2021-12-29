@@ -31,7 +31,6 @@ target_link_libraries(applevga PUBLIC
     pico_stdlib
     hardware_dma
     hardware_pio
-    hardware_pwm
 )
 
 pico_add_extra_outputs(applevga)
