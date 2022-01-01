@@ -40,18 +40,6 @@ static void __noinline __time_critical_func(render_testpattern)() {
 }
 
 
-static void __noinline __time_critical_func(render_hires)(uint8_t *page) {
-    // TODO
-    render_testpattern();
-}
-
-
-static void __noinline __time_critical_func(render_mixed_hires)(uint8_t *hires_page, uint8_t *text_page) {
-    // TODO
-    render_testpattern();
-}
-
-
 void render_loop() {
     while(1) {
         update_text_flasher();
