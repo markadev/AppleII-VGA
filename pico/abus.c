@@ -90,7 +90,48 @@ void abus_init() {
 }
 
 
-void abus_loop() {
+static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
+    // Shadow parts of the Apple's memory by observing the bus write cycles
+    if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
+        if((address >= 0x400u) && (address < 0xc00u)) {
+            text_memory[address - 0x400] = value & 0xff;
+        } else if((address >= 0x2000) && (address < 0x6000)) {
+            hires_memory[address - 0x2000] = value & 0xff;
+        }
+    }
+
+    // Shadow the soft-switches by observing all read & write bus cycles
+    if((address & 0xfff8) == 0xc050) {
+        switch(address & 7) {
+        case 0:
+            soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
+            break;
+        case 1:
+            soft_switches |= SOFTSW_TEXT_MODE;
+            break;
+        case 2:
+            soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
+            break;
+        case 3:
+            soft_switches |= SOFTSW_MIX_MODE;
+            break;
+        case 4:
+            soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
+            break;
+        case 5:
+            soft_switches |= SOFTSW_PAGE_2;
+            break;
+        case 6:
+            soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
+            break;
+        case 7:
+            soft_switches |= SOFTSW_HIRES_MODE;
+            break;
+        }
+    }
+}
+
+void __time_critical_func(abus_loop)() {
     while(1) {
         uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
         uint address = (value >> 10) & 0xffff;
@@ -104,15 +145,6 @@ void abus_loop() {
             }
         }
 
-        // $0400 - $07FF (1024 - 2047): Text Video Page and Peripheral Screenholes
-        // $0800 - $0BFF (2048 - 3071): Text Video Page 2 or Applesoft Program and Variables
-        if((value & (1u << CONFIG_PIN_APPLEBUS_RW-CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0) {
-            // write cycle
-            if((address & 0xfc00) == 0x400) {
-                text_page[address & 0x3ff] = value & 0xff;
-            } else if((address & 0xfc00) == 0x800) {
-                text_page_2[address & 0x3ff] = value & 0xff;
-            }
-        }
+        shadow_memory(address, value);
     }
 }

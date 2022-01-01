@@ -8,7 +8,7 @@
 static uint_fast32_t text_flasher_mask = 0;
 
 
-static void __not_in_flash_func(render_testpattern)() {
+static void __noinline __time_critical_func(render_testpattern)() {
     vga_prepare_frame();
 
     for(uint line=0; line < VGA_HEIGHT; line++) {
@@ -43,7 +43,7 @@ static void __not_in_flash_func(render_testpattern)() {
 }
 
 
-static inline uint_fast8_t char_text_bits(uint_fast8_t ch, uint_fast8_t glyph_line) {
+static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
     uint_fast8_t bits = default_font[((uint_fast16_t)ch << 3) | glyph_line];
     if(ch & 0x80) {
         // normal character
@@ -59,7 +59,7 @@ static inline uint_fast8_t char_text_bits(uint_fast8_t ch, uint_fast8_t glyph_li
     }
 }
 
-static void render_text(uint8_t *page) {
+static void __noinline __time_critical_func(render_text)(uint8_t *page) {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -112,6 +112,30 @@ static void render_text(uint8_t *page) {
 }
 
 
+static void __noinline __time_critical_func(render_lores)(uint8_t *page) {
+    // TODO
+    render_testpattern();
+}
+
+
+static void __noinline __time_critical_func(render_mixed_lores)(uint8_t *page) {
+    // TODO
+    render_testpattern();
+}
+
+
+static void __noinline __time_critical_func(render_hires)(uint8_t *page) {
+    // TODO
+    render_testpattern();
+}
+
+
+static void __noinline __time_critical_func(render_mixed_hires)(uint8_t *hires_page, uint8_t *text_page) {
+    // TODO
+    render_testpattern();
+}
+
+
 static void tick_text_flasher() {
     static absolute_time_t next_flash_tick = 0;
 
@@ -122,11 +146,29 @@ static void tick_text_flasher() {
     }
 }
 
+
 void render_loop() {
     while(1) {
         tick_text_flasher();
 
-        //render_testpattern();
-        render_text(text_page);
+        switch(soft_switches & SOFTSW_MODE_MASK) {
+        case 0:
+            render_lores((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            break;
+        case SOFTSW_MIX_MODE:
+            render_mixed_lores((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            break;
+        case SOFTSW_HIRES_MODE:
+            render_hires((soft_switches & SOFTSW_PAGE_2) ? hires_memory + 8192 : hires_memory);
+            break;
+        case SOFTSW_HIRES_MODE|SOFTSW_MIX_MODE:
+            render_mixed_hires(
+                (soft_switches & SOFTSW_PAGE_2) ? hires_memory + 8192 : hires_memory,
+                (soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            break;
+        default:
+            render_text((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            break;
+        }
     }
 }
