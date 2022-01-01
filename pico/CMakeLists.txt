@@ -23,6 +23,7 @@ target_sources(applevga PUBLIC
     buffers.c
     render.c
     render_lores.c
+    render_text.c
     textfont.c
     vga.c
 )

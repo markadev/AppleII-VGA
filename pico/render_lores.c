@@ -64,7 +64,9 @@ void __time_critical_func(render_mixed_lores)(uint8_t *page) {
         render_lores_line(page, line);
     }
 
-    // TODO render 4 text lines
+    for(uint line=20; line < 24; line++) {
+        render_text_line(page, line);
+    }
 }
 
 
