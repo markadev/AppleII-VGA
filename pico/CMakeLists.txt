@@ -22,6 +22,7 @@ target_sources(applevga PUBLIC
     abus.c
     buffers.c
     render.c
+    render_lores.c
     textfont.c
     vga.c
 )

@@ -1,6 +1,7 @@
 #include <pico/stdlib.h>
 #include <hardware/timer.h>
 #include "buffers.h"
+#include "render.h"
 #include "textfont.h"
 #include "vga.h"
 
@@ -109,18 +110,6 @@ static void __noinline __time_critical_func(render_text)(uint8_t *page) {
             vga_submit_scanline(sl);
         }
     }
-}
-
-
-static void __noinline __time_critical_func(render_lores)(uint8_t *page) {
-    // TODO
-    render_testpattern();
-}
-
-
-static void __noinline __time_critical_func(render_mixed_lores)(uint8_t *page) {
-    // TODO
-    render_testpattern();
 }
 
 
