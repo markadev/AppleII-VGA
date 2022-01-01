@@ -1,7 +1,9 @@
+#include <string.h>
 #include <pico/stdlib.h>
 #include <hardware/timer.h>
 #include "buffers.h"
 #include "render.h"
+#include "textfont.h"
 #include "vga.h"
 
 
@@ -37,6 +39,12 @@ static void __noinline __time_critical_func(render_testpattern)() {
 
         vga_submit_scanline(sl);
     }
+}
+
+
+void render_init() {
+    // Initialize the character generator ROM
+    memcpy(character_rom, default_character_rom, sizeof(character_rom));
 }
 
 

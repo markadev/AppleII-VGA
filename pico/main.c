@@ -8,6 +8,7 @@
 
 static void core1_main() {
     vga_init();
+    render_init();
     render_loop();
 }
 

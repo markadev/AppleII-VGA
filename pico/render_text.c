@@ -1,4 +1,5 @@
 #include <pico/stdlib.h>
+#include "buffers.h"
 #include "render.h"
 #include "textfont.h"
 #include "vga.h"
@@ -18,7 +19,7 @@ void update_text_flasher() {
 
 
 static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
-    uint_fast8_t bits = default_font[((uint_fast16_t)ch << 3) | glyph_line];
+    uint_fast8_t bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line];
     if(ch & 0x80) {
         // normal character
         return bits & 0x7f;

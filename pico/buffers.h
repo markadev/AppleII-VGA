@@ -13,5 +13,6 @@ enum {
 };
 
 extern volatile uint32_t soft_switches;
+extern uint8_t character_rom[256*8];
 extern uint8_t text_memory[2*1024];
 extern uint8_t hires_memory[2*8192];

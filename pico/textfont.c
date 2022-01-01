@@ -1,7 +1,7 @@
 #include "textfont.h"
 
 
-const uint8_t default_font[256*8] = {
+const uint8_t default_character_rom[256*8] = {
     //
     // Inverse Set (0-63)
     //

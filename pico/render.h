@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 
+extern void render_init();
 extern void render_loop();
 
 extern void update_text_flasher();
