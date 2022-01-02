@@ -20,6 +20,8 @@ purposes only. I've built a prototype card and it works on my Apple II+ but I on
 one Apple II+ and one VGA monitor so my testing is very limited.
 
 These features are currently supported:
+ * Generates a 640x480@60 VGA signal with 3 bits per color channel using
+   resistor DACs
  * Text mode (monochrome)
  * Lo-res mode, crisp w/no color fringing
  * Hi-res mode (still wip)
