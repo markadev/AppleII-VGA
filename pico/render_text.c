@@ -6,11 +6,11 @@
 
 
 static uint_fast32_t text_flasher_mask = 0;
-static absolute_time_t next_flash_tick = 0;
+static uint64_t next_flash_tick = 0;
 
 
 void update_text_flasher() {
-    absolute_time_t now = time_us_64();
+    uint64_t now = time_us_64();
     if(now > next_flash_tick) {
         text_flasher_mask ^= 0xff;
         next_flash_tick = now + 250000u;

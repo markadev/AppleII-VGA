@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 # Pull in SDK (must be before project)
 include(cmake/pico_sdk_import.cmake)
-include(cmake/gitversion.cmake)
 
 project(applevga)
 set(CMAKE_C_STANDARD 11)
