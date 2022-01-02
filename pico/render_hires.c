@@ -57,6 +57,12 @@ static void __time_critical_func(render_hires_line)(uint8_t *page, uint line) {
     struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
 
+    // Pad 40 pixels on the left to center horizontally
+    while(sl_pos < 40/8) {
+        sl->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
+        sl_pos++;
+    }
+
     // Each hires byte contains 7 pixels which may be shifted right 1/2 a pixel. That is
     // represented here by 14 'dots' to precisely describe the half-pixel positioning.
     //
