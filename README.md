@@ -33,6 +33,7 @@ I had these goals in mind during design:
  * Generate crisp video - I wanted "perfect" video output, the way that it should have
    been barring technical difficulties of displays in 1980. So like, no NTSC artifact
    coloring where it's not supposed to be.
+ * Non-invasive - I didn't want to have to solder or modify my logic board.
  * Common parts - The parts to build should be cheap and easy to get anywhere,
    just like the original Apple II
  * Open-source - If this helps anyone else make their Apple II better then that's
