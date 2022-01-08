@@ -21,42 +21,23 @@ NTSC_YIQ_TO_RGB = np.array([
     [ 1.0, -1.1, 1.7 ],
 ]).transpose()
 
-PALETTE_OLD = [
-    (0,0,0),          # 0000 black
-    (0xce,0xd4,0x13), # 0001 d.brown
-    (0x00,0x73,0x10), # 0010 d.bluegreen
-    (0x12,0xca,0x07), # 0011 h.green
-    (0x42,0x04,0xe1), # 0100 d.blue
-    (0x8f,0x8f,0x8f), # 0101 l.gray
-    (0x24,0x97,0xff), # 0110 h.blue
-    (0x51,0xf5,0x95), # 0111 l.blgreen
-    (0x99,0x03,0x5f), # 1000 d.magenta
-    (0xf0,0x5c,0x00), # 1001 h.orange
-    (0x6f,0x6f,0x6f), # 1010 d.gray
-    (0xce,0xd4,0x13), # 1011 l.brown
-    (0xca,0x13,0xfe), # 1100 h.violet
-    (0xff,0x85,0xe1), # 1101 l.magenta
-    (0xaa,0xa2,0xff), # 1110 l.blue
-    (0xff,0xff,0xff), # 1111 white
-]
-
 PALETTE = [
-    (0,0,0),        # 0000 black
-    (72,74,0),      # 0001 d.brown
-    (0,98,30),      # 0010 d.bluegreen
-    (29,143,0),     # 0011 h.green
-    (41,40,183),    # 0100 d.blue
-    (142,142,142),  # 0101 l.gray
-    (0,110,185),    # 0110 h.blue
-    (127,240,171),  # 0111 l.blgreen
-    (128,15,84),    # 1000 d.magenta
-    (171,60,0),     # 1001 h.orange
-    (113,113,113),  # 1010 d.gray
-    (157,159,15),   # 1011 l.brown
-    (141,27,239),   # 1100 h.violet
-    (255,127,225),  # 1101 l.magenta
-    (211,210,255),  # 1110 l.blue
-    (255,255,255),  # 1111 white
+    (0x00,0x00,0x00),   # 0000 black
+    (0x24,0x24,0x00),   # 0001 brown
+    (0x00,0x48,0x00),   # 0010 d.green
+    (0x00,0xd8,0x24),   # 0011 h.green
+    (0x00,0x00,0xb4),   # 0100 d.blue
+    (0x90,0x90,0x90),   # 0101 l.gray
+    (0x00,0x90,0xfc),   # 0110 h.blue
+    (0x90,0xfc,0xb4),   # 0111 aqua
+    (0x6c,0x00,0x6c),   # 1000 magenta
+    (0xfc,0x48,0x00),   # 1001 h.orange
+    (0x48,0x48,0x48),   # 1010 d.gray
+    (0xd8,0xd8,0x00),   # 1011 yellow
+    (0xb4,0x24,0xfc),   # 1100 h.violet
+    (0xfc,0x6c,0xfc),   # 1101 pink
+    (0x6c,0x6c,0xfc),   # 1110 l.blue
+    (0xff,0xff,0xff),   # 1111 white
 ]
 
 def area(a_min, a_max):
