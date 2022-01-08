@@ -71,34 +71,34 @@ static void __time_critical_func(render_hires_line)(uint8_t *page, uint line) {
     //
     // Dots would be scanned out to the CRT from MSB to LSB (left to right here):
     //
-    //              previous      |        next
-    //                dots        |        dots
+    //            previous   |        next
+    //              dots     |        dots
     //        +-------------------+--------------------------------------------------+
     // dots:  | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | ... | 14 | 13 | 12 | ...
-    //             |              |         |              |
-    //             \______________|_________|______________/
-    //                            |         |
-    //                            \_________/
-    //                              current
-    //                               pixel
+    //        |              |         |              |
+    //        \______________|_________|______________/
+    //                       |         |
+    //                       \_________/
+    //                         current
+    //                          pixel
     uint32_t dots = 0;
     uint oddness = 0;
 
     // Load in the first 14 dots
-    dots |= (uint32_t)hires_dot_patterns[line_mem[0]] << 14;
+    dots |= (uint32_t)hires_dot_patterns[line_mem[0]] << 15;
 
     for(uint i=1; i < 41; i++) {
         // Load in the next 14 dots
         uint b = (i < 40) ? line_mem[i] : 0;
         if(b & 0x80) {
             // Extend the last bit from the previous byte
-            dots |= (dots & (1u << 14)) >> 1;
+            dots |= (dots & (1u << 15)) >> 1;
         }
-        dots |= (uint32_t)hires_dot_patterns[b];
+        dots |= (uint32_t)hires_dot_patterns[b] << 1;
 
         // Consume 14 dots
         for(uint j=0; j < 7; j++) {
-            uint dot_pattern = oddness | ((dots >> 23) & 0xff);
+            uint dot_pattern = oddness | ((dots >> 24) & 0xff);
             sl->data[sl_pos] = hires_color_patterns[dot_pattern];
             sl_pos++;
             dots <<= 2;
