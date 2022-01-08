@@ -87,12 +87,12 @@ static void __time_critical_func(render_hires_line)(uint8_t *page, uint line) {
     // Load in the first 14 dots
     dots |= (uint32_t)hires_dot_patterns[line_mem[0]] << 14;
 
-    for(uint i=1; i < 41/*FIXME: handle the last 7 dots better*/; i++) {
+    for(uint i=1; i < 41; i++) {
         // Load in the next 14 dots
-        uint b = line_mem[i];
-        if((b & 0x80) && (dots & (1u << 14))) {
-            // Extend the last 1 from the previous byte
-            dots |= (1u << 13);
+        uint b = (i < 40) ? line_mem[i] : 0;
+        if(b & 0x80) {
+            // Extend the last bit from the previous byte
+            dots |= (dots & (1u << 14)) >> 1;
         }
         dots |= (uint32_t)hires_dot_patterns[b];
 
