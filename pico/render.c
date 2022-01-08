@@ -7,36 +7,106 @@
 #include "vga.h"
 
 
+#define _PIXPAIR(p1, p2) ((uint32_t)(p1) | (((uint32_t)p2) << 16))
+
 static void __noinline __time_critical_func(render_testpattern)() {
     vga_prepare_frame();
 
-    for(uint line=0; line < VGA_HEIGHT; line++) {
+    for(uint line=0; line < VGA_HEIGHT;) {
         struct vga_scanline *sl = vga_prepare_scanline();
+        uint sl_pos = 0;
 
-        if(line == 0 || line == VGA_HEIGHT-1) {
-            for(uint i=0; i < VGA_WIDTH/4; i++) {
-                sl->data[i] = ((uint32_t)0x1ff | THEN_EXTEND_1) | (((uint32_t)0x1ff | THEN_EXTEND_1) << 16);
+        if((line == 0) || (line == VGA_HEIGHT-1)) {
+            for(; sl_pos < VGA_WIDTH/8; sl_pos++) {
+                sl->data[sl_pos] = _PIXPAIR(0x1ff | THEN_EXTEND_3, 0x1ff | THEN_EXTEND_3);
             }
-            sl->length = VGA_WIDTH/4; // number of 32-bit words
-        } else if(line < 120) {
-            for(uint32_t i=0; i < 256; i+=2) {
-                uint32_t w = ((i & 0x1ff) | THEN_EXTEND_1) |
-                    (((i+1 & 0x1ff) | THEN_EXTEND_1) << 16);
-                sl->data[i/2] = w;
+            sl->length = sl_pos;
+        } else if((line == 1) || (line == VGA_HEIGHT-32-1)) {
+            for(uint i=0; i < VGA_WIDTH/4; i++, sl_pos++) {
+                sl->data[sl_pos] = _PIXPAIR(0x1ff, 0);
             }
-            sl->length = 256/2;
-        } else if(line < 140) {
-            for(uint i=0; i < VGA_WIDTH/4; i++) {
-                sl->data[i] = (uint32_t)0x1ff;
+            for(uint i=0; i < VGA_WIDTH/4; i++, sl_pos++) {
+                sl->data[sl_pos] = _PIXPAIR(0, 0x1ff);
             }
-            for(uint i=VGA_WIDTH/4; i < VGA_WIDTH/2; i++) {
-                sl->data[i] = (uint32_t)0x1ff << 16;
+
+            sl->length = sl_pos;
+            sl->repeat_count = 31;
+        } else if((line >= 44) && (line < 44+128)) {
+            for(uint i=0; i < 15; i++) {
+                sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
             }
-            sl->length = VGA_WIDTH/2;
-            sl->repeat_count = 19;
-            line += 19;
+            sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_2, 0 | THEN_EXTEND_2);
+
+            const uint g = (line - 44) / 16;
+            for(uint b=0; b < 3; b++) {
+                for(uint r=0; r < 8; r++) {
+                    const uint rgb = (r << 6) | (g << 3) | b;
+                    sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                    sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                }
+                sl->data[sl_pos++] = _PIXPAIR(0, 0);
+            }
+            sl->length = sl_pos;
+            sl->repeat_count = 15;
+        } else if((line >= 174) && (line < 174+128)) {
+            for(uint i=0; i < 15; i++) {
+                sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
+            }
+            sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_2, 0 | THEN_EXTEND_2);
+
+            const uint g = (line - 174) / 16;
+
+            // center-left square
+            uint b = 3;
+            for(uint r=0; r < 8; r++) {
+                const uint rgb = (r << 6) | (g << 3) | b;
+                sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+            }
+            sl->data[sl_pos++] = _PIXPAIR(0, 0);
+
+            // center square (black)
+            for(uint i=0; i < 8; i++) {
+                sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
+                sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
+            }
+            sl->data[sl_pos++] = _PIXPAIR(0, 0);
+
+            // center-right square
+            b = 4;
+            for(uint r=0; r < 8; r++) {
+                const uint rgb = (r << 6) | (g << 3) | b;
+                sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+            }
+            sl->data[sl_pos++] = _PIXPAIR(0, 0);
+
+            sl->length = sl_pos;
+            sl->repeat_count = 15;
+        } else if((line >= 304) && (line < 304+128)) {
+            for(uint i=0; i < 15; i++) {
+                sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
+            }
+            sl->data[sl_pos++] = _PIXPAIR(0 | THEN_EXTEND_2, 0 | THEN_EXTEND_2);
+
+            const uint g = (line - 304) / 16;
+            for(uint b=5; b < 8; b++) {
+                for(uint r=0; r < 8; r++) {
+                    const uint rgb = (r << 6) | (g << 3) | b;
+                    sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                    sl->data[sl_pos++] = _PIXPAIR(rgb | THEN_EXTEND_3, rgb | THEN_EXTEND_3);
+                }
+                sl->data[sl_pos++] = _PIXPAIR(0, 0);
+            }
+            sl->length = sl_pos;
+            sl->repeat_count = 15;
+        } else {
+            // black
+            sl->data[sl_pos] = _PIXPAIR(0 | THEN_EXTEND_3, 0 | THEN_EXTEND_3);
+            sl_pos++;
         }
 
+        line += sl->repeat_count + 1;
         vga_submit_scanline(sl);
     }
 }
