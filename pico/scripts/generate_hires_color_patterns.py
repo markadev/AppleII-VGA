@@ -7,6 +7,26 @@ from math import cos, sin, radians, pi, isclose
 import numpy as np
 
 
+NTSC_RGB_TO_YUV = np.array([
+    [ 0.299, 0.587, 0.114 ],
+    [ -0.14713, -0.28886, 0.436 ],
+    [ 0.615, -0.51499, -0.10001 ]
+]).transpose()
+
+NTSC_YUV_TO_RGB = np.array([
+    [ 1, 0, 1.13983 ],
+    [ 1, -0.39465, -0.58060 ],
+    [ 1, 2.03211, 0 ]
+]).transpose()
+
+
+# standard
+RGB_TO_YIQ = np.array([
+    [ 0.299, 0.587, 0.114 ],
+    [ 0.5959, -0.2746, -0.3213 ],
+    [ 0.2115, -0.5227, 0.3112 ]
+]).transpose()
+
 # standard
 YIQ_TO_RGB = np.array([
     [ 1.0, 0.956, 0.619 ],
@@ -78,6 +98,7 @@ def normalize(rgb):
 
 
 def phase_shift(bits, phase):
+    phase = phase % 360
     if phase == 0:
         return bits
     elif phase == 90:
@@ -92,17 +113,17 @@ def phase_shift(bits, phase):
 
 # bits - 7 bits, where bit 3 is the one being rendered
 def color_of(phase_ref, bits):
-    #phase_ref = (phase_ref + 270) % 360
-    rgb = (255, 0, 0) # XXX
-
     if (bits >> 3) & 0xf == 0 or (bits >> 2) & 0xf == 0 or (bits >> 1) & 0xf == 0 or bits & 0xf == 0:
-        rgb = PALETTE[0]
+        rgb = np.array((PALETTE[0]))
     elif (bits >> 3) & 0xf == 0xf or (bits >> 2) & 0xf == 0xf or (bits >> 1) & 0xf == 0xf or bits & 0xf == 0xf:
-        rgb = PALETTE[15]
+        rgb = np.array((PALETTE[15]))
     else:
-        rgb = PALETTE[phase_shift(bits, phase_ref) & 0xf]
+        rgb1 = np.array((PALETTE[phase_shift(bits, phase_ref) & 0xf]))
+        rgb2 = np.array((PALETTE[phase_shift(bits >> 1, phase_ref+270) & 0xf]))
+        rgb3 = np.array((PALETTE[phase_shift(bits >> 2, phase_ref+180) & 0xf]))
+        rgb = (rgb1 + rgb2*0.25 + rgb3*0.1) / 1.35
 
-    return np.array(rgb) / 255
+    return rgb.flatten() / 255
 
 
 def rgb8_color_of(*args):
