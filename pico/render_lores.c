@@ -1,4 +1,5 @@
 #include <pico/stdlib.h>
+#include "buffers.h"
 #include "render.h"
 #include "vga.h"
 
@@ -29,10 +30,10 @@ static uint16_t lores_palette[16] = {
 #undef _RGB333
 
 
-static void render_lores_line(uint8_t *page, uint line);
+static void render_lores_line(uint line);
 
 
-void __time_critical_func(render_lores)(uint8_t *page) {
+void __time_critical_func(render_lores)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -44,12 +45,12 @@ void __time_critical_func(render_lores)(uint8_t *page) {
     vga_submit_scanline(skip_sl);
 
     for(uint line=0; line < 24; line++) {
-        render_lores_line(page, line);
+        render_lores_line(line);
     }
 }
 
 
-void __time_critical_func(render_mixed_lores)(uint8_t *page) {
+void __time_critical_func(render_mixed_lores)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -61,22 +62,23 @@ void __time_critical_func(render_mixed_lores)(uint8_t *page) {
     vga_submit_scanline(skip_sl);
 
     for(uint line=0; line < 20; line++) {
-        render_lores_line(page, line);
+        render_lores_line(line);
     }
 
     for(uint line=20; line < 24; line++) {
-        render_text_line(page, line);
+        render_text_line(line);
     }
 }
 
 
-static void __time_critical_func(render_lores_line)(uint8_t *page, uint line) {
-    const uint8_t *line_buf = &page[((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40)];
-
+static void __time_critical_func(render_lores_line)(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
+
+    const uint8_t *page = (soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory;
+    const uint8_t *line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
 
     // Pad 40 pixels on the left to center horizontally
     while(sl_pos < 40/8) {

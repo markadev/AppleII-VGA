@@ -124,21 +124,19 @@ void render_loop() {
 
         switch(soft_switches & SOFTSW_MODE_MASK) {
         case 0:
-            render_lores((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            render_lores();
             break;
         case SOFTSW_MIX_MODE:
-            render_mixed_lores((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            render_mixed_lores();
             break;
         case SOFTSW_HIRES_MODE:
-            render_hires((soft_switches & SOFTSW_PAGE_2) ? hires_memory + 8192 : hires_memory);
+            render_hires();
             break;
         case SOFTSW_HIRES_MODE|SOFTSW_MIX_MODE:
-            render_mixed_hires(
-                (soft_switches & SOFTSW_PAGE_2) ? hires_memory + 8192 : hires_memory,
-                (soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            render_mixed_hires();
             break;
         default:
-            render_text((soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory);
+            render_text();
             break;
         }
     }

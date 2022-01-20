@@ -35,7 +35,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
 }
 
 
-void __time_critical_func(render_text)(uint8_t *page) {
+void __time_critical_func(render_text)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -47,13 +47,14 @@ void __time_critical_func(render_text)(uint8_t *page) {
     vga_submit_scanline(skip_sl);
 
     for(int line=0; line < 24; line++) {
-        render_text_line(page, line);
+        render_text_line(line);
     }
 }
 
 
-void __time_critical_func(render_text_line)(uint8_t *page, unsigned int line) {
-    const uint8_t *line_buf = &page[((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40)];
+void __time_critical_func(render_text_line)(unsigned int line) {
+    const uint8_t *page = (soft_switches & SOFTSW_PAGE_2) ? text_memory + 1024 : text_memory;
+    const uint8_t *line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
 
     for(uint glyph_line=0; glyph_line < 8; glyph_line++) {
         struct vga_scanline *sl = vga_prepare_scanline();

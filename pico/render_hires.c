@@ -1,11 +1,12 @@
 #include <pico/stdlib.h>
 #include "hires_color_patterns.h"
 #include "hires_dot_patterns.h"
+#include "buffers.h"
 #include "render.h"
 #include "vga.h"
 
 
-static void render_hires_line(uint8_t *page, uint line);
+static void render_hires_line(uint line);
 
 
 static uint hires_line_to_mem_offset(uint line) {
@@ -13,7 +14,7 @@ static uint hires_line_to_mem_offset(uint line) {
 }
 
 
-void __time_critical_func(render_hires)(uint8_t *page) {
+void __time_critical_func(render_hires)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -25,12 +26,12 @@ void __time_critical_func(render_hires)(uint8_t *page) {
     vga_submit_scanline(skip_sl);
 
     for(uint line=0; line < 192; line++) {
-        render_hires_line(page, line);
+        render_hires_line(line);
     }
 }
 
 
-void __time_critical_func(render_mixed_hires)(uint8_t *hires_page, uint8_t *text_page) {
+void __time_critical_func(render_mixed_hires)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
@@ -42,20 +43,21 @@ void __time_critical_func(render_mixed_hires)(uint8_t *hires_page, uint8_t *text
     vga_submit_scanline(skip_sl);
 
     for(uint line=0; line < 160; line++) {
-        render_hires_line(hires_page, line);
+        render_hires_line(line);
     }
 
     for(uint line=20; line < 24; line++) {
-        render_text_line(text_page, line);
+        render_text_line(line);
     }
 }
 
 
-static void __time_critical_func(render_hires_line)(uint8_t *page, uint line) {
-    const uint8_t *line_mem = page + hires_line_to_mem_offset(line);
-
+static void __time_critical_func(render_hires_line)(uint line) {
     struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
+
+    const uint8_t *page = (soft_switches & SOFTSW_PAGE_2) ? hires_memory + 8192 : hires_memory;
+    const uint8_t *line_mem = page + hires_line_to_mem_offset(line);
 
     // Pad 40 pixels on the left to center horizontally
     while(sl_pos < 40/8) {
