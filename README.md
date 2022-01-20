@@ -20,12 +20,11 @@ purposes only. I've built a prototype card and it works on my Apple II+ but I on
 one Apple II+ and one VGA monitor so my testing is very limited.
 
 These features are currently supported:
- * Generates a 640x480@60 VGA signal with 3 bits per color channel using
-   resistor DACs
+ * Generates a 640x480@60 VGA signal with 3 bits per color channel using resistor DACs
  * Text mode (monochrome)
- * Lo-res mode, crisp w/no color fringing
- * Hi-res mode (still wip)
- * Mixed lo-res and hi-res modes, with crisp monochrome text
+ * Lo-res mode with no color fringing between the chunky pixels
+ * Hi-res mode with simulated NTSC artifact color
+ * Mixed lo-res and hi-res modes with monochrome text and no color fringing
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -45,3 +44,13 @@ say it should work but there were no code examples.
 Included in the repo here are the schematics and the source code for the Pi Pico
 microcontroller. I used the unrouted PCB layout to wire up the initial prototype
 board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
+
+
+## Limitations
+
+This VGA card design currently does have some limitations:
+ * The VGA signal vsync is not synchronized with the Apple II video memory scanning so
+   software that tries to detect the composite video vsync using 'vapor lock' may not
+   look good.
+ * All the Pi Pico GPIOs are being used so connecting to slot 7's SYNC or any other bus
+   signal is a bit of a challenge without adding more chips.
