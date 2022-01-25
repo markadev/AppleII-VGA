@@ -63,6 +63,15 @@ a cheap composite -> HDMI adapter
 ![Hires Mode](docs/composite_vs_vga_hires.jpg)
 
 
+## Future work
+
+There are a few things that I think are easily possible with this design and I might
+try to implement:
+ * 80 column text mode support
+ * loading custom character ROMs from Basic
+ * Palettes for hires mode (color/mono-white/mono-green)
+
+
 ## Limitations
 
 This VGA card design currently does have some limitations:
@@ -70,4 +79,4 @@ This VGA card design currently does have some limitations:
    software that tries to detect the composite video vsync using 'vapor lock' may not
    look good.
  * All the Pi Pico GPIOs are being used so connecting to slot 7's SYNC or any other bus
-   signal is a bit of a challenge without adding more chips.
+   signal is a bit of a challenge without adding more chips or optimizing the DACs.
