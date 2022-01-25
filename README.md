@@ -45,6 +45,23 @@ Included in the repo here are the schematics and the source code for the Pi Pico
 microcontroller. I used the unrouted PCB layout to wire up the initial prototype
 board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
 
+![Prototype Card](docs/prototype_card.jpg)
+
+
+## Comparisons
+
+Here are a few comparisons of the VGA card output vs composite video through
+a cheap composite -> HDMI adapter
+
+**Text**
+![Text Mode](docs/composite_vs_vga_text.jpg)
+
+**Lores**
+![Lores Mode](docs/composite_vs_vga_lores.jpg)
+
+**Hires**
+![Hires Mode](docs/composite_vs_vga_hires.jpg)
+
 
 ## Limitations
 
