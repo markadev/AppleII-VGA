@@ -1,0 +1,66 @@
+Source:,AppleII-VGA\AppleVGA\AppleVGA.kicad_sch,,,,,
+Date:,31.8.2022 20.06.58,,,,,
+Tool:,Eeschema (6.0.7),,,,,
+Generator:,C:\Program Files\KiCad\6.0\bin\scripting\plugins/bom_csv_grouped_by_value.py,,,,,
+Component Count:,34,,,,,
+,,,,,,
+Individual Components:,,,,,,
+,,,,,,
+Item,Qty,Reference(s),Value,LibPart,Footprint,Datasheet
+,,C1,0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,C2,0.33uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,C3,0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,C4,0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,C5,0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,C6,0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+,,D1,D_Schottky,Device:D_Schottky,Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal,~
+,,J1,AppleIIBus,Connector_Generic:Conn_02x25_Counter_Clockwise,AppleVGA:AppleIIBus_Edge,~
+,,J2,VGA,Connector_Generic:Conn_01x08,Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical,~
+,,J3,VGA,Connector:DB15_Female_HighDensity_MountingHoles,Connector_Dsub:DSUB-15-HD_Female_Horizontal_P2.29x1.98mm_EdgePinOffset3.03mm_Housed_MountingHolesOffset4.94mm, ~
+,,R1,330,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R2,330,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R3,330,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R4,500,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R5,1K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R6,2K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R7,500,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R8,1K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R9,2K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R10,500,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R11,1K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R12,2K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R13,47,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R14,47,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R15,10K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R16,10K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,R17,10K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+,,SW1,SW_Push,Switch:SW_Push,Button_Switch_THT:SW_PUSH_6mm_H5mm,~
+,,U1,74LVC245,74xx:74LS245,Package_DIP:DIP-20_W7.62mm_Socket,http://www.ti.com/lit/gpn/sn74LS245
+,,U2,74LVC245,74xx:74LS245,Package_DIP:DIP-20_W7.62mm_Socket,http://www.ti.com/lit/gpn/sn74LS245
+,,U3,74LVC245,74xx:74LS245,Package_DIP:DIP-20_W7.62mm_Socket,http://www.ti.com/lit/gpn/sn74LS245
+,,U4,74LS07,74xx:74LS07,Package_DIP:DIP-14_W7.62mm_Socket,www.ti.com/lit/ds/symlink/sn74ls07.pdf
+,,U5,UA78M33CKCS,Regulator_Linear:LF33_TO220,Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown,http://www.st.com/content/ccc/resource/technical/document/datasheet/c4/0e/7e/2a/be/bc/4c/bd/CD00000546.pdf/files/CD00000546.pdf/jcr:content/translations/en.CD00000546.pdf
+,,U6,Pico,AppleVGA-rescue:Pico-MCU_RaspberryPi_and_Boards,MCU_RaspberryPi_and_Boards:RPi_Pico_SMD_TH,
+,,,,,,
+,,,,,,
+,,,,,,
+Collated Components:,,,,,,
+,,,,,,
+Item,Qty,Reference(s),Value,LibPart,Footprint,Datasheet
+1,5,"C1, C3, C4, C5, C6",0.1uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+2,1,C2,0.33uF,Device:C,Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm,~
+3,1,D1,D_Schottky,Device:D_Schottky,Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal,~
+4,1,J1,AppleIIBus,Connector_Generic:Conn_02x25_Counter_Clockwise,AppleVGA:AppleIIBus_Edge,~
+5,1,J2,VGA,Connector_Generic:Conn_01x08,Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical,~
+6,1,J3,VGA,Connector:DB15_Female_HighDensity_MountingHoles,Connector_Dsub:DSUB-15-HD_Female_Horizontal_P2.29x1.98mm_EdgePinOffset3.03mm_Housed_MountingHolesOffset4.94mm, ~
+7,3,"R1, R2, R3",330,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+8,3,"R4, R7, R10",500,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+9,3,"R5, R8, R11",1K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+10,3,"R6, R9, R12",2K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+11,2,"R13, R14",47,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+12,3,"R15, R16, R17",10K,Device:R_US,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,~
+13,1,SW1,SW_Push,Switch:SW_Push,Button_Switch_THT:SW_PUSH_6mm_H5mm,~
+14,3,"U1, U2, U3",74LVC245,74xx:74LS245,Package_DIP:DIP-20_W7.62mm_Socket,http://www.ti.com/lit/gpn/sn74LS245
+15,1,U4,74LS07,74xx:74LS07,Package_DIP:DIP-14_W7.62mm_Socket,www.ti.com/lit/ds/symlink/sn74ls07.pdf
+16,1,U5,UA78M33CKCS,Regulator_Linear:LF33_TO220,Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown,http://www.st.com/content/ccc/resource/technical/document/datasheet/c4/0e/7e/2a/be/bc/4c/bd/CD00000546.pdf/files/CD00000546.pdf/jcr:content/translations/en.CD00000546.pdf
+17,1,U6,Pico,AppleVGA-rescue:Pico-MCU_RaspberryPi_and_Boards,MCU_RaspberryPi_and_Boards:RPi_Pico_SMD_TH,
