@@ -41,7 +41,7 @@ I had these goals in mind during design:
 I also wanted to see if a Pi Pico could actually work on an 8-bit CPU bus, since the docs
 say it should work but there were no code examples.
 
-Included in the repo here are the schematics (KiCAD project and [PDF](AppleVGA/AppleVGA.pdf)) and the source code for the Pi Pico
+Included in the repo here are the schematics (KiCAD project, [schematics PDF](AppleVGA/AppleVGA.pdf) and [Bill-Of-Materials CSV](AppleVGA/AppleVGA_BOM.csv)) and the source code for the Pi Pico
 microcontroller. I used the unrouted PCB layout to wire up the initial prototype
 board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
 
