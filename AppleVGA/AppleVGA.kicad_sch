@@ -6,7 +6,7 @@
 
   (title_block
     (title "Apple II VGA Card")
-    (date "2021-12-13")
+    (date "2022-09-08")
     (rev "A")
     (comment 1 "Licensed under CERN-OHL-P V2.0 (https://ohwr.org/cern_ohl_p_v2.txt)")
     (comment 2 "Copyright (c) 2021-2022 Mark Aikens")
@@ -894,6 +894,46 @@
         )
       )
     )
+    (symbol "power:PWR_FLAG" (power) (pin_numbers hide) (pin_names (offset 0) hide) (in_bom yes) (on_board yes)
+      (property "Reference" "#FLG" (id 0) (at 0 1.905 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Value" "PWR_FLAG" (id 1) (at 0 3.81 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "" (id 2) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "~" (id 3) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "power-flag" (id 4) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Special symbol for telling ERC where power comes from" (id 5) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "PWR_FLAG_0_0"
+        (pin power_out line (at 0 0 90) (length 0)
+          (name "pwr" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+      )
+      (symbol "PWR_FLAG_0_1"
+        (polyline
+          (pts
+            (xy 0 0)
+            (xy 0 1.27)
+            (xy -1.016 1.905)
+            (xy 0 2.54)
+            (xy 1.016 1.905)
+            (xy 0 1.27)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+      )
+    )
   )
 
 
@@ -923,6 +963,9 @@
   )
   (junction (at 176.53 76.2) (diameter 0) (color 0 0 0 0)
     (uuid 4e5065ed-3893-481c-8cc9-f94c803821a8)
+  )
+  (junction (at 231.14 43.18) (diameter 0) (color 0 0 0 0)
+    (uuid 5358395b-10be-4022-a983-ba53af2630a9)
   )
   (junction (at 191.77 58.42) (diameter 0) (color 0 0 0 0)
     (uuid 5743ce3f-c93f-4b24-8f5b-f807c24aaf82)
@@ -1566,6 +1609,10 @@
   (wire (pts (xy 185.42 55.88) (xy 193.04 55.88))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 4275ed89-9437-4d08-a82a-6da774caf32d)
+  )
+  (wire (pts (xy 231.14 34.29) (xy 231.14 43.18))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 432be990-7ca7-445f-ba9b-b6a16ccb7a48)
   )
   (wire (pts (xy 187.96 86.36) (xy 193.04 86.36))
     (stroke (width 0) (type default) (color 0 0 0 0))
@@ -3654,6 +3701,22 @@
     (pin "1" (uuid 920e000a-e384-4bb7-a668-bc0055207014))
   )
 
+  (symbol (lib_id "power:PWR_FLAG") (at 231.14 34.29 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 38e7a062-08cb-4fe8-987e-309e39fff71e)
+    (property "Reference" "#FLG03" (id 0) (at 231.14 32.385 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "PWR_FLAG" (id 1) (at 231.14 29.21 0))
+    (property "Footprint" "" (id 2) (at 231.14 34.29 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (id 3) (at 231.14 34.29 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 20d0aedf-39ea-4564-9305-3f57d99f218c))
+  )
+
   (sheet (at 306.07 12.7) (size 34.29 16.51) (fields_autoplaced)
     (stroke (width 0) (type solid) (color 0 0 0 0))
     (fill (color 0 0 0 0.0000))
@@ -3672,11 +3735,14 @@
   )
 
   (symbol_instances
-    (path "/00000000-0000-0000-0000-0000619081b0/00000000-0000-0000-0000-000061c4590b"
-      (reference "#FLG0101") (unit 1) (value "PWR_FLAG") (footprint "")
+    (path "/00000000-0000-0000-0000-0000619081b0/39a4cc66-e978-4241-a00d-8ea877d2b0eb"
+      (reference "#FLG01") (unit 1) (value "PWR_FLAG") (footprint "")
     )
-    (path "/00000000-0000-0000-0000-0000619081b0/00000000-0000-0000-0000-000061c467cc"
-      (reference "#FLG0102") (unit 1) (value "PWR_FLAG") (footprint "")
+    (path "/00000000-0000-0000-0000-0000619081b0/330fa4e5-f09b-4f28-8ed1-663973d11bc6"
+      (reference "#FLG02") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/38e7a062-08cb-4fe8-987e-309e39fff71e"
+      (reference "#FLG03") (unit 1) (value "PWR_FLAG") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000061c52d87"
       (reference "#PWR01") (unit 1) (value "+3.3V") (footprint "")
