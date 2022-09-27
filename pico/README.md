@@ -35,7 +35,7 @@ export PICO_SDK_PATH=/opt/pico-sdk
 cd /AppleII-VGA/pico
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 $ ls *uf2
 ...
