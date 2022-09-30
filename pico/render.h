@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+// Uncomment to enable test patter generator
+// #define RENDER_TEST_PATTERN
 
 extern void render_init();
 extern void render_loop();

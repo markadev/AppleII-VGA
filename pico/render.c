@@ -9,6 +9,7 @@
 
 #define _PIXPAIR(p1, p2) ((uint32_t)(p1) | (((uint32_t)p2) << 16))
 
+#ifdef RENDER_TEST_PATTERN
 static void __noinline __time_critical_func(render_testpattern)() {
     vga_prepare_frame();
 
@@ -110,7 +111,7 @@ static void __noinline __time_critical_func(render_testpattern)() {
         vga_submit_scanline(sl);
     }
 }
-
+#endif
 
 void render_init() {
     // Initialize the character generator ROM
@@ -124,7 +125,11 @@ void render_loop() {
 
         switch(soft_switches & SOFTSW_MODE_MASK) {
         case 0:
+#ifdef RENDER_TEST_PATTERN
+            render_testpattern();
+#else
             render_lores();
+#endif
             break;
         case SOFTSW_MIX_MODE:
             render_mixed_lores();
