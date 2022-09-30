@@ -46,3 +46,11 @@ applevga.uf2
 Hold down the BOOTSEL button and connect the Raspberry Pi Pico to your PC via micro USB cable. Once Pico is connected release the BOOTSEL button. Pi Pico should be connected to PC with USB mass storage device mode.
 
 A disk volume called RPI-RP2 will appear on your computer. Drag and drop the applevga.uf2 file to that volume. RPI-RP2 will unmount and Pico will start the program.
+
+## Stand-alone test pattern image
+There's a test pattern image in the source code that one can set to display immediately at power on, and Pico microcontroller can be powered entirely from USB. To enable test patter just uncomment `RENDER_TEST_PATTERN` flag in `render.h`:
+```shell
+// #define RENDER_TEST_PATTERN
+```
+![Test Pattern](../docs/test_pattern.jpg)
+
