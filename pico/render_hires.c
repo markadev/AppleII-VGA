@@ -162,24 +162,15 @@ static void __time_critical_func(render_dhires_line)(uint line)
   uint8_t* line_mema = NULL;
   uint8_t* line_memb = NULL;
 
-  // aux_page = dhires_aux_memory;
-  if ((soft_switches & SOFTSW_PAGE_2) && !soft_80store && soft_ramrd && !soft_ramwrt)
+  if ((soft_switches & SOFTSW_PAGE_2) && !soft_80store)
   {
-    page = hires_memory;
+    page = hires_memory + 8192;
     aux_page = dhires_aux_memory + 8192;
   }
   else
   {
-    if (soft_80store)
-    {
-      page = hires_memory;
-      aux_page = dhires_aux_memory;
-    }
-    else
-    {
-      page = hires_memory;// + 8192;
-      aux_page = dhires_aux_memory;
-    }
+    page = hires_memory;
+    aux_page = dhires_aux_memory;
   }
 
   line_mema = page + hires_line_to_mem_offset(line);

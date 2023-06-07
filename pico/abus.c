@@ -269,7 +269,8 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     else if ((address >= 0x2000) && (address < 0x6000))
     {
       // Mirror Video Memory from MAIN & AUX banks
-      // gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
+      //! From this:
+      // https://gswv.apple2.org.za/USA2WUG/IIe.Dev.TechNotes/APPLE2E3.TXT
 
       if (soft_80store)
       {
@@ -277,41 +278,73 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
         {
           if ((soft_switches & SOFTSW_HIRES_MODE))
           {
-            if (!soft_ramwrt)
+            if (soft_ramwrt)
             {
-              // PAGE 2 MAIN
-              if ((address >= 0x4000) && (address < 0x6000))
-              {
-                hires_memory[address - 0x2000] = value & 0xff;
-                // dhires_aux_memory[address - 0x2000] = value & 0xff;
-              }
-              else
-              {
-                //! PAGE 2X AUX
-                //dhires_aux_memory[address - 0x2000] = value & 0xff;
-                // hires_memory[address - 0x2000] = value & 0xff;
-              }              
+              // Both Pages in Aux
+              dhires_aux_memory[address - 0x2000] = value & 0xff;
             }
             else
             {
-              // PAGE 1X AUX
+              if ((address >= 0x2000) && (address < 0x4000))
+              {
+                //! Page 1 of Aux
+                dhires_aux_memory[address - 0x2000] = value & 0xff;
+              }
+              else
+              {
+                //! Page 2 of Hires
+                hires_memory[address - 0x2000] = value & 0xff;
+              }
+            }
+          }
+          else
+          {
+            if (soft_ramwrt)
+            {
+              //! Both Pages in Aux
               dhires_aux_memory[address - 0x2000] = value & 0xff;
+            }
+            else
+            {
+              //! Both Pages
+              hires_memory[address - 0x2000] = value & 0xff;
             }
           }
         }
         else
         {
-          if ((soft_switches & SOFTSW_HIRES_MODE) && soft_ramwrt)
+          if ((soft_switches & SOFTSW_HIRES_MODE))
           {
-            if ((address >= 0x2000) && (address < 0x4000))
+            if (soft_ramwrt)
             {
-              //! PAGE1 MAIN
-              hires_memory[address - 0x2000] = value & 0xff;
+              if ((address >= 0x2000) && (address < 0x4000))
+              {
+                //! Page 1 of Hires
+                hires_memory[address - 0x2000] = value & 0xff;
+              }
+              else
+              {
+                //! Page 2 of Hires
+                dhires_aux_memory[address - 0x2000] = value & 0xff;
+              }
             }
             else
             {
-              //! PAGE 2X AUX
+              //! Both Pages
+              hires_memory[address - 0x2000] = value & 0xff;
+            }
+          }
+          else
+          {
+            if (soft_ramwrt)
+            {
+              //! Both Pages
               dhires_aux_memory[address - 0x2000] = value & 0xff;
+            }
+            else
+            {
+              //! Both Pages
+              hires_memory[address - 0x2000] = value & 0xff;
             }
           }
         }
