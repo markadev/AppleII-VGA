@@ -97,267 +97,151 @@ void abus_init()
 
 static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
 {
-
-  //! Soft switches
-  // Shadow the soft-switches by observing all read & write bus cycles
-  if (address == 0xc003)
-  {
-    soft_ramrd = ((uint32_t)SOFTSW_READ_AUX);
-  }
-  if (address == 0xc002)
-  {
-    soft_ramrd = ((uint32_t)SOFTSW_READ_MAIN);
-  }
-  if (address == 0xc005)
-  {
-    soft_ramwrt = ((uint32_t)SOFTSW_WRITE_AUX);
-  }
-  if (address == 0xc004)
-  {
-    soft_ramwrt = ((uint32_t)SOFTSW_WRITE_MAIN);
-  }
-
-  if (address == 0xc07e)
-  {
-    soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_ON);
-  }
-  if (address == 0xc07f)
-  {
-    soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
-  }
-
-  if (address == 0xc05e)
-  {
-    soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
-    soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
-  }
-  if (address == 0xc05f)
-  {
-    soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
-    soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
-  }
-  if (address == 0xc00c)
-  {
-    soft_80col = ((uint32_t)SOFTSW_80COL_OFF);
-  }
-  if (address == 0xc00d)
-  {
-    soft_80col = ((uint32_t)SOFTSW_80COL_ON);
-  }
-
-  if (address == 0xC000)
-  {
-    soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
-  }
-
-  if (address == 0xc001)
-  {
-    soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
-  }
-
-  if ((address & 0xfff8) == 0xc050)
-  {
-    switch (address & 7)
-    {
-      case 0:
-        soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
-        break;
-      case 1:
-        soft_switches |= SOFTSW_TEXT_MODE;
-        break;
-      case 2:
-        soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
-        break;
-      case 3:
-        soft_switches |= SOFTSW_MIX_MODE;
-        break;
-      case 4:
-        soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
-        break;
-      case 5:
-        soft_switches |= SOFTSW_PAGE_2;
-        break;
-      case 6:
-        soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
-        break;
-      case 7:
-        soft_switches |= SOFTSW_HIRES_MODE;
-        break;
-    }
-  }
-  else if ((address & 0xfffe) == 0xc00e)
-  {
-    //! ALTCHAR Softswitch access
-    switch (address & 1)
-    {
-      case 0:
-      {
-        soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_OFF);
-        break;
-      }
-      case 1:
-      {
-        soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_ON);
-        break;
-      }
-      default:
-      {
-        soft_switches_alt == ((uint32_t)SOFTSW_ALTCHAR_OFF);
-        break;
-      }
-    }
-  }
-
   // Shadow parts of the Apple's memory by observing the bus write cycles
-  if ((value & (1u << CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0)
+  if (ACCESS_WRITE)
   {
-    if ((address >= 0x0400u) && (address < 0x0800u))
-    {
-      // if 80store is on and PAGE two is activated store it in aux or ramwrt to aux is set
-      if (soft_80store)
-      {
-        if ((soft_switches & SOFTSW_PAGE_2))
-        {
-          if (soft_ramwrt)
-          {
-            aux_memory[address - 0x400] = value & 0xff;
-          }
-          else
-          {
-            if ((address >= 0x0400u) && (address < 0x0800u))
-            {
-              aux_memory[address - 0x400] = value & 0xff;
-            }
-            else
-            {
-              text_memory[address - 0x400] = value & 0xff;
-            }
-          }
-        }
-        else
-        {
-          if (soft_ramwrt)
-          {
-            if ((address >= 0x0400u) && (address < 0x0800u))
-            {
-              text_memory[address - 0x400] = value & 0xff;
-            }
-            else
-            {
-              aux_memory[address - 0x400] = value & 0xff;
-            }
-          }
-          else
-          {
-            text_memory[address - 0x400] = value & 0xff;
-          }
-        }
-      }
-      else if (soft_ramwrt)
-      {
-        text_memory[address - 0x400] = value & 0xff;
-      }
-      else
-      {
-        text_memory[address - 0x400] = value & 0xff;
-      }
-    }
-    else if ((address >= 0x0800u) && (address < 0x0C00u))
-    {
-      text_memory[address - 0x400] = value & 0xff;
-    }
-    else if ((address >= 0x2000) && (address < 0x6000))
-    {
-      // Mirror Video Memory from MAIN & AUX banks
-      //! From this:
-      // https://gswv.apple2.org.za/USA2WUG/IIe.Dev.TechNotes/APPLE2E3.TXT
 
-      if (soft_80store)
+    // Mirror Video Memory from MAIN & AUX banks
+    if (soft_80store)
+    {
+      if (soft_switches & SOFTSW_PAGE_2)
       {
-        if (soft_switches & SOFTSW_PAGE_2)
+        if ((address >= 0x400) && (address < 0x800))
         {
-          if ((soft_switches & SOFTSW_HIRES_MODE))
-          {
-            if (soft_ramwrt)
-            {
-              // Both Pages in Aux
-              dhires_aux_memory[address - 0x2000] = value & 0xff;
-            }
-            else
-            {
-              if ((address >= 0x2000) && (address < 0x4000))
-              {
-                //! Page 1 of Aux
-                dhires_aux_memory[address - 0x2000] = value & 0xff;
-              }
-              else
-              {
-                //! Page 2 of Hires
-                hires_memory[address - 0x2000] = value & 0xff;
-              }
-            }
-          }
-          else
-          {
-            if (soft_ramwrt)
-            {
-              //! Both Pages in Aux
-              dhires_aux_memory[address - 0x2000] = value & 0xff;
-            }
-            else
-            {
-              //! Both Pages
-              hires_memory[address - 0x2000] = value & 0xff;
-            }
-          }
+          private_memory[address] = value & 0xff;
+          return;
         }
-        else
+        else if ((soft_switches & SOFTSW_HIRES_MODE) && (address >= 0x2000) && (address < 0x4000))
         {
-          if ((soft_switches & SOFTSW_HIRES_MODE))
-          {
-            if (soft_ramwrt)
-            {
-              if ((address >= 0x2000) && (address < 0x4000))
-              {
-                //! Page 1 of Hires
-                hires_memory[address - 0x2000] = value & 0xff;
-              }
-              else
-              {
-                //! Page 2 of Hires
-                dhires_aux_memory[address - 0x2000] = value & 0xff;
-              }
-            }
-            else
-            {
-              //! Both Pages
-              hires_memory[address - 0x2000] = value & 0xff;
-            }
-          }
-          else
-          {
-            if (soft_ramwrt)
-            {
-              //! Both Pages
-              dhires_aux_memory[address - 0x2000] = value & 0xff;
-            }
-            else
-            {
-              //! Both Pages
-              hires_memory[address - 0x2000] = value & 0xff;
-            }
-          }
+          private_memory[address] = value & 0xff;
+          return;
         }
       }
-      else if (soft_ramwrt)
+    }
+    else if (soft_ramwrt)
+    {
+      if ((address >= 0x200) && (address < 0xC000))
       {
-        // AUX PAGE X1 and X2
-        dhires_aux_memory[address - 0x2000] = value & 0xff;
+        private_memory[address] = value & 0xff;
+        return;
       }
-      else
+    }
+
+    if ((address >= 0x200) && (address < 0xC000))
+    {
+      main_memory[address] = value & 0xff;
+      return;
+    }
+  }
+
+  if (address < 0xc000)
+    return;
+  if (address < 0xc080)
+  {
+    //! Soft switches
+    // Shadow the soft-switches by observing all read & write bus cycles
+    if (address == 0xc003)
+    {
+      soft_ramrd = ((uint32_t)SOFTSW_READ_AUX);
+    }
+    if (address == 0xc002 && ACCESS_WRITE)
+    {
+      soft_ramrd = ((uint32_t)SOFTSW_READ_MAIN);
+    }
+    if (address == 0xc005 && ACCESS_WRITE)
+    {
+      soft_ramwrt = ((uint32_t)SOFTSW_WRITE_AUX);
+    }
+    if (address == 0xc004 && ACCESS_WRITE)
+    {
+      soft_ramwrt = ((uint32_t)SOFTSW_WRITE_MAIN);
+    }
+
+    if (address == 0xc07e && ACCESS_WRITE)
+    {
+      soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_ON);
+    }
+    if (address == 0xc07f && ACCESS_WRITE)
+    {
+      soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
+    }
+
+    if (address == 0xc05e)
+    {
+      soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
+      soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
+      gpio_put(PICO_DEFAULT_LED_PIN, 1);
+    }
+    if (address == 0xc05f)
+    {
+      soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
+      soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
+      gpio_put(PICO_DEFAULT_LED_PIN, 0);
+    }
+    if (address == 0xc00c && ACCESS_WRITE)
+    {
+      soft_80col = ((uint32_t)SOFTSW_80COL_OFF);
+    }
+    if (address == 0xc00d && ACCESS_WRITE)
+    {
+      soft_80col = ((uint32_t)SOFTSW_80COL_ON);
+    }
+
+    if (address == 0xC000 && ACCESS_WRITE)
+    {
+      soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
+    }
+
+    if (address == 0xc001 && ACCESS_WRITE)
+    {
+      soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
+    }
+
+    if ((address & 0xfff8) == 0xc050)
+    {
+      switch (address & 7)
       {
-        // MAIN PAGE 1 and 2
-        hires_memory[address - 0x2000] = value & 0xff;
+        case 0:
+          soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
+          break;
+        case 1:
+          soft_switches |= SOFTSW_TEXT_MODE;
+          break;
+        case 2:
+          soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
+          break;
+        case 3:
+          soft_switches |= SOFTSW_MIX_MODE;
+          break;
+        case 4:
+          soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
+          break;
+        case 5:
+          soft_switches |= SOFTSW_PAGE_2;
+          break;
+        case 6:
+          soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
+          break;
+        case 7:
+          soft_switches |= SOFTSW_HIRES_MODE;
+          break;
+      }
+    }
+    else if (((address & 0xfffe) == 0xc00e) && ACCESS_WRITE)
+    {
+      //! ALTCHAR Softswitch access
+      switch (address & 1)
+      {
+        case 0:
+        {
+          soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_OFF);
+          break;
+        }
+        case 1:
+        {
+          soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_ON);
+          break;
+        }
       }
     }
   }

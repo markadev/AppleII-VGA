@@ -112,10 +112,10 @@ void __time_critical_func(render_text80_line)(unsigned int line)
   //! this is how it can get 80 columns, doubling the ram. So need to make sure page does not turn if
   //! 80STORE and PAGE2 are set, in this case we should grab from aux memory.
 
-  const uint8_t* page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_memory + 1024 : text_memory;
-  const uint8_t* line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
-  const uint8_t* page80 = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? aux_memory + 1024 : aux_memory;
-  const uint8_t* line_80buf = page80 + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
+  const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
+  const uint8_t* page80 = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3);
+  const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+  const uint8_t* line_80buf = (const uint8_t*)(page80 + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
   for (uint glyph_line = 0; glyph_line < 8; glyph_line++)
   {
@@ -163,8 +163,8 @@ void __time_critical_func(render_text80_line)(unsigned int line)
 
 void __time_critical_func(render_text_line)(unsigned int line)
 {
-  const uint8_t* page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_memory + 1024 : text_memory;
-  const uint8_t* line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
+  const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
+  const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
   for (uint glyph_line = 0; glyph_line < 8; glyph_line++)
   {

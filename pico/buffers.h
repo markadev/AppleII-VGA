@@ -64,11 +64,17 @@ extern volatile uint32_t soft_ramwrt;
 extern volatile uint32_t soft_ramrd;
 extern volatile uint32_t soft_80store;
 extern volatile uint32_t soft_dhires;
-extern volatile uint32_t soft_monochrome;
 
 extern uint8_t character_rom[256 * 8];
 extern uint8_t altcharacter_rom[256 * 8];
-extern uint8_t text_memory[2 * 1024];
-extern uint8_t aux_memory[2*1024];
-extern uint8_t hires_memory[2 * 8192];
-extern uint8_t dhires_aux_memory[2*8192];
+
+extern uint8_t main_memory[64*1024];
+extern uint8_t private_memory[64*1024];
+extern volatile uint8_t *text_p1;
+extern volatile uint8_t *text_p2;
+extern volatile uint8_t *text_p3;
+extern volatile uint8_t *text_p4;
+extern volatile uint8_t *hgr_p1;
+extern volatile uint8_t *hgr_p2;
+extern volatile uint8_t *hgr_p3;
+extern volatile uint8_t *hgr_p4;

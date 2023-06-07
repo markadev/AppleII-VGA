@@ -46,6 +46,7 @@ static uint16_t dhgr_palette[16] = {
     _RGB333(0xff, 0xff, 0xff),  // white - 15
 };
 #undef _RGB333
+
 extern void render_init();
 extern void render_loop();
 

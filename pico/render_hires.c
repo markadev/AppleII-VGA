@@ -8,7 +8,7 @@
 static void render_hires_line(uint line);
 static void render_dhires_line(uint line);
 
-static uint hires_line_to_mem_offset(uint line)
+static inline uint hires_line_to_mem_offset(uint line)
 {
   return ((line & 0x07) << 10) | ((line & 0x38) << 4) | (((line & 0xc0) >> 6) * 40);
 }
@@ -80,8 +80,8 @@ static void __time_critical_func(render_hires_line)(uint line)
   struct vga_scanline* sl = vga_prepare_scanline();
   uint sl_pos = 0;
 
-  const uint8_t* page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hires_memory + 8192 : hires_memory;
-  const uint8_t* line_mem = page + hires_line_to_mem_offset(line);
+  const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
+  const uint8_t* line_mem = (const uint8_t*)(page + hires_line_to_mem_offset(line));
 
   // Pad 40 pixels on the left to center horizontally
   // Pad 40 pixels on the left to center horizontally
@@ -147,8 +147,6 @@ static void __time_critical_func(render_hires_line)(uint line)
 
 static void __time_critical_func(render_dhires_line)(uint line)
 {
-  struct vga_scanline* sl = vga_prepare_scanline();
-
   uint sl_pos = 0;
   uint i, j;
   uint_fast8_t dotc = 0;
@@ -157,30 +155,18 @@ static void __time_critical_func(render_dhires_line)(uint line)
   uint32_t pixeldata;
   uint32_t pixelmode = 0;
 
-  uint8_t* page = NULL;
-  uint8_t* aux_page = NULL;
-  uint8_t* line_mema = NULL;
-  uint8_t* line_memb = NULL;
+  const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
+  const uint8_t* aux_page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3);
+  const uint8_t* line_mema = (const uint8_t*)(page + hires_line_to_mem_offset(line));
+  const uint8_t* line_memb = (const uint8_t*)(aux_page + hires_line_to_mem_offset(line));
+  struct vga_scanline* sl = vga_prepare_scanline();
 
-  if ((soft_switches & SOFTSW_PAGE_2) && !soft_80store)
-  {
-    page = hires_memory + 8192;
-    aux_page = dhires_aux_memory + 8192;
-  }
-  else
-  {
-    page = hires_memory;
-    aux_page = dhires_aux_memory;
-  }
-
-  line_mema = page + hires_line_to_mem_offset(line);
-  line_memb = aux_page + hires_line_to_mem_offset(line);
   // Pad 40 pixels on the left to center horizontally
   sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
   sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
   sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
   i = 0;
-
+  /*
   while (i < 40)
   {
     // Load in as many subpixels as possible
@@ -209,18 +195,18 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
       else
       {
-        pixeldata = ((dots & 1) ? (lores_palette[15]) : (lores_palette[0]));
+        pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
         dots >>= 1;
         pixelmode >>= 1;
-        pixeldata |= (((dots & 1) ? (lores_palette[15]) : (lores_palette[0]))) << 16;
+        pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
         dots >>= 1;
         pixelmode >>= 1;
         sl->data[sl_pos++] = pixeldata;
         dotc -= 2;
-        pixeldata = ((dots & 1) ? (lores_palette[15]) : (lores_palette[0]));
+        pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
         dots >>= 1;
         pixelmode >>= 1;
-        pixeldata |= (((dots & 1) ? (lores_palette[15]) : (lores_palette[0]))) << 16;
+        pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
         dots >>= 1;
         pixelmode >>= 1;
         sl->data[sl_pos++] = pixeldata;
@@ -228,7 +214,97 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
+  */
+  // Video 7 F/B HiRes
+  if (soft_80store && !soft_80col)
+  {
+    while (i < 40)
+    {
+      dots = (line_mema[i] & 0x7f);
+      color1 = dhgr_palette[(line_memb[i] >> 4) & 0xF];
+      color2 = dhgr_palette[(line_memb[i] >> 0) & 0xF];
+      i++;
 
+      dots |= (line_mema[i] & 0x7f) << 7;
+      color3 = dhgr_palette[(line_memb[i] >> 4) & 0xF];
+      color4 = dhgr_palette[(line_memb[i] >> 0) & 0xF];
+      i++;
+
+      for (j = 0; j < 3; j++)
+      {
+        pixeldata = ((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1;
+        dots >>= 1;
+        pixeldata |= (((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1) << 16;
+        dots >>= 1;
+        sl->data[sl_pos++] = pixeldata;
+      }
+
+      pixeldata = ((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1;
+      dots >>= 1;
+      pixeldata |= (((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1) << 16;
+      dots >>= 1;
+      sl->data[sl_pos++] = pixeldata;
+
+      for (j = 0; j < 3; j++)
+      {
+        pixeldata = ((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1;
+        dots >>= 1;
+        pixeldata |= (((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1) << 16;
+        dots >>= 1;
+        sl->data[sl_pos++] = pixeldata;
+      }
+    }
+  }
+  else
+  {
+    while (i < 40)
+    {
+      // Load in as many subpixels as possible
+      while ((dotc <= 18) && (i < 40))
+      {
+        dots |= (line_memb[i] & 0x7f) << dotc;
+        pixelmode |= ((line_memb[i] & 0x80) ? 0x7f : 0x00) << dotc;
+        dotc += 7;
+        dots |= (line_mema[i] & 0x7f) << dotc;
+        pixelmode |= ((line_mema[i] & 0x80) ? 0x7f : 0x00) << dotc;
+        dotc += 7;
+        i++;
+      }
+
+      // Consume pixels
+      while (dotc >= 4)
+      {
+        if (pixelmode)
+        {
+          pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
+          pixeldata |= pixeldata << 16;
+          dots >>= 4;
+          pixelmode >>= 4;
+          sl->data[sl_pos++] = pixeldata;
+          dotc -= 4;
+        }
+        else
+        {
+          pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
+          dots >>= 1;
+          pixelmode >>= 1;
+          pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
+          dots >>= 1;
+          pixelmode >>= 1;
+          sl->data[sl_pos++] = pixeldata;
+          dotc -= 2;
+          pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
+          dots >>= 1;
+          pixelmode >>= 1;
+          pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
+          dots >>= 1;
+          pixelmode >>= 1;
+          sl->data[sl_pos++] = pixeldata;
+          dotc -= 2;
+        }
+      }
+    }
+  }
   sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
   sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
   sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
