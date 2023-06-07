@@ -17,13 +17,16 @@ void update_text_flasher() {
 
 static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
   uint_fast8_t bits = 0;
+  #ifdef APPLE_MODEL_IIE
   //! Added Alternate ROM support
   if (soft_switches_alt) {
     bits = altcharacter_rom[((uint_fast16_t)ch << 3) | glyph_line];
   } else {
     bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line];
   }
-
+  #else
+  bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line];
+  #endif
   /*
       Character stored in ram like this
           ______0 - INVERSE       / 1 - Normal
@@ -42,6 +45,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
   if ((bits & 0x80) == 0) {
     // inverse character
     int_fast8_t output = 0;
+    #ifdef APPLE_MODEL_IIE
     if (soft_switches_alt) {
       //! Need to check is not MouseText
       if ((ch > 0x3F) & (ch <= 0x5F)) {
@@ -55,6 +59,10 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
       //! Normal Characters then inverse
       output = bits ^ 0x7f;
     }
+    #else
+      //! Normal Characters then inverse
+      output = bits ^ 0x7f;    
+    #endif
     return output;
   } else {
     // flashing character
@@ -72,7 +80,7 @@ void __time_critical_func(render_text)() {
   }
   skip_sl->length = 48;
   vga_submit_scanline(skip_sl);
-
+  #ifdef APPLE_MODEL_IIE
   if (soft_80col) {
     for (int line = 0; line < 24; line++) {
       render_text80_line(line);
@@ -82,8 +90,13 @@ void __time_critical_func(render_text)() {
       render_text_line(line);
     }
   }
+  #else
+  for (int line = 0; line < 24; line++) {
+    render_text_line(line);
+  }
+  #endif
 }
-
+#ifdef APPLE_MODEL_IIE
 void __time_critical_func(render_text80_line)(unsigned int line) {
   //! In 80 Columns mode software adds data in page 1 of text_memory and in page 1 of aux memory
   //! this is how it can get 80 columns, doubling the ram. So need to make sure page does not turn if
@@ -134,7 +147,7 @@ void __time_critical_func(render_text80_line)(unsigned int line) {
     vga_submit_scanline(sl);
   }
 }
-
+#endif
 void __time_critical_func(render_text_line)(unsigned int line) {
   const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
   const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));

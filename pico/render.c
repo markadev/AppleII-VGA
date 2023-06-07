@@ -114,7 +114,9 @@ static void __noinline __time_critical_func(render_testpattern)() {
 void render_init() {
   // Initialize the character generator ROM
   memcpy(character_rom, default_character_rom, sizeof(character_rom));
+  #ifdef APPLE_MODEL_IIE
   memcpy(altcharacter_rom, alternate_character_rom, sizeof(altcharacter_rom));
+  #endif
 }
 
 void render_loop() {
