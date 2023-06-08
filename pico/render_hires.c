@@ -162,9 +162,12 @@ static void __time_critical_func(render_dhires_line)(uint line)
   struct vga_scanline* sl = vga_prepare_scanline();
 
   // Pad 40 pixels on the left to center horizontally
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+  if (soft_video7 != VIDEO7_MODE2)
+  {
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+  }
   i = 0;
 
   // Video 7 F/B HiRes
@@ -244,9 +247,9 @@ static void __time_critical_func(render_dhires_line)(uint line)
       // Load in as many subpixels as possible
       while ((dotc <= 18) && (i < 40))
       {
-        dots |= (line_memb[i] & 0x7f) << dotc;
+        dots |= (line_memb[i] & 0xff) << dotc;
         dotc += 7;
-        dots |= (line_mema[i] & 0x7f) << dotc;
+        dots |= (line_mema[i] & 0xff) << dotc;
         dotc += 7;
         i++;
       }
@@ -254,9 +257,9 @@ static void __time_critical_func(render_dhires_line)(uint line)
       // Consume pixels
       while (dotc >= 8)
       {
-        pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
+        pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
         dots >>= 4;
-        pixeldata |= (dhgr_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
+        pixeldata |= (lores_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
         dots >>= 4;
         sl->data[sl_pos++] = pixeldata;
         dotc -= 8;
@@ -339,9 +342,12 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-  sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+  if (soft_video7 != VIDEO7_MODE2)
+  {
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+  }
   sl->length = sl_pos;
   sl->repeat_count = 1;
   vga_submit_scanline(sl);

@@ -106,6 +106,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
   // Shadow parts of the Apple's memory by observing the bus write cycles
   //! Reset Detection
   static bool reset_phase_1_happening = false;
+  static bool sw1_set = false;
   if ((address == 0xFFFC) && (ACCESS_READ))
   {
     reset_phase_1_happening = true;
@@ -116,8 +117,10 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     soft_switches = SOFTSW_TEXT_MODE;
     soft_80col = 0;
     soft_80store = 0;
-    soft_video7 = 0;
+    soft_video7 = VIDEO7_DEFAULT;
+    soft_dhires = false;
     soft_monochrom = 0;
+    sw1_set = false;
     memset(private_memory, 0x00, 64 * 1024);
     memset(main_memory, 0x00, 64 * 1024);
     reset_phase_1_happening = false;
@@ -203,23 +206,24 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     {
       if (soft_dhires)
       {
-        if (soft_80col)
+        if (!sw1_set)
         {
-          soft_video7++;
-          if (soft_video7 > VIDEO7_MODE3)
-          {
-            soft_video7 = VIDEO7_MODE3;
-          }
+          soft_video7 = VIDEO7_MODE3 & (soft_video7 | (!(soft_80col) ? 1 : 0));
+          sw1_set = true;
         }
         else
         {
-          if (soft_video7 > VIDEO7_MODE0)
-          {
-            soft_video7--;
-          }
+          soft_video7 = VIDEO7_MODE3 & (soft_video7 | ((!(soft_80col) ? 1 : 0) << 1));
+          sw1_set = false;
         }
       }
-      if (soft_video7 == VIDEO7_MODE3)
+      else
+      {
+        sw1_set = false;
+        soft_video7 = VIDEO7_DEFAULT;
+      }
+
+      if (soft_video7 == VIDEO7_MODE1)
       {
         gpio_put(PICO_DEFAULT_LED_PIN, 1);
       }
