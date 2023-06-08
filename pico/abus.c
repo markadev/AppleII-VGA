@@ -117,7 +117,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     soft_switches = SOFTSW_TEXT_MODE;
     soft_80col = 0;
     soft_80store = 0;
-    soft_video7 = VIDEO7_DEFAULT;
+    soft_video7 = 0;
     soft_dhires = false;
     soft_monochrom = 0;
     sw1_set = false;
@@ -206,21 +206,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     {
       if (soft_dhires)
       {
-        if (!sw1_set)
-        {
-          soft_video7 = VIDEO7_MODE3 & (soft_video7 | (!(soft_80col) ? 1 : 0));
-          sw1_set = true;
-        }
-        else
-        {
-          soft_video7 = VIDEO7_MODE3 & (soft_video7 | ((!(soft_80col) ? 1 : 0) << 1));
-          sw1_set = false;
-        }
-      }
-      else
-      {
-        sw1_set = false;
-        soft_video7 = VIDEO7_DEFAULT;
+        soft_video7 = (0) | ((soft_video7 & 0x1) << 1) | ((soft_80col) ? 1 : 0);
       }
 
       if (soft_video7 == VIDEO7_MODE1)

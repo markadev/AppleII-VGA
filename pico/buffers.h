@@ -67,7 +67,6 @@ enum
   VIDEO7_MODE1 = 1,
   VIDEO7_MODE2 = 2,
   VIDEO7_MODE3 = 3,
-  VIDEO7_DEFAULT = 4,
 };
 extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
