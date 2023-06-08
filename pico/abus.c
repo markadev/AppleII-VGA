@@ -219,6 +219,14 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
           }
         }
       }
+      if (soft_video7 == VIDEO7_MODE3)
+      {
+        gpio_put(PICO_DEFAULT_LED_PIN, 1);
+      }
+      else
+      {
+        gpio_put(PICO_DEFAULT_LED_PIN, 0);
+      }
       soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
       soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
     }

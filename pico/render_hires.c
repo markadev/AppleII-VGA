@@ -194,6 +194,7 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
+
   else if (soft_80store && !soft_80col)
   {
     // Video 7 F/B HiRes
@@ -234,6 +235,7 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
+
   else if (soft_video7 == VIDEO7_MODE2)
   {
     // 160x192 Video-7
@@ -242,19 +244,19 @@ static void __time_critical_func(render_dhires_line)(uint line)
       // Load in as many subpixels as possible
       while ((dotc <= 18) && (i < 40))
       {
-        dots |= (line_memb[i] & 0xff) << dotc;
-        dotc += 8;
-        dots |= (line_mema[i] & 0xff) << dotc;
-        dotc += 8;
+        dots |= (line_memb[i] & 0x7f) << dotc;
+        dotc += 7;
+        dots |= (line_mema[i] & 0x7f) << dotc;
+        dotc += 7;
         i++;
       }
 
       // Consume pixels
       while (dotc >= 8)
       {
-        pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
+        pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
         dots >>= 4;
-        pixeldata |= (lores_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
+        pixeldata |= (dhgr_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
         dots >>= 4;
         sl->data[sl_pos++] = pixeldata;
         dotc -= 8;
