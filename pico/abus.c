@@ -87,20 +87,48 @@ static void abus_main_setup(PIO pio, uint sm)
 
 void abus_init()
 {
+  //! Init states
+  soft_80col = 0;
+  soft_80store = 0;
+  soft_video7 = 0;
+  soft_monochrom = 0;
+  memset(private_memory, 0x00, 64 * 1024);
+  memset(main_memory, 0x00, 64 * 1024);
+
   abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);
   abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
 
   pio_enable_sm_mask_in_sync(CONFIG_ABUS_PIO, (1 << ABUS_MAIN_SM) | (1 << ABUS_DEVICE_READ_SM));
-  soft_80col = 0;
-  soft_80store = 0;
 }
 
 static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
 {
   // Shadow parts of the Apple's memory by observing the bus write cycles
+  //! Reset Detection
+  static bool reset_phase_1_happening = false;
+  if ((address == 0xFFFC) && (ACCESS_READ))
+  {
+    reset_phase_1_happening = true;
+  }
+  else if ((address == 0xFFFD) && (ACCESS_READ) && (reset_phase_1_happening))
+  {
+    //! Reset Clear all buffers
+    soft_switches = SOFTSW_TEXT_MODE;
+    soft_80col = 0;
+    soft_80store = 0;
+    soft_video7 = 0;
+    soft_monochrom = 0;
+    memset(private_memory, 0x00, 64 * 1024);
+    memset(main_memory, 0x00, 64 * 1024);
+    reset_phase_1_happening = false;
+  }
+  else
+  {
+    reset_phase_1_happening = false;
+  }
+
   if (ACCESS_WRITE)
   {
-
     // Mirror Video Memory from MAIN & AUX banks
     if (soft_80store)
     {
@@ -170,13 +198,29 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     {
       soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
       soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
-      gpio_put(PICO_DEFAULT_LED_PIN, 1);
     }
     if (address == 0xc05f)
     {
+      if (soft_dhires)
+      {
+        if (soft_80col)
+        {
+          soft_video7++;
+          if (soft_video7 > VIDEO7_MODE3)
+          {
+            soft_video7 = VIDEO7_MODE3;
+          }
+        }
+        else
+        {
+          if (soft_video7 > VIDEO7_MODE0)
+          {
+            soft_video7--;
+          }
+        }
+      }
       soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
       soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
-      gpio_put(PICO_DEFAULT_LED_PIN, 0);
     }
     if (address == 0xc00c && ACCESS_WRITE)
     {
@@ -190,6 +234,17 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     if (address == 0xC000 && ACCESS_WRITE)
     {
       soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
+    }
+    if (address == 0xC021 && ACCESS_WRITE)
+    {
+      if (value & 0x80)
+      {
+        soft_monochrom = SOFTSW_MONO_EN;
+      }
+      else
+      {
+        soft_monochrom = SOFTSW_MONO_DIS;
+      }
     }
 
     if (address == 0xc001 && ACCESS_WRITE)

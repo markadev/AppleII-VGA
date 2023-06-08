@@ -166,68 +166,47 @@ static void __time_critical_func(render_dhires_line)(uint line)
   sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
   sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
   i = 0;
-  /*
-  while (i < 40)
-  {
-    // Load in as many subpixels as possible
-    while ((dotc <= 18) && (i < 40))
-    {
-      dots |= (line_memb[i] & 0x7f) << dotc;
-      pixelmode |= ((line_memb[i] & 0x80) ? 0x7f : 0x00) << dotc;
-      dotc += 7;
-      dots |= (line_mema[i] & 0x7f) << dotc;
-      pixelmode |= ((line_mema[i] & 0x80) ? 0x7f : 0x00) << dotc;
-      dotc += 7;
-      i++;
-    }
 
-    // Consume pixels
-    while (dotc >= 4)
+  // Video 7 F/B HiRes
+  if (soft_monochrom)
+  {
+    while (i < 40)
     {
-      if (pixelmode)
+      // Load in as many subpixels as possible
+      while ((dotc < 28) && (i < 40))
       {
-        pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
-        pixeldata |= pixeldata << 16;
-        dots >>= 4;
-        pixelmode >>= 4;
-        sl->data[sl_pos++] = pixeldata;
-        dotc -= 4;
+        dots |= (line_memb[i] & 0x7f) << dotc;
+        dotc += 7;
+        dots |= (line_mema[i] & 0x7f) << dotc;
+        dotc += 7;
+        i++;
       }
-      else
+
+      // Consume pixels
+      while (dotc)
       {
         pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
         dots >>= 1;
-        pixelmode >>= 1;
         pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
         dots >>= 1;
-        pixelmode >>= 1;
-        sl->data[sl_pos++] = pixeldata;
-        dotc -= 2;
-        pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
-        dots >>= 1;
-        pixelmode >>= 1;
-        pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
-        dots >>= 1;
-        pixelmode >>= 1;
         sl->data[sl_pos++] = pixeldata;
         dotc -= 2;
       }
     }
   }
-  */
-  // Video 7 F/B HiRes
-  if (soft_80store && !soft_80col)
+  else if (soft_80store && !soft_80col)
   {
+    // Video 7 F/B HiRes
     while (i < 40)
     {
       dots = (line_mema[i] & 0x7f);
-      color1 = dhgr_palette[(line_memb[i] >> 4) & 0xF];
-      color2 = dhgr_palette[(line_memb[i] >> 0) & 0xF];
+      color1 = lores_palette[(line_memb[i] >> 4) & 0xF];
+      color2 = lores_palette[(line_memb[i] >> 0) & 0xF];
       i++;
 
       dots |= (line_mema[i] & 0x7f) << 7;
-      color3 = dhgr_palette[(line_memb[i] >> 4) & 0xF];
-      color4 = dhgr_palette[(line_memb[i] >> 0) & 0xF];
+      color3 = lores_palette[(line_memb[i] >> 4) & 0xF];
+      color4 = lores_palette[(line_memb[i] >> 0) & 0xF];
       i++;
 
       for (j = 0; j < 3; j++)
@@ -255,7 +234,34 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
-  else
+  else if (soft_video7 == VIDEO7_MODE2)
+  {
+    // 160x192 Video-7
+    while (i < 40)
+    {
+      // Load in as many subpixels as possible
+      while ((dotc <= 18) && (i < 40))
+      {
+        dots |= (line_memb[i] & 0xff) << dotc;
+        dotc += 8;
+        dots |= (line_mema[i] & 0xff) << dotc;
+        dotc += 8;
+        i++;
+      }
+
+      // Consume pixels
+      while (dotc >= 8)
+      {
+        pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
+        dots >>= 4;
+        pixeldata |= (lores_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
+        dots >>= 4;
+        sl->data[sl_pos++] = pixeldata;
+        dotc -= 8;
+      }
+    }
+  }
+  else if (soft_video7 == VIDEO7_MODE1)
   {
     while (i < 40)
     {
@@ -302,6 +308,32 @@ static void __time_critical_func(render_dhires_line)(uint line)
           sl->data[sl_pos++] = pixeldata;
           dotc -= 2;
         }
+      }
+    }
+  }
+  else
+  {
+    while (i < 40)
+    {
+      // Load in as many subpixels as possible
+      while ((dotc <= 18) && (i < 40))
+      {
+        dots |= (line_memb[i] & 0x7f) << dotc;
+        dotc += 7;
+        dots |= (line_mema[i] & 0x7f) << dotc;
+        dotc += 7;
+        i++;
+      }
+
+      // Consume pixels
+      while (dotc >= 8)
+      {
+        pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
+        dots >>= 4;
+        pixeldata |= (dhgr_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
+        dots >>= 4;
+        sl->data[sl_pos++] = pixeldata;
+        dotc -= 8;
       }
     }
   }

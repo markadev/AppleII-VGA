@@ -55,6 +55,19 @@ enum
   SOFTSW_DHIRES_ON = 0x01
 };
 
+enum
+{
+  SOFTSW_MONO_DIS = 0,
+  SOFTSW_MONO_EN = 1
+};
+
+enum
+{
+  VIDEO7_MODE0 = 0,
+  VIDEO7_MODE1 = 1,
+  VIDEO7_MODE2 = 2,
+  VIDEO7_MODE3 = 3
+};
 extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
 extern volatile uint32_t soft_80col;
@@ -64,17 +77,19 @@ extern volatile uint32_t soft_ramwrt;
 extern volatile uint32_t soft_ramrd;
 extern volatile uint32_t soft_80store;
 extern volatile uint32_t soft_dhires;
+extern volatile uint32_t soft_monochrom;
+extern volatile uint32_t soft_video7;
 
 extern uint8_t character_rom[256 * 8];
 extern uint8_t altcharacter_rom[256 * 8];
 
-extern uint8_t main_memory[64*1024];
-extern uint8_t private_memory[64*1024];
-extern volatile uint8_t *text_p1;
-extern volatile uint8_t *text_p2;
-extern volatile uint8_t *text_p3;
-extern volatile uint8_t *text_p4;
-extern volatile uint8_t *hgr_p1;
-extern volatile uint8_t *hgr_p2;
-extern volatile uint8_t *hgr_p3;
-extern volatile uint8_t *hgr_p4;
+extern uint8_t main_memory[64 * 1024];
+extern uint8_t private_memory[64 * 1024];
+extern volatile uint8_t* text_p1;
+extern volatile uint8_t* text_p2;
+extern volatile uint8_t* text_p3;
+extern volatile uint8_t* text_p4;
+extern volatile uint8_t* hgr_p1;
+extern volatile uint8_t* hgr_p2;
+extern volatile uint8_t* hgr_p3;
+extern volatile uint8_t* hgr_p4;
