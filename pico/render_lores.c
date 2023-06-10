@@ -81,22 +81,23 @@ static void __time_critical_func(render_lores_line)(uint line) {
     const uint8_t *line_buf = page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
 
     // Pad 40 pixels on the left to center horizontally
-    while(sl_pos < 40/8) {
-        sl1->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
-        sl2->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
-        sl_pos++;
-    }
+    sl1->data[sl_pos] = (0|THEN_EXTEND_7) | ((0|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl2->data[sl_pos] = (0|THEN_EXTEND_7) | ((0|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl_pos++;
+    sl1->data[sl_pos] = (0|THEN_EXTEND_7) | ((0|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl2->data[sl_pos] = (0|THEN_EXTEND_7) | ((0|THEN_EXTEND_7) << 16); // 16 pixels per word
+    sl_pos++;
+    sl1->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
+    sl2->data[sl_pos] = (0|THEN_EXTEND_3) | ((0|THEN_EXTEND_3) << 16); // 8 pixels per word
+    sl_pos++;
 
     for(int i=0; i < 40; i++) {
         uint32_t color1 = lores_palette[line_buf[i] & 0xf];
         uint32_t color2 = lores_palette[(line_buf[i] >> 4) & 0xf];
 
         // Each lores pixel is 7 hires pixels, or 14 VGA pixels wide
-        sl1->data[sl_pos] = (color1|THEN_EXTEND_2) | ((color1|THEN_EXTEND_3) << 16);
-        sl2->data[sl_pos] = (color2|THEN_EXTEND_2) | ((color2|THEN_EXTEND_3) << 16);
-        sl_pos++;
-        sl1->data[sl_pos] = (color1|THEN_EXTEND_2) | ((color1|THEN_EXTEND_3) << 16);
-        sl2->data[sl_pos] = (color2|THEN_EXTEND_2) | ((color2|THEN_EXTEND_3) << 16);
+        sl1->data[sl_pos] = (color1|THEN_EXTEND_6) | ((color1|THEN_EXTEND_6) << 16);
+        sl2->data[sl_pos] = (color2|THEN_EXTEND_6) | ((color2|THEN_EXTEND_6) << 16);
         sl_pos++;
     }
 

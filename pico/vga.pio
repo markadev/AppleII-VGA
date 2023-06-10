@@ -36,12 +36,16 @@ pixel_out:
 public wait_vsync:
     wait 0 irq VSYNC_IRQ_NUM
 public wait_hsync:
-    wait 0 irq HSYNC_IRQ_NUM  [9]
-public extend_3:
+    wait 0 irq HSYNC_IRQ_NUM  [1]
+public extend_7:                   ;  8 pixels / an extra 14 clocks (2+6+2+2+2)
     nop  [1]
-public extend_2:
+public extend_6:                   ;  7 pixels / an extra 12 clocks (6+2+2+2)
+    nop  [5]
+public extend_3:                   ;  4 pixels / an extra 6 clocks (2+2+2)
     nop  [1]
-public extend_1:
+public extend_2:                   ;  3 pixels / an extra 4 clocks (2+2)
+    nop  [1]
+public extend_1:                   ;  2 pixels / an extra 2 clocks
     nop  [1]
 .wrap
 

@@ -9,9 +9,11 @@
 
 #define THEN_WAIT_VSYNC (2 << 9)
 #define THEN_WAIT_HSYNC (3 << 9)
-#define THEN_EXTEND_1   (6 << 9)
-#define THEN_EXTEND_2   (5 << 9)
-#define THEN_EXTEND_3   (4 << 9)
+#define THEN_EXTEND_1   (8 << 9)
+#define THEN_EXTEND_2   (7 << 9)
+#define THEN_EXTEND_3   (6 << 9)
+#define THEN_EXTEND_6   (5 << 9)
+#define THEN_EXTEND_7   (4 << 9)
 
 
 struct vga_scanline {
