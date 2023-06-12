@@ -90,7 +90,7 @@ void abus_init()
   //! Init states
   soft_80col = 0;
   soft_80store = 0;
-  soft_video7 = 0;
+  soft_video7 = VIDEO7_MODE3;
   soft_monochrom = 0;
   memset(private_memory, 0x00, 64 * 1024);
   memset(main_memory, 0x00, 64 * 1024);
@@ -103,10 +103,11 @@ void abus_init()
 
 static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
 {
-  // Shadow parts of the Apple's memory by observing the bus write cycles
-  //! Reset Detection
+  // Shadow parts of the Apple's memory by observing the bus write cycles  
   static bool reset_phase_1_happening = false;
   static bool sw1_set = false;
+  
+  //! Reset Detection
   if ((address == 0xFFFC) && (ACCESS_READ))
   {
     reset_phase_1_happening = true;
@@ -117,10 +118,10 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     soft_switches = SOFTSW_TEXT_MODE;
     soft_80col = 0;
     soft_80store = 0;
-    soft_video7 = 0;
+    soft_video7 = VIDEO7_MODE3;
     soft_dhires = false;
     soft_monochrom = 0;
-    sw1_set = false;    
+    sw1_set = false;
     //! Erase Text Memory
     memset(main_memory + 0x400, 0x20, 2 * 1024);
     memset(private_memory + 0x400, 0x20, 2 * 1024);
@@ -199,34 +200,6 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
       soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
     }
 
-    if (address == 0xc05e)
-    {
-      soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
-      soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
-    }
-    if (address == 0xc05f)
-    {
-      if (soft_dhires)
-      {
-        //! This is the VIDEO7 Magic
-        //! Apple ii has softswitches and also a special 2bit shift register (two flipflops basicly)
-        //! controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
-        //! the content of 80COL in the 2 switches
-        //! this is VIDEO7 Mode
-        soft_video7 = (0) | ((soft_video7 & 0x1) << 1) | ((soft_80col) ? 1 : 0);
-      }
-
-      if (soft_video7 == VIDEO7_MODE1)
-      {
-        gpio_put(PICO_DEFAULT_LED_PIN, 1);
-      }
-      else
-      {
-        gpio_put(PICO_DEFAULT_LED_PIN, 0);
-      }
-      soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
-      soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
-    }
     if (address == 0xc00c && ACCESS_WRITE)
     {
       soft_80col = ((uint32_t)SOFTSW_80COL_OFF);
@@ -240,6 +213,44 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
     {
       soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
     }
+
+    if (address == 0xc001 && ACCESS_WRITE)
+    {
+      soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
+    }
+
+    if (address == 0xc05e)
+    {
+      soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
+      soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
+    }
+    if (address == 0xc05f)
+    {
+      if (soft_dhires)
+      {
+        //! This is the VIDEO7 Magic (Not documented by apple but by a patent US4631692 )
+        //! Apple ii has softswitches and also a special 2bit shift register (two flipflops basicly)
+        //! controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
+        //! the content of 80COL in the 2 switches
+        //! this is VIDEO7 Mode
+
+        static int bit0_set = 0;
+        if (!bit0_set)
+        {
+          soft_video7 = (0x01) & (soft_video7 | !soft_80col);
+          bit0_set = 1;
+        }
+        else
+        {
+          soft_video7 = soft_video7 | ((!soft_80col) << 1);
+          //! reset state
+          bit0_set = 0;
+        }
+      }
+      soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
+      soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
+    }
+
     if (address == 0xC021 && ACCESS_WRITE)
     {
       if (value & 0x80)
@@ -250,11 +261,6 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
       {
         soft_monochrom = SOFTSW_MONO_DIS;
       }
-    }
-
-    if (address == 0xc001 && ACCESS_WRITE)
-    {
-      soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
     }
 
     if ((address & 0xfff8) == 0xc050)

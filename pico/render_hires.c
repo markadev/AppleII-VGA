@@ -197,9 +197,9 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
-
   else if (soft_80store && !soft_80col)
   {
+    gpio_put(PICO_DEFAULT_LED_PIN, 1);
     // Video 7 F/B HiRes
     while (i < 40)
     {
@@ -238,7 +238,6 @@ static void __time_critical_func(render_dhires_line)(uint line)
       }
     }
   }
-
   else if (soft_video7 == VIDEO7_MODE2)
   {
     // 160x192 Video-7
@@ -317,7 +316,7 @@ static void __time_critical_func(render_dhires_line)(uint line)
     }
   }
   else
-  {
+  {    
     while (i < 40)
     {
       // Load in as many subpixels as possible
