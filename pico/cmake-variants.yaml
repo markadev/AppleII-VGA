@@ -1,0 +1,28 @@
+---
+buildType:
+  description: The build type
+  default: release
+  choices:
+    release:
+      short: Release
+      long: Optimize for speed
+      buildType: Release
+    debug:
+      short: Debug
+      long: Disable optimizations for debugging
+      buildType: Debug
+
+appleModel:
+  description: The model of Apple II to support
+  default: iiplus
+  choices:
+    iiplus:
+      short: II+
+      long: Support Apple II and II+ video features
+      settings:
+        APPLE_MODEL: IIPLUS
+    iie:
+      short: IIe
+      long: Support Apple IIe video features
+      settings:
+        APPLE_MODEL: IIE

@@ -6,6 +6,10 @@ include(cmake/pico_sdk_import.cmake)
 project(applevga)
 set(CMAKE_C_STANDARD 11)
 
+set(APPLE_MODEL "IIPLUS" CACHE STRING "The model of Apple II to support")
+message("Target Apple model is ${APPLE_MODEL}")
+add_definitions(-DAPPLE_MODEL_${APPLE_MODEL}=1)
+
 pico_sdk_init()
 
 
