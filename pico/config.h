@@ -1,6 +1,6 @@
 #pragma once
 
-#define CONFIG_SYSCLOCK 225.0 /* MHz */
+#define CONFIG_SYSCLOCK 126.0 /* MHz */
 
 // Pin configuration
 #define CONFIG_PIN_APPLEBUS_DATA_BASE 0 /* 8+2 pins */
