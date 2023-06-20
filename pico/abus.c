@@ -10,14 +10,12 @@
 #error CONFIG_PIN_APPLEBUS_PHI0 and PHI0_GPIO must be set to the same pin
 #endif
 
-enum
-{
+enum {
   ABUS_MAIN_SM = 0,
   ABUS_DEVICE_READ_SM = 1,
 };
 
-static void abus_device_read_setup(PIO pio, uint sm)
-{
+static void abus_device_read_setup(PIO pio, uint sm) {
   uint program_offset = pio_add_program(pio, &abus_device_read_program);
   pio_sm_claim(pio, sm);
 
@@ -37,8 +35,7 @@ static void abus_device_read_setup(PIO pio, uint sm)
   // All the GPIOs are shared and setup by the main program
 }
 
-static void abus_main_setup(PIO pio, uint sm)
-{
+static void abus_main_setup(PIO pio, uint sm) {
   uint program_offset = pio_add_program(pio, &abus_program);
   pio_sm_claim(pio, sm);
 
@@ -74,19 +71,18 @@ static void abus_main_setup(PIO pio, uint sm)
 
   pio_gpio_init(pio, CONFIG_PIN_APPLEBUS_PHI0);
   gpio_set_pulls(CONFIG_PIN_APPLEBUS_PHI0, false, false);
-  for (int pin = CONFIG_PIN_APPLEBUS_CONTROL_BASE; pin < CONFIG_PIN_APPLEBUS_CONTROL_BASE + 4; pin++)
-  {
+
+  for (int pin = CONFIG_PIN_APPLEBUS_CONTROL_BASE; pin < CONFIG_PIN_APPLEBUS_CONTROL_BASE + 4; pin++) {
     pio_gpio_init(pio, pin);
   }
-  for (int pin = CONFIG_PIN_APPLEBUS_DATA_BASE; pin < CONFIG_PIN_APPLEBUS_DATA_BASE + 10; pin++)
-  {
+
+  for (int pin = CONFIG_PIN_APPLEBUS_DATA_BASE; pin < CONFIG_PIN_APPLEBUS_DATA_BASE + 10; pin++) {
     pio_gpio_init(pio, pin);
     gpio_set_pulls(pin, false, false);
   }
 }
 
-void abus_init()
-{
+void abus_init() {
   //! Init states
   soft_80col = 0;
   soft_80store = 0;
@@ -101,133 +97,111 @@ void abus_init()
   pio_enable_sm_mask_in_sync(CONFIG_ABUS_PIO, (1 << ABUS_MAIN_SM) | (1 << ABUS_DEVICE_READ_SM));
 }
 
-static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
-{
+static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
   // Shadow parts of the Apple's memory by observing the bus write cycles  
   static bool reset_phase_1_happening = false;
-  static bool sw1_set = false;
   
   //! Reset Detection
-  if ((address == 0xFFFC) && (ACCESS_READ))
-  {
+  if ((address == 0xFFFC) && (ACCESS_READ)) {
     reset_phase_1_happening = true;
-  }
-  else if ((address == 0xFFFD) && (ACCESS_READ) && (reset_phase_1_happening))
-  {
+    return;
+  } else if ((address == 0xFFFD) && (ACCESS_READ) && (reset_phase_1_happening)) {
     //! Reset Clear all buffers
-    soft_switches = SOFTSW_TEXT_MODE;
+    soft_switches = 0;
     soft_80col = 0;
     soft_80store = 0;
     soft_video7 = VIDEO7_MODE3;
-    soft_dhires = false;
+    soft_dhires = 0;
     soft_monochrom = 0;
-    sw1_set = false;
     //! Erase Text Memory
     memset(main_memory + 0x400, 0x20, 2 * 1024);
     memset(private_memory + 0x400, 0x20, 2 * 1024);
 
-    reset_phase_1_happening = false;
-  }
-  else
-  {
+    reset_phase_1_happening = false;    
+    return;
+  } else {
     reset_phase_1_happening = false;
   }
 
-  if (ACCESS_WRITE)
-  {
+  if (ACCESS_WRITE) {
     // Mirror Video Memory from MAIN & AUX banks
-    if (soft_80store)
-    {
-      if (soft_switches & SOFTSW_PAGE_2)
-      {
-        if ((address >= 0x400) && (address < 0x800))
-        {
+    if (soft_80store) {
+      if (soft_switches & SOFTSW_PAGE_2) {
+        if ((address >= 0x400) && (address < 0x800)) {
           private_memory[address] = value & 0xff;
           return;
-        }
-        else if ((soft_switches & SOFTSW_HIRES_MODE) && (address >= 0x2000) && (address < 0x4000))
-        {
+        } else if ((soft_switches & SOFTSW_HIRES_MODE) && (address >= 0x2000) && (address < 0x4000)) {
           private_memory[address] = value & 0xff;
           return;
         }
       }
-    }
-    else if (soft_ramwrt)
-    {
-      if ((address >= 0x200) && (address < 0xC000))
-      {
+    } else if (soft_ramwrt) {
+      if ((address >= 0x200) && (address < 0xC000)) {
         private_memory[address] = value & 0xff;
         return;
       }
     }
 
-    if ((address >= 0x200) && (address < 0xC000))
-    {
+    if ((address >= 0x200) && (address < 0xC000)) {
       main_memory[address] = value & 0xff;
       return;
     }
   }
 
-  if (address < 0xc000)
+  if (address < 0xc000) {
     return;
-  if (address < 0xc080)
-  {
+  }
+
+  if (address < 0xc080) {
     //! Soft switches
     // Shadow the soft-switches by observing all read & write bus cycles
-    if (address == 0xc003)
-    {
+    if (address == 0xc003) {
       soft_ramrd = ((uint32_t)SOFTSW_READ_AUX);
     }
-    if (address == 0xc002 && ACCESS_WRITE)
-    {
+
+    if (address == 0xc002 && ACCESS_WRITE) {
       soft_ramrd = ((uint32_t)SOFTSW_READ_MAIN);
     }
-    if (address == 0xc005 && ACCESS_WRITE)
-    {
+
+    if (address == 0xc005 && ACCESS_WRITE) {
       soft_ramwrt = ((uint32_t)SOFTSW_WRITE_AUX);
     }
-    if (address == 0xc004 && ACCESS_WRITE)
-    {
+
+    if (address == 0xc004 && ACCESS_WRITE) {
       soft_ramwrt = ((uint32_t)SOFTSW_WRITE_MAIN);
     }
 
-    if (address == 0xc07e && ACCESS_WRITE)
-    {
+    if (address == 0xc07e && ACCESS_WRITE) {
       soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_ON);
     }
-    if (address == 0xc07f && ACCESS_WRITE)
-    {
+
+    if (address == 0xc07f && ACCESS_WRITE) {
       soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
     }
 
-    if (address == 0xc00c && ACCESS_WRITE)
-    {
+    if (address == 0xc00c && ACCESS_WRITE) {
       soft_80col = ((uint32_t)SOFTSW_80COL_OFF);
     }
-    if (address == 0xc00d && ACCESS_WRITE)
-    {
+    
+    if (address == 0xc00d && ACCESS_WRITE) {
       soft_80col = ((uint32_t)SOFTSW_80COL_ON);
     }
 
-    if (address == 0xC000 && ACCESS_WRITE)
-    {
+    if (address == 0xC000 && ACCESS_WRITE) {
       soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
     }
 
-    if (address == 0xc001 && ACCESS_WRITE)
-    {
+    if (address == 0xc001 && ACCESS_WRITE) {
       soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
     }
 
-    if (address == 0xc05e)
-    {
+    if (address == 0xc05e) {
       soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
       soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
     }
-    if (address == 0xc05f)
-    {
-      if (soft_dhires)
-      {
+
+    if (address == 0xc05f) {
+      if (soft_dhires) {
         //! This is the VIDEO7 Magic (Not documented by apple but by a patent US4631692 )
         //! Apple ii has softswitches and also a special 2bit shift register (two flipflops basicly)
         //! controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
@@ -235,13 +209,10 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
         //! this is VIDEO7 Mode
 
         static int bit0_set = 0;
-        if (!bit0_set)
-        {
+        if (!bit0_set) {
           soft_video7 = (0x01) & (soft_video7 | !soft_80col);
           bit0_set = 1;
-        }
-        else
-        {
+        } else {
           soft_video7 = soft_video7 | ((!soft_80col) << 1);
           //! reset state
           bit0_set = 0;
@@ -251,60 +222,57 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
       soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
     }
 
-    if (address == 0xC021 && ACCESS_WRITE)
-    {
-      if (value & 0x80)
-      {
+    if (address == 0xC021 && ACCESS_WRITE) {
+      if (value & 0x80) {
         soft_monochrom = SOFTSW_MONO_EN;
-      }
-      else
-      {
+      } else {
         soft_monochrom = SOFTSW_MONO_DIS;
       }
     }
 
-    if ((address & 0xfff8) == 0xc050)
-    {
-      switch (address & 7)
-      {
-        case 0:
+    if ((address & 0xfff8) == 0xc050) {
+      switch (address & 7) {
+        case 0: {
           soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
           break;
-        case 1:
+        }
+        case 1: {
           soft_switches |= SOFTSW_TEXT_MODE;
           break;
-        case 2:
+        }
+        case 2: {
           soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
           break;
-        case 3:
+        }
+        case 3: {
           soft_switches |= SOFTSW_MIX_MODE;
           break;
-        case 4:
+        }
+        case 4: {
           soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
           break;
-        case 5:
+        }
+        case 5: {
           soft_switches |= SOFTSW_PAGE_2;
           break;
-        case 6:
+        }
+        case 6: {
           soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
           break;
-        case 7:
+        }
+        case 7: {
           soft_switches |= SOFTSW_HIRES_MODE;
           break;
+        }
       }
-    }
-    else if (((address & 0xfffe) == 0xc00e) && ACCESS_WRITE)
-    {
+    } else if (((address & 0xfffe) == 0xc00e) && ACCESS_WRITE) {
       //! ALTCHAR Softswitch access
-      switch (address & 1)
-      {
-        case 0:
-        {
+      switch (address & 1) {
+        case 0: {
           soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_OFF);
           break;
         }
-        case 1:
-        {
+        case 1: {
           soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_ON);
           break;
         }
@@ -313,22 +281,17 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value)
   }
 }
 
-void __time_critical_func(abus_loop)()
-{
-  while (1)
-  {
+void __time_critical_func(abus_loop)() {
+  while (1) {
     uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
     uint address = (value >> 10) & 0xffff;
 
-    if ((value & (1u << CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE)) == 0)
-    {
-      if ((value & (1u << CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE)) != 0)
-      {
+    if (DESVEL) {
+      if (ACCESS_READ) {
         // device read access
         pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, address & 0xf);
       }
     }
-
     shadow_memory(address, value);
   }
 }

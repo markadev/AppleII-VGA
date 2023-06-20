@@ -2,72 +2,66 @@
 
 #include <stdint.h>
 
-enum
-{
+enum {
   SOFTSW_TEXT_MODE = 0x01,
   SOFTSW_MIX_MODE = 0x02,
   SOFTSW_HIRES_MODE = 0x04,
   SOFTSW_MODE_MASK = 0x07,
-
   SOFTSW_PAGE_2 = 0x08,
 };
 
-enum
-{
+enum {
   SOFTSW_ALTCHAR_OFF = 0x00,
   SOFTSW_ALTCHAR_ON = 0x01,
 };
 
-enum
-{
+enum {
   SOFTSW_80COL_OFF = 0x00,
   SOFTSW_80COL_ON = 0x01,
 };
-enum
-{
+
+enum {
   SOFTSW_AN3_OFF = 0x00,
   SOFTSW_AN3_ON = 0x01,
 };
 
-enum
-{
+enum {
   SOFTSW_IOUDIS_OFF = 0x00,
   SOFTSW_IOUDIS_ON = 0x01,
 };
-enum
-{
+
+enum {
   SOFTSW_80STORE_OFF = 0x00,
   SOFTSW_80STORE_ON = 0x01
 };
-enum
-{
+
+enum {
   SOFTSW_WRITE_MAIN = 0x00,
   SOFTSW_WRITE_AUX = 0x01
 };
-enum
-{
+
+enum {
   SOFTSW_READ_MAIN = 0x00,
   SOFTSW_READ_AUX = 0x01
 };
-enum
-{
+
+enum {
   SOFTSW_DHIRES_OFF = 0x00,
   SOFTSW_DHIRES_ON = 0x01
 };
 
-enum
-{
+enum {
   SOFTSW_MONO_DIS = 0,
   SOFTSW_MONO_EN = 1
 };
 
-enum
-{
+enum {
   VIDEO7_MODE0 = 0,
   VIDEO7_MODE1 = 1,
   VIDEO7_MODE2 = 2,
   VIDEO7_MODE3 = 3,
 };
+
 extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
 extern volatile uint32_t soft_80col;

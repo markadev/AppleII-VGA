@@ -29,4 +29,3 @@ volatile uint8_t *hgr_p1  = main_memory + 0x2000;
 volatile uint8_t *hgr_p2  = main_memory + 0x4000;
 volatile uint8_t *hgr_p3  = private_memory + 0x2000;
 volatile uint8_t *hgr_p4  = private_memory + 0x4000;
-
