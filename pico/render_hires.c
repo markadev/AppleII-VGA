@@ -26,6 +26,7 @@ void __time_critical_func(render_hires)() {
     if (soft_dhires) {
       render_dhires_line(line);
     } else {
+      gpio_put(PICO_DEFAULT_LED_PIN, 1);      
       render_hires_line(line);
     }
   }
@@ -44,7 +45,7 @@ void __time_critical_func(render_mixed_hires)() {
   for (uint line = 0; line < 160; line++) {
     if (soft_dhires) {
       render_dhires_line(line);
-    } else {
+    } else {      
       render_hires_line(line);
     }
   }
@@ -169,10 +170,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         dotc -= 2;
       }
     }
-  } else if (soft_80store && !soft_80col) {
-    
+  } else if (soft_80store && !soft_80col) {    
     // Video 7 F/B HiRes
-    gpio_put(PICO_DEFAULT_LED_PIN, 1);
     while (i < 40) {
       dots = (line_mema[i] & 0x7f);
       color1 = lores_palette[(line_memb[i] >> 4) & 0xF];
@@ -206,7 +205,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         sl->data[sl_pos++] = pixeldata;
       }
     }
-  } else if (soft_video7 == VIDEO7_MODE2) {
+  } else if (soft_video7 == VIDEO7_MODE2) {  
     // 160x192 Video-7
     while (i < 40) {
       // Load in as many subpixels as possible
@@ -228,8 +227,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         dotc -= 8;
       }
     }
-  } else if (soft_video7 == VIDEO7_MODE1) {
-    gpio_put(PICO_DEFAULT_LED_PIN, 0);
+  
+  } else if (soft_video7 == VIDEO7_MODE1) {        
     while (i < 40) {
       // Load in as many subpixels as possible
       while ((dotc <= 18) && (i < 40)) {
@@ -271,7 +270,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         }
       }
     }
-  } else {    
+  } else {        
     while (i < 40) {
       // Load in as many subpixels as possible
       while ((dotc <= 18) && (i < 40)) {

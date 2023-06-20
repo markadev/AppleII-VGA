@@ -144,6 +144,7 @@ void render_loop() {
         break;
       }
       default: {
+        gpio_put(PICO_DEFAULT_LED_PIN, 0);
         render_text();
         break;
       }

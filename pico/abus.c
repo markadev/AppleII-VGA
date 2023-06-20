@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <hardware/pio.h>
+#include <pico/stdlib.h>
 #include "config.h"
 #include "abus.h"
 #include "abus.pio.h"
@@ -84,12 +85,18 @@ static void abus_main_setup(PIO pio, uint sm) {
 
 void abus_init() {
   //! Init states
+  soft_switches = SOFTSW_TEXT_MODE;
   soft_80col = 0;
   soft_80store = 0;
   soft_video7 = VIDEO7_MODE3;
-  soft_monochrom = 0;
+  soft_dhires = 0;
+  soft_monochrom = 0; 
   memset(private_memory, 0x00, 64 * 1024);
   memset(main_memory, 0x00, 64 * 1024);
+  //! put empty text
+  memset(main_memory + 0x400, 0x20, 2 * 1024);
+  memset(private_memory + 0x400, 0x20, 2 * 1024);
+  gpio_put(PICO_DEFAULT_LED_PIN, 0);
 
   abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);
   abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
@@ -103,24 +110,24 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
   
   //! Reset Detection
   if ((address == 0xFFFC) && (ACCESS_READ)) {
-    reset_phase_1_happening = true;
-    return;
+    reset_phase_1_happening = true;    
   } else if ((address == 0xFFFD) && (ACCESS_READ) && (reset_phase_1_happening)) {
-    //! Reset Clear all buffers
-    soft_switches = 0;
+    //! Reset Clear all buffers    
+    soft_switches = SOFTSW_TEXT_MODE;
     soft_80col = 0;
     soft_80store = 0;
     soft_video7 = VIDEO7_MODE3;
     soft_dhires = 0;
-    soft_monochrom = 0;
-    //! Erase Text Memory
+    soft_monochrom = 0;  
+    memset(private_memory, 0x00, 64 * 1024);
+    memset(main_memory, 0x00, 64 * 1024);  
+    //! Erase Text Memory    
     memset(main_memory + 0x400, 0x20, 2 * 1024);
     memset(private_memory + 0x400, 0x20, 2 * 1024);
-
-    reset_phase_1_happening = false;    
-    return;
-  } else {
     reset_phase_1_happening = false;
+    gpio_put(PICO_DEFAULT_LED_PIN, 0);    
+  } else {
+    reset_phase_1_happening = false;        
   }
 
   if (ACCESS_WRITE) {
@@ -276,8 +283,8 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
           soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_ON);
           break;
         }
-      }
-    }
+      }      
+    }    
   }
 }
 
