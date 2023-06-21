@@ -1,0 +1,13 @@
+BasedOnStyle: google
+AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: DontAlign
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+ColumnLimit: 140
+IndentCaseLabels: false
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
+PointerAlignment: Right
+SortIncludes: Never
+SpaceBeforeParens: Never
