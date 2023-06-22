@@ -1,7 +1,7 @@
 #pragma once
 
 #define _PIXELS(color1, color2) ((uint32_t)(color1) | ((uint32_t)(color2) << 16))
-static uint32_t hires_color_patterns[2*256] = {
+static uint32_t hires_color_patterns[2 * 256] = {
     // Even byte pixels
     /* 0b00000000 */ _PIXELS(0x000, 0x000),
     /* 0b00000001 */ _PIXELS(0x000, 0x000),

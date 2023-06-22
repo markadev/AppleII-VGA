@@ -9,5 +9,5 @@ IndentCaseLabels: false
 IndentWidth: 4
 MaxEmptyLinesToKeep: 2
 PointerAlignment: Right
-SortIncludes: Never
+SortIncludes: false
 SpaceBeforeParens: Never
