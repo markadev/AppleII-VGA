@@ -14,7 +14,7 @@ static void core1_main() {
 
 int main() {
     // Adjust system clock for better dividing into other clocks
-    set_sys_clock_khz(CONFIG_SYSCLOCK*1000, true);
+    set_sys_clock_khz(CONFIG_SYSCLOCK * 1000, true);
 
     // Setup the on-board LED for debugging
     gpio_init(PICO_DEFAULT_LED_PIN);
