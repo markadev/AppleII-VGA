@@ -86,7 +86,7 @@ void abus_init() {
     soft_ramwrt = 0;
     soft_80col = 0;
     soft_80store = 0;
-    soft_video7 = VIDEO7_MODE3;
+    soft_video7 = VIDEO7_MODE0;
     soft_dhires = 0;
     soft_monochrom = 0;
     memset(private_memory, 0x00, 64 * 1024);
@@ -115,7 +115,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         soft_ramwrt = 0;
         soft_80col = 0;
         soft_80store = 0;
-        soft_video7 = VIDEO7_MODE3;
+        soft_video7 = VIDEO7_MODE0;
         soft_dhires = 0;
         soft_monochrom = 0;
         memset(private_memory, 0x00, 64 * 1024);
@@ -233,6 +233,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
                     bit0_set = 0;
                 }
             }
+
             soft_an3 = ((uint32_t)SOFTSW_AN3_ON);
             soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
             return;

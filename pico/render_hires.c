@@ -38,9 +38,6 @@ void __time_critical_func(render_hires)() {
 }
 
 void __time_critical_func(render_mixed_hires)() {
-    if(soft_dhires) {
-        gpio_put(PICO_DEFAULT_LED_PIN, 1);
-    }
     vga_prepare_frame();
     // Skip 48 lines to center vertically
     struct vga_scanline* skip_sl = vga_prepare_scanline();
@@ -140,6 +137,7 @@ static void __time_critical_func(render_hires_line)(uint line) {
     sl->repeat_count = 1;
     vga_submit_scanline(sl);
 }
+//#define APPLE_MODEL_IIE
 #ifdef APPLE_MODEL_IIE
 static void __time_critical_func(render_dhires_line)(uint line) {
     uint sl_pos = 0;
