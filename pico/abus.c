@@ -117,11 +117,6 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         soft_video7 = VIDEO7_MODE0;
         soft_dhires = 0;
         soft_monochrom = 0;
-        memset(private_memory, 0x00, 64 * 1024);
-        memset(main_memory, 0x00, 64 * 1024);
-        //! Erase Text Memory
-        memset(main_memory + 0x400, 0x20, 2 * 1024);
-        memset(private_memory + 0x400, 0x20, 2 * 1024);
         reset_phase_1_happening = false;
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
     } else {
@@ -158,6 +153,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
     }
 
     if(address < 0xc080) {
+#ifdef APPLE_MODEL_IIE
         //! Soft switches
         // Shadow the soft-switches by observing all read & write bus cycles
         if(address == 0xC000 && ACCESS_WRITE) {
@@ -207,7 +203,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         if(address == 0xc07f && ACCESS_WRITE) {
             soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
         }
-#ifdef APPLE_MODEL_IIE
+
         if(address == 0xc05e) {
             soft_an3 = ((uint32_t)SOFTSW_AN3_OFF);
             soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);

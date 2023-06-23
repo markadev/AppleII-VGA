@@ -46,7 +46,7 @@ applevga.uf2
 cd /AppleII-VGA/pico
 mkdir build
 cd build
-cmake -DAPPLE_MODEL=II+ -DCMAKE_BUILD_TYPE=Release ..
+cmake -DAPPLE_MODEL=IIPLUS -DCMAKE_BUILD_TYPE=Release ..
 make
 $ ls *uf2
 ...

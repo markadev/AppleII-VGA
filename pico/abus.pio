@@ -12,7 +12,7 @@
 ;  * IN pins are mapped to ~DEVSEL, R/W, and Data[7:0]
 ;  * SET pins are mapped to the transceiver enable signals
 ;  * input shift left & autopush @ 26 bits
-;  * run at about 250MHz (4ns/instruction)
+;  * run at about 125MHz (8ns/instruction)
 ;
 ; SET bits for tranceiver control:
 ;  0bxxx
@@ -21,27 +21,27 @@
 ;      x  - select Data, active low
 .wrap_target
 next_bus_cycle:
-    set PINS, 0b011                     ; disable tranceivers
-    wait 1 GPIO, PHI0_GPIO [5]          ; wait for PHI0 to rise.
-    set PINS, 0b011  [5]                ; enable AddrHi tranceiver and delay for transceiver propagation delay (24ns)
+    set PINS, 0b011                     ; enable AddrHi tranceiver
+    wait 1 GPIO, PHI0_GPIO              ; wait for PHI0 to rise. Data propagation through the transceiver should
+                                        ; be complete by the time this happens.
     in PINS, 8                          ; read AddrHi[7:0]
-    set PINS, 0b101  [5]                ; enable AddrLo tranceiver and delay for transceiver propagation delay (24ns)
+    set PINS, 0b101  [5]                ; enable AddrLo tranceiver and delay for transceiver propagation delay
     in PINS, 8                          ; read AddrLo[7:0]
 
     jmp PIN, read_cycle                 ; jump based on the state of the R/W pin
 
 write_cycle:
-    ; the current time is P0+92ns (P0 + 10ns + 2 clocks (input synchronizers) + 21 instructions)
+    ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
 
-    set PINS, 0b110  [31]               ; enable Data tranceiver & wait until both ~DEVSEL and the written data are valid (P0+220ns)
+    set PINS, 0b110  [15]               ; enable Data tranceiver & wait until both ~DEVSEL and the written data are valid (P0+200ns)
     in PINS, 10                         ; read R/W, ~DEVSEL, and Data[7:0], then autopush
     wait 0 GPIO, PHI0_GPIO  [7]         ; wait for PHI0 to fall
     jmp next_bus_cycle
 
 read_cycle:
-    ; the current time is P0+92ns (P0 + 10ns + 2 clocks (input synchronizers) + 21 instructions)
+    ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
 
-    set PINS, 0b110  [5]                ; ensure AddrLo transceiver is disabled and delay for ~DEVSEL to become valid (P0+102ns+buffer delay)
+    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled and delay for ~DEVSEL to become valid (P0+63ns+buffer delay)
     in PINS, 10                         ; read R/W, ~DEVSEL, and dontcare[7:0], then autopush
 
     irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
@@ -66,32 +66,32 @@ wait_loop:
     wait 1 irq READ_DATA_TRIGGER_IRQ    ; wait for the data portion of a read cycle (from the main SM)
     jmp PIN, wait_loop                  ; skip if this device is not being addressed
 
-    ; the current time is P0+128ns and
+    ; the current time is P0+136ns (P0 + 16ns + 2 clocks (input synchronizers) + 13 instructions) and
     ; this read cycle is addressed to this device.
     ;
     ; Phase 0 is typically 489 ns long.
     ;  * Data from peripherals should be valid on the data bus by 45 nanoseconds before the end of phase 0
-    ;  * Data should be held for no more than 20ns after phase 0 ends
-    ;  * Data bus should be tri-stated within 30ns after phase 0 ends
+    ;  * Data should be held for 40ns after phase 0 ends
+    ;  * Data bus should be tri-stated within 60ns after phase 0 ends
 
     irq set DATA_BUSY_IRQ
 
-    set PINS, 0b01  [7]                 ; enable Data tranceiver with output direction [P0+164ns]
-    mov OSR, ~NULL  [31]                ; [P0+292ns]
-    out PINDIRS, 8  [31]                ; set data pins as outputs [P0+420ns]
+    pull noblock                        ; extra early pull to clear out any standing values from the FIFO
 
-    pull noblock                        ; pull value from the FIFO as late as possible [P0+424ns]
-    out PINS, 8                         ; [P0+428ns]
+    set PINS, 0b01                      ; enable Data tranceiver with output direction
+    mov OSR, ~NULL
+    out PINDIRS, 8  [31]                ; set data pins as outputs
 
-    ; the current time is P0+428ns
+    pull noblock                        ; pull value from the FIFO as late as possible
+    out PINS, 8
 
-    wait 0 GPIO, PHI0_GPIO  [2]         ; wait for PHI0 to fall then hold for 12ns  (2 clocks (input synchronizers) + 7 instructions)
+    ; the current time is P0+440ns (P0 + 16ns + 2 clocks (input synchronizers) + 51 instructions)
+
+    wait 0 GPIO, PHI0_GPIO  [1]         ; wait for PHI0 to fall then hold for 40ns  (2 clocks (input synchronizers) + 2-3 instructions)
     set PINS, 0b10                      ; disable Data tranceiver to tri-state the data bus
 
     mov OSR, NULL
     out PINDIRS, 8                      ; reset data pins as inputs
-
-    pull noblock                        ; extra late pull to clear out any standing values from the FIFO [P1+56ns]
 
     irq clear DATA_BUSY_IRQ
 .wrap

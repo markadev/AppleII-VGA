@@ -6,6 +6,7 @@
 #include "vga.pio.h"
 #include "vga.h"
 
+
 #define PIXEL_FREQ 25.2 /*MHz*/
 #define PIXELS_PER_LINE 800
 #define LINES_PER_FRAME 525
@@ -14,7 +15,7 @@
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 23)
 #define VSYNC_TIMING_VALUE ((LINES_PER_FRAME)-4)
 
-#define NUM_SCANLINE_BUFFERS 32
+#define NUM_SCANLINE_BUFFERS 8
 
 enum {
     VGA_HSYNC_SM = 0,
@@ -38,6 +39,7 @@ enum {
     FLAG_STARTED = 0x04,
 };
 
+
 static uint vga_dma_channel;
 
 // Scanline queue. Scanlines are filled in from the head and are
@@ -45,6 +47,7 @@ static uint vga_dma_channel;
 static uint scanline_queue_head;
 static uint scanline_queue_tail;
 static struct vga_scanline scanline_queue[NUM_SCANLINE_BUFFERS];
+
 
 static void vga_hsync_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &vga_hsync_program);
@@ -133,7 +136,7 @@ static void vga_dma_irq_handler() {
     dma_hw->ints0 = 1u << vga_dma_channel;
 
     // Repeat the scanline as specified
-    if(active_scanline->repeat_count != 0) {
+    if(active_scanline->repeat_count) {
         active_scanline->repeat_count--;
         dma_channel_transfer_from_buffer_now(vga_dma_channel, &(active_scanline->_sync), active_scanline->length + 2);
         return;
@@ -143,10 +146,11 @@ static void vga_dma_irq_handler() {
     active_scanline->_flags &= ~(uint_fast8_t)FLAG_BUSY;
 
     const uint32_t irq_status = spin_lock_blocking(lock);
-    scanline_queue_tail = (scanline_queue_tail + 1) % (NUM_SCANLINE_BUFFERS - 1);
+    scanline_queue_tail = (scanline_queue_tail + 1) % NUM_SCANLINE_BUFFERS;
     trigger_ready_scanline_dma();
     spin_unlock(lock, irq_status);
 }
+
 
 void vga_init() {
     spin_lock_claim(CONFIG_VGA_SPINLOCK_ID);
@@ -195,9 +199,8 @@ struct vga_scanline *vga_prepare_scanline() {
     struct vga_scanline *scanline = &scanline_queue[scanline_queue_head];
 
     // Wait for the scanline buffer to become available again
-    while(scanline->_flags & FLAG_BUSY) {
+    while(scanline->_flags & FLAG_BUSY)
         tight_loop_contents();
-    }
 
     // Reinitialize the scanline struct for reuse
     scanline->length = 0;
@@ -205,7 +208,7 @@ struct vga_scanline *vga_prepare_scanline() {
     scanline->_flags = FLAG_BUSY;
     scanline->_sync = (uint32_t)THEN_WAIT_HSYNC << 16;
 
-    scanline_queue_head = (scanline_queue_head + 1) % (NUM_SCANLINE_BUFFERS - 1);
+    scanline_queue_head = (scanline_queue_head + 1) % NUM_SCANLINE_BUFFERS;
 
     return scanline;
 }
