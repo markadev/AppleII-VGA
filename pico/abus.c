@@ -102,6 +102,7 @@ void abus_init() {
 }
 
 static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
+    static int bit0_set = 0;
     // Shadow parts of the Apple's memory by observing the bus write cycles
     static bool reset_phase_1_happening = false;
 
@@ -115,6 +116,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         soft_80col = 0;
         soft_80store = 0;
         soft_video7 = VIDEO7_MODE0;
+        bit0_set = 0;
         soft_dhires = 0;
         soft_monochrom = 0;
         reset_phase_1_happening = false;
@@ -217,8 +219,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
                 //! controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
                 //! the content of 80COL in the 2 switches
                 //! this is VIDEO7 Mode
-
-                static int bit0_set = 0;
+                
                 if(!bit0_set) {
                     soft_video7 = (0x01) & (soft_video7 | !soft_80col);
                     bit0_set = 1;
