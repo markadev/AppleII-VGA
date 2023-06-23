@@ -17,14 +17,17 @@ signal.
 
 This project is currently in a pretty raw state so consider it useful for informational
 purposes only. I've built a prototype card and it works on my Apple II+ but I only have
-one Apple II+ and one VGA monitor so my testing is very limited.
+one Apple II+ and one VGA monitor so my testing is very limited. 
 
 These features are currently supported:
  * Generates a 640x480@60 VGA signal with 3 bits per color channel using resistor DACs
  * Text mode (monochrome)
  * Lo-res mode with no color fringing between the chunky pixels
+ * Double Lo-res mode (Apple iie only)
  * Hi-res mode with simulated NTSC artifact color
+ * Double Hi-res mode (Apple iie only)
  * Mixed lo-res and hi-res modes with monochrome text and no color fringing
+ * 80 Columms text support (Apple iie only)
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -47,7 +50,6 @@ board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/produ
 
 ![Prototype Card](docs/prototype_card.jpg)
 
-
 ## Comparisons
 
 Here are a few comparisons of the VGA card output vs composite video through
@@ -62,12 +64,16 @@ a cheap composite -> HDMI adapter
 **Hires**
 ![Hires Mode](docs/composite_vs_vga_hires.jpg)
 
+**DHires**
+![DHires Mode](docs/composite_vs_vga_dhires.jpg)
+
+**80 Columms**
+![80 Columms Mode](docs/composite_vs_vga_80columms.jpg)
 
 ## Future work
 
 There are a few things that I think are easily possible with this design and I might
 try to implement:
- * 80 column text mode support
  * loading custom character ROMs from Basic
  * Palettes for hires mode (color/mono-white/mono-green)
 
