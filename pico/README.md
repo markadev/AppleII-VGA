@@ -30,18 +30,28 @@ sudo git -C /opt/pico-sdk submodule update --init
 export PICO_SDK_PATH=/opt/pico-sdk
 ```
 
-## Build the firmware
+## Build the firmware for Apple IIe
 ```shell
 cd /AppleII-VGA/pico
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DAPPLE_MODEL=IIE -DCMAKE_BUILD_TYPE=Release ..
 make
 $ ls *uf2
 ...
 applevga.uf2
 ```
-
+## Build the firmware for Apple II+
+```shell
+cd /AppleII-VGA/pico
+mkdir build
+cd build
+cmake -DAPPLE_MODEL=IIPLUS -DCMAKE_BUILD_TYPE=Release ..
+make
+$ ls *uf2
+...
+applevga.uf2
+```
 ## Upload the firmware
 Hold down the BOOTSEL button and connect the Raspberry Pi Pico to your PC via micro USB cable. Once Pico is connected release the BOOTSEL button. Pi Pico should be connected to PC with USB mass storage device mode.
 

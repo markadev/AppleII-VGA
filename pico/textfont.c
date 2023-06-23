@@ -1,13 +1,33 @@
 #include "textfont.h"
 
+/*
+    Character stored in ram like this
+        ______0 - INVERSE       / 1 - NORMAL
+       | _____0 - NOT FLASHING  / 1 - FLASHING
+       ||  ___0 - CAP           / 1 - LOWER
+       || |   ___ ASCII Code
+       || |  |
+    0b 00 0 00000
 
-const uint8_t default_character_rom[256*8] = {
-    //
-    // Inverse Set (0-63)
-    //
+    for example
+    A = 0x41 0b 01 0 00001 Normal Flashing CAP A
+    a = 0x61 0b 01 1 00001 Normal Flashing Low A
 
-    // Inverse '@'
-    0b00000000,
+    Char Memory Map first glyph line
+    (CH << 3) = rom address
+                Memory                Rom Mapped
+    Inverse M = 0x0D = 0b 00 001101 -> 0x0068
+    Inverse a = 0x61 = 0b 01 100001 -> 0x0308 // Noflashing Lowercases AltChar
+   only, other wise flashing "!" Normal  a = 0xE1 = 0b 11 100001 -> 0x0708
+
+ */
+#ifdef APPLE_MODEL_IIE
+const uint8_t default_character_rom[256 * 8] = {
+    ////////////////////////////
+    // Inverse Set (0x00-0x3F)//
+    ///////////////////////////
+
+    // Inverse '@ at 0x0000'
     0b00011100,
     0b00100010,
     0b00101010,
@@ -15,9 +35,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101100,
     0b00100000,
     0b00011110,
-
-    // Inverse 'A'
     0b00000000,
+
+    // Inverse 'A at 0x0008'
     0b00001000,
     0b00010100,
     0b00100010,
@@ -25,19 +45,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00100010,
     0b00100010,
-
-    // Inverse 'B'
     0b00000000,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
 
-    // Inverse 'C'
+    // Inverse 'B at 0x0010'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
     0b00000000,
+
+    // Inverse 'C at 0x0018'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -45,9 +65,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100010,
     0b00011100,
-
-    // Inverse 'D'
     0b00000000,
+
+    // Inverse 'D at 0x0020'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -55,9 +75,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00111100,
-
-    // Inverse 'E'
     0b00000000,
+
+    // Inverse 'E at 0x0028'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -65,9 +85,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Inverse 'F'
     0b00000000,
+
+    // Inverse 'F at 0x0030'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -75,9 +95,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Inverse 'G'
     0b00000000,
+
+    // Inverse 'G at 0x0038'
     0b00011110,
     0b00100000,
     0b00100000,
@@ -85,9 +105,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00011110,
-
-    // Inverse 'H'
     0b00000000,
+
+    // Inverse 'H at 0x0040'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -95,9 +115,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Inverse 'I'
     0b00000000,
+
+    // Inverse 'I at 0x0048'
     0b00011100,
     0b00001000,
     0b00001000,
@@ -105,9 +125,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00011100,
-
-    // Inverse 'J'
     0b00000000,
+
+    // Inverse 'J at 0x0050'
     0b00000010,
     0b00000010,
     0b00000010,
@@ -115,9 +135,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Inverse 'K'
     0b00000000,
+
+    // Inverse 'K at 0x0058'
     0b00100010,
     0b00100100,
     0b00101000,
@@ -125,9 +145,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Inverse 'L'
     0b00000000,
+
+    // Inverse 'L at 0x0060'
     0b00100000,
     0b00100000,
     0b00100000,
@@ -135,9 +155,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Inverse 'M'
     0b00000000,
+
+    // Inverse 'M at 0x0068'
     0b00100010,
     0b00110110,
     0b00101010,
@@ -145,9 +165,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Inverse 'N'
     0b00000000,
+
+    // Inverse 'N at 0x0070'
     0b00100010,
     0b00100010,
     0b00110010,
@@ -155,9 +175,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00100010,
-
-    // Inverse 'O'
     0b00000000,
+
+    // Inverse 'O at 0x0078'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -165,9 +185,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Inverse 'P'
     0b00000000,
+
+    // Inverse 'P at 0x0080'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -175,9 +195,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Inverse 'Q'
     0b00000000,
+
+    // Inverse 'Q at 0x0088'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -185,9 +205,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00100100,
     0b00011010,
-
-    // Inverse 'R'
     0b00000000,
+
+    // Inverse 'R at 0x0090'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -195,9 +215,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Inverse 'S'
     0b00000000,
+
+    // Inverse 'S at 0x0098'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -205,9 +225,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Inverse 'T'
     0b00000000,
+
+    // Inverse 'T at 0x00A0'
     0b00111110,
     0b00001000,
     0b00001000,
@@ -215,9 +235,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Inverse 'U'
     0b00000000,
+
+    // Inverse 'U at 0x00A8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -225,9 +245,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Inverse 'V'
     0b00000000,
+
+    // Inverse 'V at 0x00B0'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -235,9 +255,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00010100,
     0b00001000,
-
-    // Inverse 'W'
     0b00000000,
+
+    // Inverse 'W at 0x00B8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -245,9 +265,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00110110,
     0b00100010,
-
-    // Inverse 'X'
     0b00000000,
+
+    // Inverse 'X at 0x00C0'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -255,9 +275,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010100,
     0b00100010,
     0b00100010,
-
-    // Inverse 'Y'
     0b00000000,
+
+    // Inverse 'Y at 0x00C8'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -265,9 +285,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Inverse 'Z'
     0b00000000,
+
+    // Inverse 'Z at 0x00D0'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -275,9 +295,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00111110,
-
-    // Inverse '['
     0b00000000,
+
+    // Inverse '[ at 0x00D8'
     0b00111110,
     0b00110000,
     0b00110000,
@@ -285,9 +305,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00110000,
     0b00110000,
     0b00111110,
-
-    // Inverse '\'
     0b00000000,
+
+    // Inverse '\ at 0x00E0'
     0b00000000,
     0b00100000,
     0b00010000,
@@ -295,9 +315,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000100,
     0b00000010,
     0b00000000,
-
-    // Inverse ']'
     0b00000000,
+
+    // Inverse '] at 0x00E8'
     0b00111110,
     0b00000110,
     0b00000110,
@@ -305,9 +325,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000110,
     0b00000110,
     0b00111110,
-
-    // Inverse '^'
     0b00000000,
+
+    // Inverse '^ at 0x00F0'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -315,8 +335,10 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00000000,
     0b00000000,
+    0b00000000,
 
-    // Inverse '_'
+    // Inverse '_ at 0x00F8'
+
     0b00000000,
     0b00000000,
     0b00000000,
@@ -324,50 +346,49 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00000000,
+    0b01111111,
+
+    // Inverse '  at 0x0100'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '! at 0x0108'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '" at 0x0110'
+    0b00010100,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '# at 0x0118'
+    0b00010100,
+    0b00010100,
     0b00111110,
-
-    // Inverse ' '
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-
-    // Inverse '!'
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
-
-    // Inverse '"'
-    0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-
-    // Inverse '#'
-    0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00111110,
     0b00010100,
     0b00111110,
     0b00010100,
     0b00010100,
-
-    // Inverse '$'
     0b00000000,
+
+    // Inverse '$ at 0x0120'
     0b00001000,
     0b00011110,
     0b00101000,
@@ -375,9 +396,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001010,
     0b00111100,
     0b00001000,
-
-    // Inverse '%'
     0b00000000,
+
+    // Inverse '% at 0x0128'
     0b00110000,
     0b00110010,
     0b00000100,
@@ -385,9 +406,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100110,
     0b00000110,
-
-    // Inverse '&'
     0b00000000,
+
+    // Inverse '& at 0x0130'
     0b00010000,
     0b00101000,
     0b00101000,
@@ -395,19 +416,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00100100,
     0b00011010,
-
-    // Inverse '''
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00000000,
 
-    // Inverse '('
+    // Inverse '' at 0x0138'
+    0b00001000,
+    0b00001000,
+    0b00001000,
     0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '( at 0x0140'
     0b00001000,
     0b00010000,
     0b00100000,
@@ -415,9 +436,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00010000,
     0b00001000,
-
-    // Inverse ')'
     0b00000000,
+
+    // Inverse ') at 0x0148'
     0b00001000,
     0b00000100,
     0b00000010,
@@ -425,9 +446,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00000100,
     0b00001000,
-
-    // Inverse '*'
     0b00000000,
+
+    // Inverse '* at 0x0150'
     0b00001000,
     0b00101010,
     0b00011100,
@@ -435,9 +456,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00011100,
     0b00101010,
     0b00001000,
-
-    // Inverse '+'
     0b00000000,
+
+    // Inverse '+ at 0x0158'
     0b00000000,
     0b00001000,
     0b00001000,
@@ -445,9 +466,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00000000,
-
-    // Inverse ','
     0b00000000,
+
+    // Inverse ', at 0x0160'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -455,9 +476,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00010000,
-
-    // Inverse '-'
     0b00000000,
+
+    // Inverse '- at 0x0168'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -465,9 +486,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-
-    // Inverse '.'
     0b00000000,
+
+    // Inverse '. at 0x0170'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -475,9 +496,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00001000,
-
-    // Inverse '/'
     0b00000000,
+
+    // Inverse '/ at 0x0178'
     0b00000000,
     0b00000010,
     0b00000100,
@@ -485,9 +506,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00000000,
-
-    // Inverse '0'
     0b00000000,
+
+    // Inverse '0 at 0x0180'
     0b00011100,
     0b00100010,
     0b00100110,
@@ -495,9 +516,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00110010,
     0b00100010,
     0b00011100,
-
-    // Inverse '1'
     0b00000000,
+
+    // Inverse '1 at 0x0188'
     0b00001000,
     0b00011000,
     0b00001000,
@@ -505,9 +526,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00011100,
-
-    // Inverse '2'
     0b00000000,
+
+    // Inverse '2 at 0x0190'
     0b00011100,
     0b00100010,
     0b00000010,
@@ -515,9 +536,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00111110,
-
-    // Inverse '3'
     0b00000000,
+
+    // Inverse '3 at 0x0198'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -525,9 +546,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011110,
-
-    // Inverse '4'
     0b00000000,
+
+    // Inverse '4 at 0x01A0'
     0b00000100,
     0b00001100,
     0b00010100,
@@ -535,9 +556,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00000100,
     0b00000100,
-
-    // Inverse '5'
     0b00000000,
+
+    // Inverse '5 at 0x01A8'
     0b00111110,
     0b00100000,
     0b00111100,
@@ -545,9 +566,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Inverse '6'
     0b00000000,
+
+    // Inverse '6 at 0x01B0'
     0b00001110,
     0b00010000,
     0b00100000,
@@ -555,9 +576,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Inverse '7'
     0b00000000,
+
+    // Inverse '7 at 0x01B8'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -565,19 +586,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00010000,
     0b00010000,
-
-    // Inverse '8'
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
-    // Inverse '9'
+    // Inverse '8 at 0x01C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
+
+    // Inverse '9 at 0x01C8'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -585,9 +606,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00000100,
     0b00111000,
-
-    // Inverse ':'
     0b00000000,
+
+    // Inverse ': at 0x01D0'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -595,9 +616,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00000000,
     0b00000000,
-
-    // Inverse ';'
     0b00000000,
+
+    // Inverse '; at 0x01D8'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -605,9 +626,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00010000,
-
-    // Inverse '<'
     0b00000000,
+
+    // Inverse '< at 0x01E0'
     0b00000100,
     0b00001000,
     0b00010000,
@@ -615,9 +636,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00001000,
     0b00000100,
-
-    // Inverse '='
     0b00000000,
+
+    // Inverse '= at 0x01E8'
     0b00000000,
     0b00000000,
     0b00111110,
@@ -625,9 +646,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00000000,
     0b00000000,
-
-    // Inverse '>'
     0b00000000,
+
+    // Inverse '> at 0x01F0'
     0b00010000,
     0b00001000,
     0b00000100,
@@ -635,9 +656,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000100,
     0b00001000,
     0b00010000,
-
-    // Inverse '?'
     0b00000000,
+
+    // Inverse '? at 0x01F8'
     0b00011100,
     0b00100010,
     0b00000100,
@@ -645,13 +666,13 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00000000,
     0b00001000,
+    0b00000000,
 
-    //
-    // Flashing Set (64-127)
-    //
+    /////////////////////////////
+    // Flashing Set (0x40-0x7F)//
+    /////////////////////////////
 
-    // Flashing '@'
-    0b10000000,
+    // Flashing '@ at 0x0200'
     0b10011100,
     0b10100010,
     0b10101010,
@@ -659,9 +680,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10101100,
     0b10100000,
     0b10011110,
-
-    // Flashing 'A'
     0b10000000,
+
+    // Flashing 'A at 0x0208'
     0b10001000,
     0b10010100,
     0b10100010,
@@ -669,19 +690,19 @@ const uint8_t default_character_rom[256*8] = {
     0b10111110,
     0b10100010,
     0b10100010,
-
-    // Flashing 'B'
     0b10000000,
-    0b10111100,
-    0b10100010,
-    0b10100010,
-    0b10111100,
-    0b10100010,
-    0b10100010,
-    0b10111100,
 
-    // Flashing 'C'
+    // Flashing 'B at 0x0210'
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
     0b10000000,
+
+    // Flashing 'C at 0x0218'
     0b10011100,
     0b10100010,
     0b10100000,
@@ -689,9 +710,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10100010,
     0b10011100,
-
-    // Flashing 'D'
     0b10000000,
+
+    // Flashing 'D at 0x0220'
     0b10111100,
     0b10100010,
     0b10100010,
@@ -699,9 +720,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10111100,
-
-    // Flashing 'E'
     0b10000000,
+
+    // Flashing 'E at 0x0228'
     0b10111110,
     0b10100000,
     0b10100000,
@@ -709,9 +730,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10100000,
     0b10111110,
-
-    // Flashing 'F'
     0b10000000,
+
+    // Flashing 'F at 0x0230'
     0b10111110,
     0b10100000,
     0b10100000,
@@ -719,9 +740,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10100000,
     0b10100000,
-
-    // Flashing 'G'
     0b10000000,
+
+    // Flashing 'G at 0x0238'
     0b10011110,
     0b10100000,
     0b10100000,
@@ -729,9 +750,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100110,
     0b10100010,
     0b10011110,
-
-    // Flashing 'H'
     0b10000000,
+
+    // Flashing 'H at 0x0240'
     0b10100010,
     0b10100010,
     0b10100010,
@@ -739,9 +760,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10100010,
-
-    // Flashing 'I'
     0b10000000,
+
+    // Flashing 'I at 0x0248'
     0b10011100,
     0b10001000,
     0b10001000,
@@ -749,9 +770,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10011100,
-
-    // Flashing 'J'
     0b10000000,
+
+    // Flashing 'J at 0x0250'
     0b10000010,
     0b10000010,
     0b10000010,
@@ -759,9 +780,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10100010,
     0b10011100,
-
-    // Flashing 'K'
     0b10000000,
+
+    // Flashing 'K at 0x0258'
     0b10100010,
     0b10100100,
     0b10101000,
@@ -769,9 +790,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10101000,
     0b10100100,
     0b10100010,
-
-    // Flashing 'L'
     0b10000000,
+
+    // Flashing 'L at 0x0260'
     0b10100000,
     0b10100000,
     0b10100000,
@@ -779,9 +800,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10100000,
     0b10111110,
-
-    // Flashing 'M'
     0b10000000,
+
+    // Flashing 'M at 0x0268'
     0b10100010,
     0b10110110,
     0b10101010,
@@ -789,9 +810,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10100010,
-
-    // Flashing 'N'
     0b10000000,
+
+    // Flashing 'N at 0x0270'
     0b10100010,
     0b10100010,
     0b10110010,
@@ -799,9 +820,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100110,
     0b10100010,
     0b10100010,
-
-    // Flashing 'O'
     0b10000000,
+
+    // Flashing 'O at 0x0278'
     0b10011100,
     0b10100010,
     0b10100010,
@@ -809,9 +830,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10011100,
-
-    // Flashing 'P'
     0b10000000,
+
+    // Flashing 'P at 0x0280'
     0b10111100,
     0b10100010,
     0b10100010,
@@ -819,9 +840,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10100000,
     0b10100000,
-
-    // Flashing 'Q'
     0b10000000,
+
+    // Flashing 'Q at 0x0288'
     0b10011100,
     0b10100010,
     0b10100010,
@@ -829,9 +850,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10101010,
     0b10100100,
     0b10011010,
-
-    // Flashing 'R'
     0b10000000,
+
+    // Flashing 'R at 0x0290'
     0b10111100,
     0b10100010,
     0b10100010,
@@ -839,9 +860,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10101000,
     0b10100100,
     0b10100010,
-
-    // Flashing 'S'
     0b10000000,
+
+    // Flashing 'S at 0x0298'
     0b10011100,
     0b10100010,
     0b10100000,
@@ -849,9 +870,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10100010,
     0b10011100,
-
-    // Flashing 'T'
     0b10000000,
+
+    // Flashing 'T at 0x02A0'
     0b10111110,
     0b10001000,
     0b10001000,
@@ -859,9 +880,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10001000,
-
-    // Flashing 'U'
     0b10000000,
+
+    // Flashing 'U at 0x02A8'
     0b10100010,
     0b10100010,
     0b10100010,
@@ -869,9 +890,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10011100,
-
-    // Flashing 'V'
     0b10000000,
+
+    // Flashing 'V at 0x02B0'
     0b10100010,
     0b10100010,
     0b10100010,
@@ -879,9 +900,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10010100,
     0b10001000,
-
-    // Flashing 'W'
     0b10000000,
+
+    // Flashing 'W at 0x02B8'
     0b10100010,
     0b10100010,
     0b10100010,
@@ -889,9 +910,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10101010,
     0b10110110,
     0b10100010,
-
-    // Flashing 'X'
     0b10000000,
+
+    // Flashing 'X at 0x02C0'
     0b10100010,
     0b10100010,
     0b10010100,
@@ -899,9 +920,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010100,
     0b10100010,
     0b10100010,
-
-    // Flashing 'Y'
     0b10000000,
+
+    // Flashing 'Y at 0x02C8'
     0b10100010,
     0b10100010,
     0b10010100,
@@ -909,9 +930,8 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10001000,
-
-    // Flashing 'Z'
     0b10000000,
+    // Flashing 'Z at 0x02D0'
     0b10111110,
     0b10000010,
     0b10000100,
@@ -919,9 +939,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10100000,
     0b10111110,
-
-    // Flashing '['
     0b10000000,
+
+    // Flashing '[ at 0x02D8'
     0b10111110,
     0b10110000,
     0b10110000,
@@ -929,9 +949,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10110000,
     0b10110000,
     0b10111110,
-
-    // Flashing '\'
     0b10000000,
+
+    // Flashing '\ at 0x02E0'
     0b10000000,
     0b10100000,
     0b10010000,
@@ -939,9 +959,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000100,
     0b10000010,
     0b10000000,
-
-    // Flashing ']'
     0b10000000,
+
+    // Flashing '] at 0x02E8'
     0b10111110,
     0b10000110,
     0b10000110,
@@ -949,9 +969,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000110,
     0b10000110,
     0b10111110,
-
-    // Flashing '^'
     0b10000000,
+
+    // Flashing '^ at 0x02F0'
     0b10000000,
     0b10000000,
     0b10001000,
@@ -959,39 +979,39 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10000000,
     0b10000000,
-
-    // Flashing '_'
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10111110,
-
-    // Flashing ' '
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
     0b10000000,
 
-    // Flashing '!'
+    // Flashing '_ at 0x02F8'
     0b10000000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
     0b10000000,
-    0b10001000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b11111111,
 
-    // Flashing '"'
+    // Flashing '  at 0x0300'
     0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '! at 0x0308'
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '" at 0x0310'
     0b10010100,
     0b10010100,
     0b10000000,
@@ -999,19 +1019,19 @@ const uint8_t default_character_rom[256*8] = {
     0b10000000,
     0b10000000,
     0b10000000,
-
-    // Flashing '#'
     0b10000000,
+
+    // Flashing '# at 0x0318'
     0b10010100,
-    0b10010100,
-    0b10111110,
     0b10010100,
     0b10111110,
     0b10010100,
+    0b10111110,
     0b10010100,
-
-    // Flashing '$'
+    0b10010100,
     0b10000000,
+
+    // Flashing '$ at 0x0320'
     0b10001000,
     0b10011110,
     0b10101000,
@@ -1019,9 +1039,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001010,
     0b10111100,
     0b10001000,
-
-    // Flashing '%'
     0b10000000,
+
+    // Flashing '% at 0x0328'
     0b10110000,
     0b10110010,
     0b10000100,
@@ -1029,9 +1049,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10100110,
     0b10000110,
-
-    // Flashing '&'
     0b10000000,
+
+    // Flashing '& at 0x0330'
     0b10010000,
     0b10101000,
     0b10101000,
@@ -1039,19 +1059,19 @@ const uint8_t default_character_rom[256*8] = {
     0b10101010,
     0b10100100,
     0b10011010,
-
-    // Flashing '''
-    0b10000000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10000000,
-    0b10000000,
-    0b10000000,
     0b10000000,
 
-    // Flashing '('
+    // Flashing '' at 0x0338'
+    0b10001000,
+    0b10001000,
+    0b10001000,
     0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '( at 0x0340'
     0b10001000,
     0b10010000,
     0b10100000,
@@ -1059,9 +1079,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100000,
     0b10010000,
     0b10001000,
-
-    // Flashing ')'
     0b10000000,
+
+    // Flashing ') at 0x0348'
     0b10001000,
     0b10000100,
     0b10000010,
@@ -1069,9 +1089,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10000100,
     0b10001000,
-
-    // Flashing '*'
     0b10000000,
+
+    // Flashing '* at 0x0350'
     0b10001000,
     0b10101010,
     0b10011100,
@@ -1079,9 +1099,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10011100,
     0b10101010,
     0b10001000,
-
-    // Flashing '+'
     0b10000000,
+
+    // Flashing '+ at 0x0358'
     0b10000000,
     0b10001000,
     0b10001000,
@@ -1089,9 +1109,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10000000,
-
-    // Flashing ','
     0b10000000,
+
+    // Flashing ', at 0x0360'
     0b10000000,
     0b10000000,
     0b10000000,
@@ -1099,9 +1119,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10010000,
-
-    // Flashing '-'
     0b10000000,
+
+    // Flashing '- at 0x0368'
     0b10000000,
     0b10000000,
     0b10000000,
@@ -1109,9 +1129,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000000,
     0b10000000,
     0b10000000,
-
-    // Flashing '.'
     0b10000000,
+
+    // Flashing '. at 0x0370'
     0b10000000,
     0b10000000,
     0b10000000,
@@ -1119,9 +1139,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000000,
     0b10000000,
     0b10001000,
-
-    // Flashing '/'
     0b10000000,
+
+    // Flashing '/ at 0x0378'
     0b10000000,
     0b10000010,
     0b10000100,
@@ -1129,9 +1149,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10100000,
     0b10000000,
-
-    // Flashing '0'
     0b10000000,
+
+    // Flashing '0 at 0x0380'
     0b10011100,
     0b10100010,
     0b10100110,
@@ -1139,9 +1159,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10110010,
     0b10100010,
     0b10011100,
-
-    // Flashing '1'
     0b10000000,
+
+    // Flashing '1 at 0x0388'
     0b10001000,
     0b10011000,
     0b10001000,
@@ -1149,9 +1169,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10011100,
-
-    // Flashing '2'
     0b10000000,
+
+    // Flashing '2 at 0x0390'
     0b10011100,
     0b10100010,
     0b10000010,
@@ -1159,9 +1179,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10100000,
     0b10111110,
-
-    // Flashing '3'
     0b10000000,
+
+    // Flashing '3 at 0x0398'
     0b10111110,
     0b10000010,
     0b10000100,
@@ -1169,9 +1189,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10100010,
     0b10011110,
-
-    // Flashing '4'
     0b10000000,
+
+    // Flashing '4 at 0x03A0'
     0b10000100,
     0b10001100,
     0b10010100,
@@ -1179,9 +1199,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10111110,
     0b10000100,
     0b10000100,
-
-    // Flashing '5'
     0b10000000,
+
+    // Flashing '5 at 0x03A8'
     0b10111110,
     0b10100000,
     0b10111100,
@@ -1189,9 +1209,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10100010,
     0b10011100,
-
-    // Flashing '6'
     0b10000000,
+
+    // Flashing '6 at 0x03B0'
     0b10001110,
     0b10010000,
     0b10100000,
@@ -1199,9 +1219,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10100010,
     0b10100010,
     0b10011100,
-
-    // Flashing '7'
     0b10000000,
+
+    // Flashing '7 at 0x03B8'
     0b10111110,
     0b10000010,
     0b10000100,
@@ -1209,19 +1229,19 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10010000,
     0b10010000,
-
-    // Flashing '8'
     0b10000000,
-    0b10011100,
-    0b10100010,
-    0b10100010,
-    0b10011100,
-    0b10100010,
-    0b10100010,
-    0b10011100,
 
-    // Flashing '9'
+    // Flashing '8 at 0x03C0'
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
     0b10000000,
+
+    // Flashing '9 at 0x03C8'
     0b10011100,
     0b10100010,
     0b10100010,
@@ -1229,9 +1249,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000010,
     0b10000100,
     0b10111000,
-
-    // Flashing ':'
     0b10000000,
+
+    // Flashing ': at 0x03D0'
     0b10000000,
     0b10000000,
     0b10001000,
@@ -1239,9 +1259,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10000000,
     0b10000000,
-
-    // Flashing ';'
     0b10000000,
+
+    // Flashing '; at 0x03D8'
     0b10000000,
     0b10000000,
     0b10001000,
@@ -1249,9 +1269,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10001000,
     0b10010000,
-
-    // Flashing '<'
     0b10000000,
+
+    // Flashing '< at 0x03E0'
     0b10000100,
     0b10001000,
     0b10010000,
@@ -1259,9 +1279,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10010000,
     0b10001000,
     0b10000100,
-
-    // Flashing '='
     0b10000000,
+
+    // Flashing '= at 0x03E8'
     0b10000000,
     0b10000000,
     0b10111110,
@@ -1269,9 +1289,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10111110,
     0b10000000,
     0b10000000,
-
-    // Flashing '>'
     0b10000000,
+
+    // Flashing '> at 0x03F0'
     0b10010000,
     0b10001000,
     0b10000100,
@@ -1279,9 +1299,9 @@ const uint8_t default_character_rom[256*8] = {
     0b10000100,
     0b10001000,
     0b10010000,
-
-    // Flashing '?'
     0b10000000,
+
+    // Flashing '? at 0x03F8'
     0b10011100,
     0b10100010,
     0b10000100,
@@ -1289,13 +1309,13 @@ const uint8_t default_character_rom[256*8] = {
     0b10001000,
     0b10000000,
     0b10001000,
+    0b10000000,
 
-    //
-    // Normal Set (128-255)
-    //
+    ////////////////////////////
+    // Normal Set (0x80-0xFF) //
+    ////////////////////////////
 
-    // Normal '@'
-    0b00000000,
+    // Normal '@ at 0x0400'
     0b00011100,
     0b00100010,
     0b00101010,
@@ -1303,9 +1323,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101100,
     0b00100000,
     0b00011110,
-
-    // Normal 'A'
     0b00000000,
+
+    // Normal 'A at 0x0408'
     0b00001000,
     0b00010100,
     0b00100010,
@@ -1313,19 +1333,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00100010,
     0b00100010,
-
-    // Normal 'B'
     0b00000000,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
 
-    // Normal 'C'
+    // Normal 'B at 0x0410'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
     0b00000000,
+
+    // Normal 'C at 0x0418'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -1333,9 +1353,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100010,
     0b00011100,
-
-    // Normal 'D'
     0b00000000,
+
+    // Normal 'D at 0x0420'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -1343,9 +1363,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00111100,
-
-    // Normal 'E'
     0b00000000,
+
+    // Normal 'E at 0x0428'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -1353,9 +1373,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Normal 'F'
     0b00000000,
+
+    // Normal 'F at 0x0430'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -1363,9 +1383,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Normal 'G'
     0b00000000,
+
+    // Normal 'G at 0x0438'
     0b00011110,
     0b00100000,
     0b00100000,
@@ -1373,9 +1393,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00011110,
-
-    // Normal 'H'
     0b00000000,
+
+    // Normal 'H at 0x0440'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1383,9 +1403,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Normal 'I'
     0b00000000,
+
+    // Normal 'I at 0x0448'
     0b00011100,
     0b00001000,
     0b00001000,
@@ -1393,9 +1413,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00011100,
-
-    // Normal 'J'
     0b00000000,
+
+    // Normal 'J at 0x0450'
     0b00000010,
     0b00000010,
     0b00000010,
@@ -1403,9 +1423,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Normal 'K'
     0b00000000,
+
+    // Normal 'K at 0x0458'
     0b00100010,
     0b00100100,
     0b00101000,
@@ -1413,9 +1433,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Normal 'L'
     0b00000000,
+
+    // Normal 'L at 0x0460'
     0b00100000,
     0b00100000,
     0b00100000,
@@ -1423,9 +1443,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Normal 'M'
     0b00000000,
+
+    // Normal 'M at 0x0468'
     0b00100010,
     0b00110110,
     0b00101010,
@@ -1433,9 +1453,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Normal 'N'
     0b00000000,
+
+    // Normal 'N at 0x0470'
     0b00100010,
     0b00100010,
     0b00110010,
@@ -1443,9 +1463,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00100010,
-
-    // Normal 'O'
     0b00000000,
+
+    // Normal 'O at 0x0478'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -1453,9 +1473,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Normal 'P'
     0b00000000,
+
+    // Normal 'P at 0x0480'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -1463,9 +1483,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Normal 'Q'
     0b00000000,
+
+    // Normal 'Q at 0x0488'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -1473,9 +1493,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00100100,
     0b00011010,
-
-    // Normal 'R'
     0b00000000,
+
+    // Normal 'R at 0x0490'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -1483,9 +1503,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Normal 'S'
     0b00000000,
+
+    // Normal 'S at 0x0498'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -1493,9 +1513,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Normal 'T'
     0b00000000,
+
+    // Normal 'T at 0x04A0'
     0b00111110,
     0b00001000,
     0b00001000,
@@ -1503,9 +1523,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Normal 'U'
     0b00000000,
+
+    // Normal 'U at 0x04A8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1513,9 +1533,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Normal 'V'
     0b00000000,
+
+    // Normal 'V at 0x04B0'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1523,9 +1543,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00010100,
     0b00001000,
-
-    // Normal 'W'
     0b00000000,
+
+    // Normal 'W at 0x04B8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1533,9 +1553,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00110110,
     0b00100010,
-
-    // Normal 'X'
     0b00000000,
+
+    // Normal 'X at 0x04C0'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -1543,9 +1563,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010100,
     0b00100010,
     0b00100010,
-
-    // Normal 'Y'
     0b00000000,
+
+    // Normal 'Y at 0x04C8'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -1553,9 +1573,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Normal 'Z'
     0b00000000,
+
+    // Normal 'Z at 0x04D0'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -1563,9 +1583,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00111110,
-
-    // Normal '['
     0b00000000,
+
+    // Normal '[ at 0x04D8'
     0b00111110,
     0b00110000,
     0b00110000,
@@ -1573,9 +1593,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00110000,
     0b00110000,
     0b00111110,
-
-    // Normal '\'
     0b00000000,
+
+    // Normal '\ at 0x04E0'
     0b00000000,
     0b00100000,
     0b00010000,
@@ -1583,9 +1603,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000100,
     0b00000010,
     0b00000000,
-
-    // Normal ']'
     0b00000000,
+
+    // Normal '] at 0x04E8'
     0b00111110,
     0b00000110,
     0b00000110,
@@ -1593,9 +1613,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000110,
     0b00000110,
     0b00111110,
-
-    // Normal '^'
     0b00000000,
+
+    // Normal '^ at 0x04F0'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -1603,39 +1623,39 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00000000,
     0b00000000,
-
-    // Normal '_'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-
-    // Normal ' '
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00000000,
 
-    // Normal '!'
+    // Normal '_ at 0x04F8'
     0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
     0b00000000,
-    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
 
-    // Normal '"'
+    // Normal '  at 0x0500'
     0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '! at 0x0508'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '" at 0x0510'
     0b00010100,
     0b00010100,
     0b00000000,
@@ -1643,19 +1663,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-
-    // Normal '#'
     0b00000000,
+
+    // Normal '# at 0x0518'
     0b00010100,
-    0b00010100,
-    0b00111110,
     0b00010100,
     0b00111110,
     0b00010100,
+    0b00111110,
     0b00010100,
-
-    // Normal '$'
+    0b00010100,
     0b00000000,
+
+    // Normal '$ at 0x0520'
     0b00001000,
     0b00011110,
     0b00101000,
@@ -1663,9 +1683,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001010,
     0b00111100,
     0b00001000,
-
-    // Normal '%'
     0b00000000,
+
+    // Normal '% at 0x0528'
     0b00110000,
     0b00110010,
     0b00000100,
@@ -1673,9 +1693,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100110,
     0b00000110,
-
-    // Normal '&'
     0b00000000,
+
+    // Normal '& at 0x0530'
     0b00010000,
     0b00101000,
     0b00101000,
@@ -1683,19 +1703,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00100100,
     0b00011010,
-
-    // Normal '''
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00000000,
 
-    // Normal '('
+    // Normal '' at 0x0538'
+    0b00001000,
+    0b00001000,
+    0b00001000,
     0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '( at 0x0540'
     0b00001000,
     0b00010000,
     0b00100000,
@@ -1703,9 +1723,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00010000,
     0b00001000,
-
-    // Normal ')'
     0b00000000,
+
+    // Normal ') at 0x0548'
     0b00001000,
     0b00000100,
     0b00000010,
@@ -1713,9 +1733,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00000100,
     0b00001000,
-
-    // Normal '*'
     0b00000000,
+
+    // Normal '* at 0x0550'
     0b00001000,
     0b00101010,
     0b00011100,
@@ -1723,9 +1743,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00011100,
     0b00101010,
     0b00001000,
-
-    // Normal '+'
     0b00000000,
+
+    // Normal '+ at 0x0558'
     0b00000000,
     0b00001000,
     0b00001000,
@@ -1733,9 +1753,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00000000,
-
-    // Normal ','
     0b00000000,
+
+    // Normal ', at 0x0560'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1743,9 +1763,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00010000,
-
-    // Normal '-'
     0b00000000,
+
+    // Normal '- at 0x0568'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1753,9 +1773,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-
-    // Normal '.'
     0b00000000,
+
+    // Normal '. at 0x0570'
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1763,9 +1783,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000000,
     0b00000000,
     0b00001000,
-
-    // Normal '/'
     0b00000000,
+
+    // Normal '/ at 0x0578'
     0b00000000,
     0b00000010,
     0b00000100,
@@ -1773,9 +1793,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00000000,
-
-    // Normal '0'
     0b00000000,
+
+    // Normal '0 at 0x0580'
     0b00011100,
     0b00100010,
     0b00100110,
@@ -1783,9 +1803,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00110010,
     0b00100010,
     0b00011100,
-
-    // Normal '1'
     0b00000000,
+
+    // Normal '1 at 0x0588'
     0b00001000,
     0b00011000,
     0b00001000,
@@ -1793,9 +1813,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00011100,
-
-    // Normal '2'
     0b00000000,
+
+    // Normal '2 at 0x0590'
     0b00011100,
     0b00100010,
     0b00000010,
@@ -1803,9 +1823,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00111110,
-
-    // Normal '3'
     0b00000000,
+
+    // Normal '3 at 0x0598'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -1813,9 +1833,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011110,
-
-    // Normal '4'
     0b00000000,
+
+    // Normal '4 at 0x05A0'
     0b00000100,
     0b00001100,
     0b00010100,
@@ -1823,9 +1843,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00000100,
     0b00000100,
-
-    // Normal '5'
     0b00000000,
+
+    // Normal '5 at 0x05A8'
     0b00111110,
     0b00100000,
     0b00111100,
@@ -1833,9 +1853,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Normal '6'
     0b00000000,
+
+    // Normal '6 at 0x05B0'
     0b00001110,
     0b00010000,
     0b00100000,
@@ -1843,9 +1863,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Normal '7'
     0b00000000,
+
+    // Normal '7 at 0x05B8'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -1853,19 +1873,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00010000,
     0b00010000,
-
-    // Normal '8'
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
-    // Normal '9'
+    // Normal '8 at 0x05C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
+
+    // Normal '9 at 0x05C8'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -1873,9 +1893,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00000100,
     0b00111000,
-
-    // Normal ':'
     0b00000000,
+
+    // Normal ': at 0x05D0'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -1883,9 +1903,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00000000,
     0b00000000,
-
-    // Normal ';'
     0b00000000,
+
+    // Normal '; at 0x05D8'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -1893,9 +1913,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00010000,
-
-    // Normal '<'
     0b00000000,
+
+    // Normal '< at 0x05E0'
     0b00000100,
     0b00001000,
     0b00010000,
@@ -1903,9 +1923,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00001000,
     0b00000100,
-
-    // Normal '='
     0b00000000,
+
+    // Normal '= at 0x05E8'
     0b00000000,
     0b00000000,
     0b00111110,
@@ -1913,9 +1933,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00000000,
     0b00000000,
-
-    // Normal '>'
     0b00000000,
+
+    // Normal '> at 0x05F0'
     0b00010000,
     0b00001000,
     0b00000100,
@@ -1923,9 +1943,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000100,
     0b00001000,
     0b00010000,
-
-    // Normal '?'
     0b00000000,
+
+    // Normal '? at 0x05F8'
     0b00011100,
     0b00100010,
     0b00000100,
@@ -1933,9 +1953,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00000000,
     0b00001000,
-
-    // Normal '@'
     0b00000000,
+
+    // Normal '@ at 0x0600'
     0b00011100,
     0b00100010,
     0b00101010,
@@ -1943,9 +1963,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101100,
     0b00100000,
     0b00011110,
-
-    // Normal 'A'
     0b00000000,
+
+    // Normal 'A at 0x0608'
     0b00001000,
     0b00010100,
     0b00100010,
@@ -1953,19 +1973,19 @@ const uint8_t default_character_rom[256*8] = {
     0b00111110,
     0b00100010,
     0b00100010,
-
-    // Normal 'B'
     0b00000000,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00111100,
 
-    // Normal 'C'
+    // Normal 'B at 0x0610'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
     0b00000000,
+
+    // Normal 'C at 0x0618'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -1973,9 +1993,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100010,
     0b00011100,
-
-    // Normal 'D'
     0b00000000,
+
+    // Normal 'D at 0x0620'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -1983,9 +2003,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00111100,
-
-    // Normal 'E'
     0b00000000,
+
+    // Normal 'E at 0x0628'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -1993,9 +2013,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Normal 'F'
     0b00000000,
+
+    // Normal 'F at 0x0630'
     0b00111110,
     0b00100000,
     0b00100000,
@@ -2003,9 +2023,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Normal 'G'
     0b00000000,
+
+    // Normal 'G at 0x0638'
     0b00011110,
     0b00100000,
     0b00100000,
@@ -2013,9 +2033,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00011110,
-
-    // Normal 'H'
     0b00000000,
+
+    // Normal 'H at 0x0640'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2023,9 +2043,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Normal 'I'
     0b00000000,
+
+    // Normal 'I at 0x0648'
     0b00011100,
     0b00001000,
     0b00001000,
@@ -2033,9 +2053,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00011100,
-
-    // Normal 'J'
     0b00000000,
+
+    // Normal 'J at 0x0650'
     0b00000010,
     0b00000010,
     0b00000010,
@@ -2043,9 +2063,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Normal 'K'
     0b00000000,
+
+    // Normal 'K at 0x0658'
     0b00100010,
     0b00100100,
     0b00101000,
@@ -2053,9 +2073,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Normal 'L'
     0b00000000,
+
+    // Normal 'L at 0x0660'
     0b00100000,
     0b00100000,
     0b00100000,
@@ -2063,9 +2083,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00111110,
-
-    // Normal 'M'
     0b00000000,
+
+    // Normal 'M at 0x0668'
     0b00100010,
     0b00110110,
     0b00101010,
@@ -2073,9 +2093,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00100010,
-
-    // Normal 'N'
     0b00000000,
+
+    // Normal 'N at 0x0670'
     0b00100010,
     0b00100010,
     0b00110010,
@@ -2083,9 +2103,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100110,
     0b00100010,
     0b00100010,
-
-    // Normal 'O'
     0b00000000,
+
+    // Normal 'O at 0x0678'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -2093,9 +2113,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Normal 'P'
     0b00000000,
+
+    // Normal 'P at 0x0680'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -2103,9 +2123,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100000,
     0b00100000,
     0b00100000,
-
-    // Normal 'Q'
     0b00000000,
+
+    // Normal 'Q at 0x0688'
     0b00011100,
     0b00100010,
     0b00100010,
@@ -2113,9 +2133,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00100100,
     0b00011010,
-
-    // Normal 'R'
     0b00000000,
+
+    // Normal 'R at 0x0690'
     0b00111100,
     0b00100010,
     0b00100010,
@@ -2123,9 +2143,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101000,
     0b00100100,
     0b00100010,
-
-    // Normal 'S'
     0b00000000,
+
+    // Normal 'S at 0x0698'
     0b00011100,
     0b00100010,
     0b00100000,
@@ -2133,9 +2153,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000010,
     0b00100010,
     0b00011100,
-
-    // Normal 'T'
     0b00000000,
+
+    // Normal 'T at 0x06A0'
     0b00111110,
     0b00001000,
     0b00001000,
@@ -2143,9 +2163,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Normal 'U'
     0b00000000,
+
+    // Normal 'U at 0x06A8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2153,9 +2173,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00100010,
     0b00011100,
-
-    // Normal 'V'
     0b00000000,
+
+    // Normal 'V at 0x06B0'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2163,9 +2183,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00010100,
     0b00001000,
-
-    // Normal 'W'
     0b00000000,
+
+    // Normal 'W at 0x06B8'
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2173,9 +2193,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00101010,
     0b00110110,
     0b00100010,
-
-    // Normal 'X'
     0b00000000,
+
+    // Normal 'X at 0x06C0'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -2183,9 +2203,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010100,
     0b00100010,
     0b00100010,
-
-    // Normal 'Y'
     0b00000000,
+
+    // Normal 'Y at 0x06C8'
     0b00100010,
     0b00100010,
     0b00010100,
@@ -2193,9 +2213,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00001000,
     0b00001000,
     0b00001000,
-
-    // Normal 'Z'
     0b00000000,
+
+    // Normal 'Z at 0x06D0'
     0b00111110,
     0b00000010,
     0b00000100,
@@ -2203,9 +2223,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00010000,
     0b00100000,
     0b00111110,
-
-    // Normal '['
     0b00000000,
+
+    // Normal '[ at 0x06D8'
     0b00111110,
     0b00110000,
     0b00110000,
@@ -2213,9 +2233,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00110000,
     0b00110000,
     0b00111110,
-
-    // Normal '\'
     0b00000000,
+
+    // Normal '\ at 0x06E0'
     0b00000000,
     0b00100000,
     0b00010000,
@@ -2223,9 +2243,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000100,
     0b00000010,
     0b00000000,
-
-    // Normal ']'
     0b00000000,
+
+    // Normal '] at 0x06E8'
     0b00111110,
     0b00000110,
     0b00000110,
@@ -2233,9 +2253,9 @@ const uint8_t default_character_rom[256*8] = {
     0b00000110,
     0b00000110,
     0b00111110,
-
-    // Normal '^'
     0b00000000,
+
+    // Normal '^ at 0x06F0'
     0b00000000,
     0b00000000,
     0b00001000,
@@ -2243,334 +2263,5495 @@ const uint8_t default_character_rom[256*8] = {
     0b00100010,
     0b00000000,
     0b00000000,
-
-    // Normal '_'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-
-    // Normal ' '
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00000000,
 
-    // Normal '!'
+    // Normal '_ at 0x06F8'
     0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
     0b00000000,
-    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
 
-    // Normal '"'
-    0b00000000,
-    0b00010100,
-    0b00010100,
+    //! Lower case now
+    // Normal '` at 0x0700'
+    0b00010000,
+    0b00001000,
+    0b00000100,
     0b00000000,
     0b00000000,
     0b00000000,
     0b00000000,
     0b00000000,
 
-    // Normal '#'
+    // Normal 'a at 0x0708'
     0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00010100,
-
-    // Normal '$'
     0b00000000,
-    0b00001000,
+    0b00011100,
+    0b00000010,
     0b00011110,
-    0b00101000,
-    0b00011100,
-    0b00001010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'b at 0x0710'
+    0b00100000,
+    0b00100000,
     0b00111100,
-    0b00001000,
-
-    // Normal '%'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
     0b00000000,
-    0b00110000,
-    0b00110010,
+
+    // Normal 'c at 0x0718'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'd at 0x0720'
+    0b00000010,
+    0b00000010,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'e at 0x0728'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00111110,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'f at 0x0730'
+    0b00001100,
+    0b00010010,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Normal 'g at 0x0738'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00011100,
+
+    // Normal 'h at 0x0740'
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'i at 0x0748'
+    0b00001000,
+    0b00000000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'j at 0x0750'
     0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100110,
-    0b00000110,
-
-    // Normal '&'
     0b00000000,
-    0b00010000,
-    0b00101000,
-    0b00101000,
-    0b00010000,
-    0b00101010,
+    0b00001100,
+    0b00000100,
+    0b00000100,
+    0b00000100,
     0b00100100,
-    0b00011010,
+    0b00011000,
 
-    // Normal '''
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-
-    // Normal '('
-    0b00000000,
-    0b00001000,
-    0b00010000,
+    // Normal 'k at 0x0758'
     0b00100000,
     0b00100000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-
-    // Normal ')'
-    0b00000000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000010,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-
-    // Normal '*'
-    0b00000000,
-    0b00001000,
-    0b00101010,
-    0b00011100,
-    0b00001000,
-    0b00011100,
-    0b00101010,
-    0b00001000,
-
-    // Normal '+'
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00111110,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-
-    // Normal ','
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00010000,
-
-    // Normal '-'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-
-    // Normal '.'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-
-    // Normal '/'
-    0b00000000,
-    0b00000000,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00000000,
-
-    // Normal '0'
-    0b00000000,
-    0b00011100,
     0b00100010,
-    0b00100110,
-    0b00101010,
-    0b00110010,
+    0b00100100,
+    0b00111000,
+    0b00100100,
     0b00100010,
-    0b00011100,
-
-    // Normal '1'
     0b00000000,
-    0b00001000,
+
+    // Normal 'l at 0x0760'
     0b00011000,
     0b00001000,
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00001000,
     0b00011100,
+    0b00000000,
 
-    // Normal '2'
+    // Normal 'm at 0x0768'
+    0b00000000,
+    0b00000000,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'n at 0x0770'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'o at 0x0778'
+    0b00000000,
     0b00000000,
     0b00011100,
     0b00100010,
-    0b00000010,
-    0b00001100,
-    0b00010000,
-    0b00100000,
-    0b00111110,
-
-    // Normal '3'
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00111110,
-    0b00000010,
-    0b00000100,
-    0b00001100,
-    0b00000010,
+
+    // Normal 'p at 0x0780'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+
+    // Normal 'q at 0x0788'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100010,
     0b00100010,
     0b00011110,
+    0b00000010,
+    0b00000010,
 
-    // Normal '4'
+    // Normal 'r at 0x0790'
     0b00000000,
-    0b00000100,
+    0b00000000,
+    0b00101110,
+    0b00110000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 's at 0x0798'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 't at 0x07A0'
+    0b00010000,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010010,
     0b00001100,
+    0b00000000,
+
+    // Normal 'u at 0x07A8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100110,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'v at 0x07B0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
     0b00010100,
-    0b00100100,
-    0b00111110,
-    0b00000100,
-    0b00000100,
-
-    // Normal '5'
-    0b00000000,
-    0b00111110,
-    0b00100000,
-    0b00111100,
-    0b00000010,
-    0b00000010,
-    0b00100010,
-    0b00011100,
-
-    // Normal '6'
-    0b00000000,
-    0b00001110,
-    0b00010000,
-    0b00100000,
-    0b00111100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
-
-    // Normal '7'
-    0b00000000,
-    0b00111110,
-    0b00000010,
-    0b00000100,
     0b00001000,
-    0b00010000,
-    0b00010000,
-    0b00010000,
-
-    // Normal '8'
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
-    // Normal '9'
+    // Normal 'w at 0x07B8'
     0b00000000,
-    0b00011100,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00000000,
+
+    // Normal 'x at 0x07C0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'y at 0x07C8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
     0b00100010,
     0b00100010,
     0b00011110,
     0b00000010,
-    0b00000100,
-    0b00111000,
-
-    // Normal ':'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
-    0b00000000,
-
-    // Normal ';'
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00010000,
-
-    // Normal '<'
-    0b00000000,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-
-    // Normal '='
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-    0b00000000,
-    0b00111110,
-    0b00000000,
-    0b00000000,
-
-    // Normal '>'
-    0b00000000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-
-    // Normal '?'
-    0b00000000,
     0b00011100,
-    0b00100010,
+
+    // Normal 'z at 0x07D0'
+    0b00000000,
+    0b00000000,
+    0b00111110,
     0b00000100,
     0b00001000,
-    0b00001000,
+    0b00010000,
+    0b00111110,
     0b00000000,
+
+    // Normal '{ at 0x07D8'
+    0b00001110,
+    0b00011000,
+    0b00011000,
+    0b00110000,
+    0b00011000,
+    0b00011000,
+    0b00001110,
+    0b00000000,
+
+    // Normal '| at 0x07E0'
     0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+
+    // Normal '} at 0x07E8'
+    0b00111000,
+    0b00001100,
+    0b00001100,
+    0b00000110,
+    0b00001100,
+    0b00001100,
+    0b00111000,
+    0b00000000,
+
+    // Normal '~ at 0x07F0'
+    0b00011010,
+    0b00101100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal 'check pattern  at 0x07F8''
+    0b00000000,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00000000,
+    0b00000000,
 };
+
+const uint8_t alternate_character_rom[256 * 8] = {
+
+    /////////////////////////////
+    // Inverse Set (0x00-0x3F) //
+    ////////////////////////////
+
+    // Inverse '@ at 0x0000'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Inverse 'A at 0x0008'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'B at 0x0010'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Inverse 'C at 0x0018'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'D at 0x0020'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Inverse 'E at 0x0028'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse 'F at 0x0030'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Inverse 'G at 0x0038'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverse 'H at 0x0040'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'I at 0x0048'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'J at 0x0050'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'K at 0x0058'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'L at 0x0060'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse 'M at 0x0068'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'N at 0x0070'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'O at 0x0078'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'P at 0x0080'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Inverse 'Q at 0x0088'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Inverse 'R at 0x0090'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'S at 0x0098'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'T at 0x00A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'U at 0x00A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'V at 0x00B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'W at 0x00B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'X at 0x00C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'Y at 0x00C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'Z at 0x00D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '[ at 0x00D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '\ at 0x00E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '] at 0x00E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '^ at 0x00F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '_ at 0x00F8'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // Inverse '  at 0x0100'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '! at 0x0108'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '" at 0x0110'
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '# at 0x0118'
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // Inverse '$ at 0x0120'
+    0b00001000,
+    0b00011110,
+    0b00101000,
+    0b00011100,
+    0b00001010,
+    0b00111100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '% at 0x0128'
+    0b00110000,
+    0b00110010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100110,
+    0b00000110,
+    0b00000000,
+
+    // Inverse '& at 0x0130'
+    0b00010000,
+    0b00101000,
+    0b00101000,
+    0b00010000,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Inverse '' at 0x0138'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '( at 0x0140'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse ') at 0x0148'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '* at 0x0150'
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '+ at 0x0158'
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse ', at 0x0160'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '- at 0x0168'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '. at 0x0170'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '/ at 0x0178'
+    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '0 at 0x0180'
+    0b00011100,
+    0b00100010,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '1 at 0x0188'
+    0b00001000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '2 at 0x0190'
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00001100,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '3 at 0x0198'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001100,
+    0b00000010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverse '4 at 0x01A0'
+    0b00000100,
+    0b00001100,
+    0b00010100,
+    0b00100100,
+    0b00111110,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    // Inverse '5 at 0x01A8'
+    0b00111110,
+    0b00100000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '6 at 0x01B0'
+    0b00001110,
+    0b00010000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '7 at 0x01B8'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '8 at 0x01C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '9 at 0x01C8'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000100,
+    0b00111000,
+    0b00000000,
+
+    // Inverse ': at 0x01D0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '; at 0x01D8'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '< at 0x01E0'
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+
+    // Inverse '= at 0x01E8'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '> at 0x01F0'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '? at 0x01F8'
+    0b00011100,
+    0b00100010,
+    0b00000100,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    ///////////////////////////////
+    // MouseText Set (0x40-0x5F) //
+    ///////////////////////////////
+
+    // MouseText 'full apple at 0x0200'
+    0b00000100,
+    0b00001000,
+    0b00110110,
+    0b01111111,
+    0b01111110,
+    0b01111110,
+    0b00111111,
+    0b00110110,
+
+    // MouseText 'empty apple at 0x0208'
+    0b00000100,
+    0b00001000,
+    0b00110110,
+    0b01000001,
+    0b01000010,
+    0b01000010,
+    0b00101001,
+    0b00110110,
+
+    // MouseText 'm_pointer at 0x0210'
+    0b00000000,
+    0b00000000,
+    0b00100000,
+    0b00110000,
+    0b00111000,
+    0b00111100,
+    0b00110110,
+    0b00100001,
+
+    // MouseText 'hour glass at 0x0218'
+    0b01111111,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00010100,
+    0b00101010,
+    0b01111111,
+
+    // MouseText 'Check at 0x0220'
+    0b00000000,
+    0b00000001,
+    0b00000010,
+    0b01000100,
+    0b00101000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // MouseText 'Inv Check at 0x0228'
+    0b01111111,
+    0b01111110,
+    0b01111101,
+    0b00011011,
+    0b01010111,
+    0b01101111,
+    0b01101111,
+    0b01111111,
+
+    // MouseText 'RM Left at 0x0230'
+    0b00000111,
+    0b00000011,
+    0b00111111,
+    0b01000110,
+    0b01001111,
+    0b00000110,
+    0b01111110,
+    0b00100000,
+
+    // MouseText 'RM Right at 0x0238'
+    0b00000000,
+    0b00001100,
+    0b01110000,
+    0b00000000,
+    0b01110000,
+    0b00011000,
+    0b00001000,
+    0b00000111,
+
+    // MouseText 'left Arrow at 0x0240'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b01111111,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // MouseText '3 dots at 0x0248'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00101010,
+
+    // MouseText 'Down Arrow at 0x0250'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b01001001,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+
+    // MouseText 'Up Arrow at 0x0258'
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b01001001,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+
+    // MouseText 'Top Bars at 0x0260'
+    0b01111111,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // MouseText 'Enter Arror at 0x0268'
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00010001,
+    0b00110001,
+    0b01111111,
+    0b00110000,
+    0b00010000,
+
+    // MouseText 'Square at 0x0270'
+    0b01111110,
+    0b01111110,
+    0b01111110,
+    0b01111110,
+    0b01111110,
+    0b01111110,
+    0b01111110,
+    0b01111110,
+
+    // MouseText 'strange arrow left at 0x0278'
+    0b01100100,
+    0b00001100,
+    0b00011100,
+    0b00111111,
+    0b00011100,
+    0b00001100,
+    0b00000100,
+    0b01111011,
+
+    // MouseText 'strange arrow rigth at 0x0280'
+    0b00010011,
+    0b00011000,
+    0b00011100,
+    0b01111111,
+    0b00011100,
+    0b00011000,
+    0b00010000,
+    0b01101111,
+
+    // MouseText 'strange arrow down at 0x0288'
+    0b00001001,
+    0b00001001,
+    0b00001000,
+    0b01111111,
+    0b00111110,
+    0b00011100,
+    0b00001001,
+    0b00000001,
+
+    // MouseText 'strange arrow up at 0x0290'
+    0b00000001,
+    0b00001001,
+    0b00011100,
+    0b00111110,
+    0b01111111,
+    0b00001000,
+    0b00001001,
+    0b00001001,
+
+    // MouseText 'midel bar at 0x0298'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // MouseText 'botom left corner at 0x02A0'
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01111111,
+
+    // MouseText 'rigth arrow at 0x02A8'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b01111111,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // MouseText 'Check Patern 1 at 0x02B0'
+    0b00101010,
+    0b01010101,
+    0b00101010,
+    0b01010101,
+    0b00101010,
+    0b01010101,
+    0b00101010,
+    0b01010101,
+
+    // MouseText 'Check Patern 2 at 0x02B8'
+    0b01010101,
+    0b00101010,
+    0b01010101,
+    0b00101010,
+    0b01010101,
+    0b00101010,
+    0b01010101,
+    0b00101010,
+
+    // MouseText 'Left Folder Part at 0x02C0'
+    0b00000000,
+    0b00111110,
+    0b01000001,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01111111,
+    0b00000000,
+
+    // MouseText 'Rigth Folder Part at 0x02C8'
+    0b00000000,
+    0b00000000,
+    0b01111110,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b01111111,
+    0b00000000,
+
+    // MouseText 'Right Bar at 0x02D0'
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+
+    // MouseText 'Diamond at 0x02D8'
+    0b00001000,
+    0b00011100,
+    0b00111110,
+    0b01111111,
+    0b00111110,
+    0b00011100,
+    0b00001000,
+    0b00000000,
+
+    // MouseText 'Top and Bottom Bar at 0x02E0'
+    0b01111111,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // MouseText 'Cross at 0x02E8'
+    0b00010100,
+    0b00010100,
+    0b01110111,
+    0b00000000,
+    0b01110111,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // MouseText 'Box and dot at 0x02F0'
+    0b01111111,
+    0b00000001,
+    0b00000001,
+    0b00011001,
+    0b00011001,
+    0b00000001,
+    0b00000001,
+    0b01111111,
+
+    // MouseText 'Left Bar at 0x02F8'
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+    0b01000000,
+
+    //////////////////////////////
+    // Inverted Set (0x60-0x7F) //
+    //////////////////////////////
+
+    // Inverted '` at 0x0300'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverted 'a at 0x0308'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00000010,
+    0b00011110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverted 'b at 0x0310'
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Inverted 'c at 0x0318'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Inverted 'd at 0x0320'
+    0b00000010,
+    0b00000010,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverted 'e at 0x0328'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00111110,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Inverted 'f at 0x0330'
+    0b00001100,
+    0b00010010,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Inverted 'g at 0x0338'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00011100,
+
+    // Inverted 'h at 0x0340'
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverted 'i at 0x0348'
+    0b00001000,
+    0b00000000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverted 'j at 0x0350'
+    0b00000100,
+    0b00000000,
+    0b00001100,
+    0b00000100,
+    0b00000100,
+    0b00000100,
+    0b00100100,
+    0b00011000,
+
+    // Inverted 'k at 0x0358'
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00100100,
+    0b00111000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Inverted 'l at 0x0360'
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverted 'm at 0x0368'
+    0b00000000,
+    0b00000000,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00000000,
+
+    // Inverted 'n at 0x0370'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverted 'o at 0x0378'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverted 'p at 0x0380'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+
+    // Inverted 'q at 0x0388'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000010,
+
+    // Inverted 'r at 0x0390'
+    0b00000000,
+    0b00000000,
+    0b00101110,
+    0b00110000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Inverted 's at 0x0398'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00111100,
+    0b00000000,
+
+    // Inverted 't at 0x03A0'
+    0b00010000,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010010,
+    0b00001100,
+    0b00000000,
+
+    // Inverted 'u at 0x03A8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100110,
+    0b00011010,
+    0b00000000,
+
+    // Inverted 'v at 0x03B0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Inverted 'w at 0x03B8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00000000,
+
+    // Inverted 'x at 0x03C0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+
+    // Inverted 'y at 0x03C8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00011100,
+
+    // Inverted 'z at 0x03D0'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00111110,
+    0b00000000,
+
+    // Inverted '{ at 0x03D8'
+    0b00001110,
+    0b00011000,
+    0b00011000,
+    0b00110000,
+    0b00011000,
+    0b00011000,
+    0b00001110,
+    0b00000000,
+
+    // Inverted '| at 0x03E0'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+
+    // Inverted '} at 0x03E8'
+    0b00111000,
+    0b00001100,
+    0b00001100,
+    0b00000110,
+    0b00001100,
+    0b00001100,
+    0b00111000,
+    0b00000000,
+
+    // Inverted '~ at 0x03F0'
+    0b00011010,
+    0b00101100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverted 'check pattern at 0x03F8'
+    0b00000000,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00000000,
+    0b00000000,
+
+    ////////////////////////////
+    // Normal Set (0x80-0xDF) //
+    ////////////////////////////
+
+    // Normal '@ at 0x0400'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'A at 0x0408'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'B at 0x0410'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'C at 0x0418'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'D at 0x0420'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'E at 0x0428'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'F at 0x0430'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'G at 0x0438'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'H at 0x0440'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'I at 0x0448'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'J at 0x0450'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'K at 0x0458'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'L at 0x0460'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'M at 0x0468'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'N at 0x0470'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'O at 0x0478'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'P at 0x0480'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'Q at 0x0488'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'R at 0x0490'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'S at 0x0498'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'T at 0x04A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'U at 0x04A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'V at 0x04B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'W at 0x04B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'X at 0x04C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'Y at 0x04C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'Z at 0x04D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '[ at 0x04D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '\ at 0x04E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Normal '] at 0x04E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Normal '^ at 0x04F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '_ at 0x04F8'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // Normal '  at 0x0500'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '! at 0x0508'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '" at 0x0510'
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '# at 0x0518'
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // Normal '$ at 0x0520'
+    0b00001000,
+    0b00011110,
+    0b00101000,
+    0b00011100,
+    0b00001010,
+    0b00111100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '% at 0x0528'
+    0b00110000,
+    0b00110010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100110,
+    0b00000110,
+    0b00000000,
+
+    // Normal '& at 0x0530'
+    0b00010000,
+    0b00101000,
+    0b00101000,
+    0b00010000,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal '' at 0x0538'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '( at 0x0540'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // Normal ') at 0x0548'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '* at 0x0550'
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
+    0b00000000,
+
+    // Normal '+ at 0x0558'
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+
+    // Normal ', at 0x0560'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '- at 0x0568'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '. at 0x0570'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '/ at 0x0578'
+    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '0 at 0x0580'
+    0b00011100,
+    0b00100010,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '1 at 0x0588'
+    0b00001000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal '2 at 0x0590'
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00001100,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '3 at 0x0598'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001100,
+    0b00000010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal '4 at 0x05A0'
+    0b00000100,
+    0b00001100,
+    0b00010100,
+    0b00100100,
+    0b00111110,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    // Normal '5 at 0x05A8'
+    0b00111110,
+    0b00100000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '6 at 0x05B0'
+    0b00001110,
+    0b00010000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '7 at 0x05B8'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '8 at 0x05C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '9 at 0x05C8'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000100,
+    0b00111000,
+    0b00000000,
+
+    // Normal ': at 0x05D0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '; at 0x05D8'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '< at 0x05E0'
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+
+    // Normal '= at 0x05E8'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '> at 0x05F0'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '? at 0x05F8'
+    0b00011100,
+    0b00100010,
+    0b00000100,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '@ at 0x0600'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'A at 0x0608'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'B at 0x0610'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'C at 0x0618'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'D at 0x0620'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'E at 0x0628'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'F at 0x0630'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'G at 0x0638'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'H at 0x0640'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'I at 0x0648'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'J at 0x0650'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'K at 0x0658'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'L at 0x0660'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'M at 0x0668'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'N at 0x0670'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'O at 0x0678'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'P at 0x0680'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'Q at 0x0688'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'R at 0x0690'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'S at 0x0698'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'T at 0x06A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'U at 0x06A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'V at 0x06B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'W at 0x06B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'X at 0x06C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'Y at 0x06C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'Z at 0x06D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '[ at 0x06D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '\ at 0x06E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Normal '] at 0x06E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Normal '^ at 0x06F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '_ at 0x06F8'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    ////////////////////////////////////////
+    // Normal Lower case  Set (0xE0-0xFF) //
+    ////////////////////////////////////////
+
+    // Normal '` at 0x0700'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal 'a at 0x0708'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00000010,
+    0b00011110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'b at 0x0710'
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'c at 0x0718'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'd at 0x0720'
+    0b00000010,
+    0b00000010,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'e at 0x0728'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00111110,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'f at 0x0730'
+    0b00001100,
+    0b00010010,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Normal 'g at 0x0738'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00011100,
+
+    // Normal 'h at 0x0740'
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'i at 0x0748'
+    0b00001000,
+    0b00000000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'j at 0x0750'
+    0b00000100,
+    0b00000000,
+    0b00001100,
+    0b00000100,
+    0b00000100,
+    0b00000100,
+    0b00100100,
+    0b00011000,
+
+    // Normal 'k at 0x0758'
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00100100,
+    0b00111000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'l at 0x0760'
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'm at 0x0768'
+    0b00000000,
+    0b00000000,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'n at 0x0770'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'o at 0x0778'
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'p at 0x0780'
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+
+    // Normal 'q at 0x0788'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000010,
+
+    // Normal 'r at 0x0790'
+    0b00000000,
+    0b00000000,
+    0b00101110,
+    0b00110000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 's at 0x0798'
+    0b00000000,
+    0b00000000,
+    0b00011110,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 't at 0x07A0'
+    0b00010000,
+    0b00010000,
+    0b00111100,
+    0b00010000,
+    0b00010000,
+    0b00010010,
+    0b00001100,
+    0b00000000,
+
+    // Normal 'u at 0x07A8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100110,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'v at 0x07B0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'w at 0x07B8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00000000,
+
+    // Normal 'x at 0x07C0'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'y at 0x07C8'
+    0b00000000,
+    0b00000000,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00011100,
+
+    // Normal 'z at 0x07D0'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '{ at 0x07D8'
+    0b00001110,
+    0b00011000,
+    0b00011000,
+    0b00110000,
+    0b00011000,
+    0b00011000,
+    0b00001110,
+    0b00000000,
+
+    // Normal '| at 0x07E0'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+
+    // Normal '} at 0x07E8'
+    0b00111000,
+    0b00001100,
+    0b00001100,
+    0b00000110,
+    0b00001100,
+    0b00001100,
+    0b00111000,
+    0b00000000,
+
+    // Normal '~ at 0x07F0'
+    0b00011010,
+    0b00101100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal 'check pattern at 0x07F8'
+    0b00000000,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00000000,
+    0b00000000,
+};
+#else
+const uint8_t default_character_rom[256 * 8] = {
+    ////////////////////////////
+    // Inverse Set (0x00-0x3F)//
+    ///////////////////////////
+
+    // Inverse '@ at 0x0000'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Inverse 'A at 0x0008'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'B at 0x0010'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Inverse 'C at 0x0018'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'D at 0x0020'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Inverse 'E at 0x0028'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse 'F at 0x0030'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Inverse 'G at 0x0038'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverse 'H at 0x0040'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'I at 0x0048'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'J at 0x0050'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'K at 0x0058'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'L at 0x0060'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse 'M at 0x0068'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'N at 0x0070'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'O at 0x0078'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'P at 0x0080'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Inverse 'Q at 0x0088'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Inverse 'R at 0x0090'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'S at 0x0098'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'T at 0x00A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'U at 0x00A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse 'V at 0x00B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'W at 0x00B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'X at 0x00C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Inverse 'Y at 0x00C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse 'Z at 0x00D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '[ at 0x00D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '\ at 0x00E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '] at 0x00E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '^ at 0x00F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '_ at 0x00F8'
+
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // Inverse '  at 0x0100'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '! at 0x0108'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '" at 0x0110'
+    0b00010100,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '# at 0x0118'
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // Inverse '$ at 0x0120'
+    0b00001000,
+    0b00011110,
+    0b00101000,
+    0b00011100,
+    0b00001010,
+    0b00111100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '% at 0x0128'
+    0b00110000,
+    0b00110010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100110,
+    0b00000110,
+    0b00000000,
+
+    // Inverse '& at 0x0130'
+    0b00010000,
+    0b00101000,
+    0b00101000,
+    0b00010000,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Inverse '' at 0x0138'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '( at 0x0140'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse ') at 0x0148'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '* at 0x0150'
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '+ at 0x0158'
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse ', at 0x0160'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '- at 0x0168'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '. at 0x0170'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Inverse '/ at 0x0178'
+    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '0 at 0x0180'
+    0b00011100,
+    0b00100010,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '1 at 0x0188'
+    0b00001000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '2 at 0x0190'
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00001100,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Inverse '3 at 0x0198'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001100,
+    0b00000010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Inverse '4 at 0x01A0'
+    0b00000100,
+    0b00001100,
+    0b00010100,
+    0b00100100,
+    0b00111110,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    // Inverse '5 at 0x01A8'
+    0b00111110,
+    0b00100000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '6 at 0x01B0'
+    0b00001110,
+    0b00010000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '7 at 0x01B8'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '8 at 0x01C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Inverse '9 at 0x01C8'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000100,
+    0b00111000,
+    0b00000000,
+
+    // Inverse ': at 0x01D0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '; at 0x01D8'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '< at 0x01E0'
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+
+    // Inverse '= at 0x01E8'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Inverse '> at 0x01F0'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Inverse '? at 0x01F8'
+    0b00011100,
+    0b00100010,
+    0b00000100,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    /////////////////////////////
+    // Flashing Set (0x40-0x7F)//
+    /////////////////////////////
+
+    // Flashing '@ at 0x0200'
+    0b10011100,
+    0b10100010,
+    0b10101010,
+    0b10101110,
+    0b10101100,
+    0b10100000,
+    0b10011110,
+    0b10000000,
+
+    // Flashing 'A at 0x0208'
+    0b10001000,
+    0b10010100,
+    0b10100010,
+    0b10100010,
+    0b10111110,
+    0b10100010,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'B at 0x0210'
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10000000,
+
+    // Flashing 'C at 0x0218'
+    0b10011100,
+    0b10100010,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'D at 0x0220'
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10000000,
+
+    // Flashing 'E at 0x0228'
+    0b10111110,
+    0b10100000,
+    0b10100000,
+    0b10111100,
+    0b10100000,
+    0b10100000,
+    0b10111110,
+    0b10000000,
+
+    // Flashing 'F at 0x0230'
+    0b10111110,
+    0b10100000,
+    0b10100000,
+    0b10111100,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10000000,
+
+    // Flashing 'G at 0x0238'
+    0b10011110,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10100110,
+    0b10100010,
+    0b10011110,
+    0b10000000,
+
+    // Flashing 'H at 0x0240'
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10111110,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'I at 0x0248'
+    0b10011100,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'J at 0x0250'
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'K at 0x0258'
+    0b10100010,
+    0b10100100,
+    0b10101000,
+    0b10110000,
+    0b10101000,
+    0b10100100,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'L at 0x0260'
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10111110,
+    0b10000000,
+
+    // Flashing 'M at 0x0268'
+    0b10100010,
+    0b10110110,
+    0b10101010,
+    0b10101010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'N at 0x0270'
+    0b10100010,
+    0b10100010,
+    0b10110010,
+    0b10101010,
+    0b10100110,
+    0b10100010,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'O at 0x0278'
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'P at 0x0280'
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10000000,
+
+    // Flashing 'Q at 0x0288'
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10101010,
+    0b10100100,
+    0b10011010,
+    0b10000000,
+
+    // Flashing 'R at 0x0290'
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10111100,
+    0b10101000,
+    0b10100100,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'S at 0x0298'
+    0b10011100,
+    0b10100010,
+    0b10100000,
+    0b10011100,
+    0b10000010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'T at 0x02A0'
+    0b10111110,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+
+    // Flashing 'U at 0x02A8'
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing 'V at 0x02B0'
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10010100,
+    0b10001000,
+    0b10000000,
+
+    // Flashing 'W at 0x02B8'
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10101010,
+    0b10101010,
+    0b10110110,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'X at 0x02C0'
+    0b10100010,
+    0b10100010,
+    0b10010100,
+    0b10001000,
+    0b10010100,
+    0b10100010,
+    0b10100010,
+    0b10000000,
+
+    // Flashing 'Y at 0x02C8'
+    0b10100010,
+    0b10100010,
+    0b10010100,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    // Flashing 'Z at 0x02D0'
+    0b10111110,
+    0b10000010,
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10100000,
+    0b10111110,
+    0b10000000,
+
+    // Flashing '[ at 0x02D8'
+    0b10111110,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10111110,
+    0b10000000,
+
+    // Flashing '\ at 0x02E0'
+    0b10000000,
+    0b10100000,
+    0b10010000,
+    0b10001000,
+    0b10000100,
+    0b10000010,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '] at 0x02E8'
+    0b10111110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10111110,
+    0b10000000,
+
+    // Flashing '^ at 0x02F0'
+    0b10000000,
+    0b10000000,
+    0b10001000,
+    0b10010100,
+    0b10100010,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '_ at 0x02F8'
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b11111111,
+
+    // Flashing '  at 0x0300'
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '! at 0x0308'
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '" at 0x0310'
+    0b10010100,
+    0b10010100,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '# at 0x0318'
+    0b10010100,
+    0b10010100,
+    0b10111110,
+    0b10010100,
+    0b10111110,
+    0b10010100,
+    0b10010100,
+    0b10000000,
+
+    // Flashing '$ at 0x0320'
+    0b10001000,
+    0b10011110,
+    0b10101000,
+    0b10011100,
+    0b10001010,
+    0b10111100,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '% at 0x0328'
+    0b10110000,
+    0b10110010,
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10100110,
+    0b10000110,
+    0b10000000,
+
+    // Flashing '& at 0x0330'
+    0b10010000,
+    0b10101000,
+    0b10101000,
+    0b10010000,
+    0b10101010,
+    0b10100100,
+    0b10011010,
+    0b10000000,
+
+    // Flashing '' at 0x0338'
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '( at 0x0340'
+    0b10001000,
+    0b10010000,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10010000,
+    0b10001000,
+    0b10000000,
+
+    // Flashing ') at 0x0348'
+    0b10001000,
+    0b10000100,
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10000100,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '* at 0x0350'
+    0b10001000,
+    0b10101010,
+    0b10011100,
+    0b10001000,
+    0b10011100,
+    0b10101010,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '+ at 0x0358'
+    0b10000000,
+    0b10001000,
+    0b10001000,
+    0b10111110,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing ', at 0x0360'
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10001000,
+    0b10001000,
+    0b10010000,
+    0b10000000,
+
+    // Flashing '- at 0x0368'
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10111110,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '. at 0x0370'
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+
+    // Flashing '/ at 0x0378'
+    0b10000000,
+    0b10000010,
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10100000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '0 at 0x0380'
+    0b10011100,
+    0b10100010,
+    0b10100110,
+    0b10101010,
+    0b10110010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing '1 at 0x0388'
+    0b10001000,
+    0b10011000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10011100,
+    0b10000000,
+
+    // Flashing '2 at 0x0390'
+    0b10011100,
+    0b10100010,
+    0b10000010,
+    0b10001100,
+    0b10010000,
+    0b10100000,
+    0b10111110,
+    0b10000000,
+
+    // Flashing '3 at 0x0398'
+    0b10111110,
+    0b10000010,
+    0b10000100,
+    0b10001100,
+    0b10000010,
+    0b10100010,
+    0b10011110,
+    0b10000000,
+
+    // Flashing '4 at 0x03A0'
+    0b10000100,
+    0b10001100,
+    0b10010100,
+    0b10100100,
+    0b10111110,
+    0b10000100,
+    0b10000100,
+    0b10000000,
+
+    // Flashing '5 at 0x03A8'
+    0b10111110,
+    0b10100000,
+    0b10111100,
+    0b10000010,
+    0b10000010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing '6 at 0x03B0'
+    0b10001110,
+    0b10010000,
+    0b10100000,
+    0b10111100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing '7 at 0x03B8'
+    0b10111110,
+    0b10000010,
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10010000,
+    0b10010000,
+    0b10000000,
+
+    // Flashing '8 at 0x03C0'
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10000000,
+
+    // Flashing '9 at 0x03C8'
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011110,
+    0b10000010,
+    0b10000100,
+    0b10111000,
+    0b10000000,
+
+    // Flashing ': at 0x03D0'
+    0b10000000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '; at 0x03D8'
+    0b10000000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+    0b10001000,
+    0b10001000,
+    0b10010000,
+    0b10000000,
+
+    // Flashing '< at 0x03E0'
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10100000,
+    0b10010000,
+    0b10001000,
+    0b10000100,
+    0b10000000,
+
+    // Flashing '= at 0x03E8'
+    0b10000000,
+    0b10000000,
+    0b10111110,
+    0b10000000,
+    0b10111110,
+    0b10000000,
+    0b10000000,
+    0b10000000,
+
+    // Flashing '> at 0x03F0'
+    0b10010000,
+    0b10001000,
+    0b10000100,
+    0b10000010,
+    0b10000100,
+    0b10001000,
+    0b10010000,
+    0b10000000,
+
+    // Flashing '? at 0x03F8'
+    0b10011100,
+    0b10100010,
+    0b10000100,
+    0b10001000,
+    0b10001000,
+    0b10000000,
+    0b10001000,
+    0b10000000,
+
+    ////////////////////////////
+    // Normal Set (0x80-0xFF) //
+    ////////////////////////////
+
+    // Normal '@ at 0x0400'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'A at 0x0408'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'B at 0x0410'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'C at 0x0418'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'D at 0x0420'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'E at 0x0428'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'F at 0x0430'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'G at 0x0438'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'H at 0x0440'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'I at 0x0448'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'J at 0x0450'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'K at 0x0458'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'L at 0x0460'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'M at 0x0468'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'N at 0x0470'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'O at 0x0478'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'P at 0x0480'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'Q at 0x0488'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'R at 0x0490'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'S at 0x0498'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'T at 0x04A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'U at 0x04A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'V at 0x04B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'W at 0x04B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'X at 0x04C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'Y at 0x04C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'Z at 0x04D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '[ at 0x04D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '\ at 0x04E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Normal '] at 0x04E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Normal '^ at 0x04F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '_ at 0x04F8'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // Normal '  at 0x0500'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '! at 0x0508'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '" at 0x0510'
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '# at 0x0518'
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // Normal '$ at 0x0520'
+    0b00001000,
+    0b00011110,
+    0b00101000,
+    0b00011100,
+    0b00001010,
+    0b00111100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '% at 0x0528'
+    0b00110000,
+    0b00110010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100110,
+    0b00000110,
+    0b00000000,
+
+    // Normal '& at 0x0530'
+    0b00010000,
+    0b00101000,
+    0b00101000,
+    0b00010000,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal '' at 0x0538'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '( at 0x0540'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // Normal ') at 0x0548'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '* at 0x0550'
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
+    0b00000000,
+
+    // Normal '+ at 0x0558'
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+
+    // Normal ', at 0x0560'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '- at 0x0568'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '. at 0x0570'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '/ at 0x0578'
+    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '0 at 0x0580'
+    0b00011100,
+    0b00100010,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '1 at 0x0588'
+    0b00001000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal '2 at 0x0590'
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00001100,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '3 at 0x0598'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001100,
+    0b00000010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal '4 at 0x05A0'
+    0b00000100,
+    0b00001100,
+    0b00010100,
+    0b00100100,
+    0b00111110,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    // Normal '5 at 0x05A8'
+    0b00111110,
+    0b00100000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '6 at 0x05B0'
+    0b00001110,
+    0b00010000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '7 at 0x05B8'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '8 at 0x05C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '9 at 0x05C8'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000100,
+    0b00111000,
+    0b00000000,
+
+    // Normal ': at 0x05D0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '; at 0x05D8'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '< at 0x05E0'
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+
+    // Normal '= at 0x05E8'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '> at 0x05F0'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '? at 0x05F8'
+    0b00011100,
+    0b00100010,
+    0b00000100,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '@ at 0x0600'
+    0b00011100,
+    0b00100010,
+    0b00101010,
+    0b00101110,
+    0b00101100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'A at 0x0608'
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'B at 0x0610'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'C at 0x0618'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'D at 0x0620'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00000000,
+
+    // Normal 'E at 0x0628'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'F at 0x0630'
+    0b00111110,
+    0b00100000,
+    0b00100000,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'G at 0x0638'
+    0b00011110,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100110,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal 'H at 0x0640'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00111110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'I at 0x0648'
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'J at 0x0650'
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'K at 0x0658'
+    0b00100010,
+    0b00100100,
+    0b00101000,
+    0b00110000,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'L at 0x0660'
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal 'M at 0x0668'
+    0b00100010,
+    0b00110110,
+    0b00101010,
+    0b00101010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'N at 0x0670'
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'O at 0x0678'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'P at 0x0680'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00000000,
+
+    // Normal 'Q at 0x0688'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal 'R at 0x0690'
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00101000,
+    0b00100100,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'S at 0x0698'
+    0b00011100,
+    0b00100010,
+    0b00100000,
+    0b00011100,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'T at 0x06A0'
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'U at 0x06A8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal 'V at 0x06B0'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'W at 0x06B8'
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00110110,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'X at 0x06C0'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Normal 'Y at 0x06C8'
+    0b00100010,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+
+    // Normal 'Z at 0x06D0'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '[ at 0x06D8'
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '\ at 0x06E0'
+    0b00000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000000,
+    0b00000000,
+
+    // Normal '] at 0x06E8'
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
+    0b00000000,
+
+    // Normal '^ at 0x06F0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00010100,
+    0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '_ at 0x06F8'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b01111111,
+
+    // Normal '  at 0x0700'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '! at 0x0708'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '" at 0x0710'
+    0b00010100,
+    0b00010100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '# at 0x0718'
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
+    0b00000000,
+
+    // Normal '$ at 0x0720'
+    0b00001000,
+    0b00011110,
+    0b00101000,
+    0b00011100,
+    0b00001010,
+    0b00111100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '% at 0x0728'
+    0b00110000,
+    0b00110010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100110,
+    0b00000110,
+    0b00000000,
+
+    // Normal '& at 0x0730'
+    0b00010000,
+    0b00101000,
+    0b00101000,
+    0b00010000,
+    0b00101010,
+    0b00100100,
+    0b00011010,
+    0b00000000,
+
+    // Normal '' at 0x0738'
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '( at 0x0740'
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000000,
+
+    // Normal ') at 0x0748'
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00000000,
+
+    // Normal '* at 0x0750'
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
+    0b00000000,
+
+    // Normal '+ at 0x0758'
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00111110,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+
+    // Normal ', at 0x0760'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '- at 0x0768'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '. at 0x0770'
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+
+    // Normal '/ at 0x0778'
+    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '0 at 0x0780'
+    0b00011100,
+    0b00100010,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '1 at 0x0788'
+    0b00001000,
+    0b00011000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
+
+    // Normal '2 at 0x0790'
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00001100,
+    0b00010000,
+    0b00100000,
+    0b00111110,
+    0b00000000,
+
+    // Normal '3 at 0x0798'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001100,
+    0b00000010,
+    0b00100010,
+    0b00011110,
+    0b00000000,
+
+    // Normal '4 at 0x07A0'
+    0b00000100,
+    0b00001100,
+    0b00010100,
+    0b00100100,
+    0b00111110,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    // Normal '5 at 0x07A8'
+    0b00111110,
+    0b00100000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '6 at 0x07B0'
+    0b00001110,
+    0b00010000,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '7 at 0x07B8'
+    0b00111110,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '8 at 0x07C0'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Normal '9 at 0x07C8'
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000100,
+    0b00111000,
+    0b00000000,
+
+    // Normal ': at 0x07D0'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '; at 0x07D8'
+    0b00000000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '< at 0x07E0'
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000000,
+
+    // Normal '= at 0x07E8'
+    0b00000000,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00111110,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    // Normal '> at 0x07F0'
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000100,
+    0b00001000,
+    0b00010000,
+    0b00000000,
+
+    // Normal '? at 0x07F8'
+    0b00011100,
+    0b00100010,
+    0b00000100,
+    0b00001000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00000000,
+};
+
+#endif

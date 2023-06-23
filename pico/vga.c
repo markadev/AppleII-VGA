@@ -7,13 +7,13 @@
 #include "vga.h"
 
 
-#define PIXEL_FREQ 25.2/*MHz*/
+#define PIXEL_FREQ 25.2 /*MHz*/
 #define PIXELS_PER_LINE 800
 #define LINES_PER_FRAME 525
 #define LINES_IN_BACK_PORCH 33
 
 #define HSYNC_TIMING_VALUE (((PIXELS_PER_LINE) / 8) - 23)
-#define VSYNC_TIMING_VALUE ((LINES_PER_FRAME) - 4)
+#define VSYNC_TIMING_VALUE ((LINES_PER_FRAME)-4)
 
 #define NUM_SCANLINE_BUFFERS 8
 
@@ -94,7 +94,7 @@ static void vga_data_setup(PIO pio, uint sm) {
     pio_sm_claim(pio, sm);
 
     pio_sm_config c = vga_data_program_get_default_config(program_offset);
-    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (2*PIXEL_FREQ));  // 2 * PIXEL_FREQ
+    sm_config_set_clkdiv(&c, CONFIG_SYSCLOCK / (2 * PIXEL_FREQ));  // 2 * PIXEL_FREQ
 
     // Map the state machine's OUT pin group to the data pins
     sm_config_set_out_pins(&c, CONFIG_PIN_RGB_BASE, 9);
@@ -108,12 +108,12 @@ static void vga_data_setup(PIO pio, uint sm) {
 
     // Configure the pins as outputs & connect to the PIO
     pio_sm_set_consecutive_pindirs(pio, sm, CONFIG_PIN_RGB_BASE, 9, true);
-    for(int i=0; i < 9; i++) {
-        pio_gpio_init(pio, CONFIG_PIN_RGB_BASE+i);
+    for(int i = 0; i < 9; i++) {
+        pio_gpio_init(pio, CONFIG_PIN_RGB_BASE + i);
     }
 
     // Load the configuration, starting execution at 'wait_vsync'
-    pio_sm_init(pio, sm, program_offset+vga_data_offset_wait_vsync, &c);
+    pio_sm_init(pio, sm, program_offset + vga_data_offset_wait_vsync, &c);
 }
 
 // Start the DMA operation of the next scanline if it's ready.
@@ -122,7 +122,7 @@ static void vga_data_setup(PIO pio, uint sm) {
 static void trigger_ready_scanline_dma() {
     struct vga_scanline *active_scanline = &scanline_queue[scanline_queue_tail];
 
-    if((active_scanline->_flags & (FLAG_BUSY|FLAG_READY|FLAG_STARTED)) == (FLAG_BUSY|FLAG_READY)) {
+    if((active_scanline->_flags & (FLAG_BUSY | FLAG_READY | FLAG_STARTED)) == (FLAG_BUSY | FLAG_READY)) {
         active_scanline->_flags |= FLAG_STARTED;
         dma_channel_transfer_from_buffer_now(vga_dma_channel, &(active_scanline->_sync), active_scanline->length + 2);
     }
@@ -186,7 +186,7 @@ void vga_prepare_frame() {
     // FIXME: the number of hsyncs we have to wait for seems to be one too few
     // because the vsync is supposed to last two lines (we wait one) and THEN
     // the back porch lines need to be skipped.
-    for(int i=0; i < LINES_IN_BACK_PORCH; i++) {
+    for(int i = 0; i < LINES_IN_BACK_PORCH; i++) {
         sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
     sl->length = LINES_IN_BACK_PORCH;
@@ -217,7 +217,7 @@ struct vga_scanline *vga_prepare_scanline() {
 void vga_submit_scanline(struct vga_scanline *scanline) {
     spin_lock_t *lock = spin_lock_instance(CONFIG_VGA_SPINLOCK_ID);
 
-    scanline->data[scanline->length] = 0; // ensure beam off at end of line
+    scanline->data[scanline->length] = 0;  // ensure beam off at end of line
 
     const uint32_t irq_status = spin_lock_blocking(lock);
     scanline->_flags |= FLAG_READY;

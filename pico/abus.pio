@@ -25,7 +25,7 @@ next_bus_cycle:
     wait 1 GPIO, PHI0_GPIO              ; wait for PHI0 to rise. Data propagation through the transceiver should
                                         ; be complete by the time this happens.
     in PINS, 8                          ; read AddrHi[7:0]
-    set PINS, 0b101  [2]                ; enable AddrLo tranceiver and delay for transceiver propagation delay
+    set PINS, 0b101  [5]                ; enable AddrLo tranceiver and delay for transceiver propagation delay
     in PINS, 8                          ; read AddrLo[7:0]
 
     jmp PIN, read_cycle                 ; jump based on the state of the R/W pin
