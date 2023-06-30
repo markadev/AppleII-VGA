@@ -17,17 +17,17 @@ signal.
 
 This project is currently in a pretty raw state so consider it useful for informational
 purposes only. I've built a prototype card and it works on my Apple II+ but I only have
-one Apple II+ and one VGA monitor so my testing is very limited. 
+one Apple II+ and one VGA monitor so my testing is very limited.
 
 These features are currently supported:
  * Generates a 640x480@60 VGA signal with 3 bits per color channel using resistor DACs
  * Text mode (monochrome)
  * Lo-res mode with no color fringing between the chunky pixels
- * Double Lo-res mode (Apple iie only)
+ * Double Lo-res mode (Apple IIe only)
  * Hi-res mode with simulated NTSC artifact color
- * Double Hi-res mode (Apple iie only)
+ * Double Hi-res mode (Apple IIe only)
  * Mixed lo-res and hi-res modes with monochrome text and no color fringing
- * 80 Columms text support (Apple iie only)
+ * 80 Columms text support (Apple IIe only)
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -49,6 +49,7 @@ microcontroller. I used the unrouted PCB layout to wire up the initial prototype
 board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
 
 ![Prototype Card](docs/prototype_card.jpg)
+
 
 ## Comparisons
 
