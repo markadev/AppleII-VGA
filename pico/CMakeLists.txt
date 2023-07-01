@@ -27,6 +27,7 @@ target_sources(applevga PUBLIC
     render.c
     render_hires.c
     render_lores.c
+    render_testpat.c
     render_text.c
     textfont.c
     vga.c
