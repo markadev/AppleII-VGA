@@ -5,9 +5,10 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 ColumnLimit: 140
+DerivePointerAlignment: false
 IndentCaseLabels: false
 IndentWidth: 4
 MaxEmptyLinesToKeep: 2
 PointerAlignment: Right
-SortIncludes: false
+SortIncludes: Never
 SpaceBeforeParens: Never

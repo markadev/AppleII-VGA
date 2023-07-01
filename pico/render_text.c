@@ -4,8 +4,10 @@
 #include "textfont.h"
 #include "vga.h"
 
+
 static uint_fast32_t text_flasher_mask = 0;
 static uint64_t next_flash_tick = 0;
+
 
 void update_text_flasher() {
     uint64_t now = time_us_64();
@@ -14,6 +16,7 @@ void update_text_flasher() {
         next_flash_tick = now + 250000u;
     }
 }
+
 
 static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
     uint_fast8_t bits = 0;
@@ -70,16 +73,18 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
     }
 }
 
+
 void __time_critical_func(render_text)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
-    struct vga_scanline* skip_sl = vga_prepare_scanline();
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
     for(int i = 0; i < 48; i++) {
         skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
     skip_sl->length = 48;
     vga_submit_scanline(skip_sl);
+
 #ifdef APPLE_MODEL_IIE
     if(soft_80col) {
         for(int line = 0; line < 24; line++) {
@@ -96,19 +101,21 @@ void __time_critical_func(render_text)() {
     }
 #endif
 }
+
+
 #ifdef APPLE_MODEL_IIE
 void __time_critical_func(render_text80_line)(unsigned int line) {
     //! In 80 Columns mode software adds data in page 1 of text_memory and in page 1 of aux memory
     //! this is how it can get 80 columns, doubling the ram. So need to make sure page does not turn if
     //! 80STORE and PAGE2 are set, in this case we should grab from aux memory.
 
-    const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
-    const uint8_t* page80 = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3);
-    const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
-    const uint8_t* line_80buf = (const uint8_t*)(page80 + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
+    const uint8_t *page80 = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3);
+    const uint8_t *line_buf = (const uint8_t *)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *line_80buf = (const uint8_t *)(page80 + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
     for(uint glyph_line = 0; glyph_line < 8; glyph_line++) {
-        struct vga_scanline* sl = vga_prepare_scanline();
+        struct vga_scanline *sl = vga_prepare_scanline();
         uint sl_pos = 0;
 
         // Pad 40 pixels on the left to center horizontally
@@ -148,12 +155,14 @@ void __time_critical_func(render_text80_line)(unsigned int line) {
     }
 }
 #endif
+
+
 void __time_critical_func(render_text_line)(unsigned int line) {
-    const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
-    const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
+    const uint8_t *line_buf = (const uint8_t *)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
     for(uint glyph_line = 0; glyph_line < 8; glyph_line++) {
-        struct vga_scanline* sl = vga_prepare_scanline();
+        struct vga_scanline *sl = vga_prepare_scanline();
         uint sl_pos = 0;
 
         // Pad 40 pixels on the left to center horizontally
@@ -177,6 +186,7 @@ void __time_critical_func(render_text_line)(unsigned int line) {
                 uint32_t pixeldata = (bits & 0x2000) ? (0x1ff | THEN_EXTEND_1) : (0 | THEN_EXTEND_1);
                 pixeldata |= (bits & 0x1000) ? ((uint32_t)0x1ff | THEN_EXTEND_1) << 16 : ((uint32_t)0 | THEN_EXTEND_1) << 16;
                 bits <<= 2;
+
                 sl->data[sl_pos] = pixeldata;
                 sl_pos++;
             }
@@ -188,7 +198,6 @@ void __time_critical_func(render_text_line)(unsigned int line) {
 
         sl->length = sl_pos;
         sl->repeat_count = 1;
-
         vga_submit_scanline(sl);
     }
 }

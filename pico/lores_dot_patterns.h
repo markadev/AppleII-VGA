@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off
 #include <stdint.h>
 
 
@@ -13,6 +14,7 @@ static uint16_t lores_dot_pattern[16] = {
     0x0CCC, 0x2EEE,
     0x1DDD, 0x3FFF,
 };
+
 #ifdef APPLE_MODEL_IIE
 static uint8_t dgr_dot_pattern[32] = {
     0x00,0x11,0x22,0x33,

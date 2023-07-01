@@ -6,6 +6,7 @@
 #include "textfont.h"
 #include "vga.h"
 
+
 #define _PIXPAIR(p1, p2) ((uint32_t)(p1) | (((uint32_t)p2) << 16))
 
 #ifdef RENDER_TEST_PATTERN
@@ -13,7 +14,7 @@ static void __noinline __time_critical_func(render_testpattern)() {
     vga_prepare_frame();
 
     for(uint line = 0; line < VGA_HEIGHT;) {
-        struct vga_scanline* sl = vga_prepare_scanline();
+        struct vga_scanline *sl = vga_prepare_scanline();
         uint sl_pos = 0;
 
         if((line == 0) || (line == VGA_HEIGHT - 1)) {
@@ -124,7 +125,7 @@ void render_loop() {
         update_text_flasher();
 
         switch(soft_switches & SOFTSW_MODE_MASK) {
-        case 0: {
+        case 0:
 #ifdef RENDER_TEST_PATTERN
             gpio_put(PICO_DEFAULT_LED_PIN, 1);
             render_testpattern();
@@ -132,24 +133,19 @@ void render_loop() {
             render_lores();
 #endif
             break;
-        }
-        case SOFTSW_MIX_MODE: {
+        case SOFTSW_MIX_MODE:
             render_mixed_lores();
             break;
-        }
-        case SOFTSW_HIRES_MODE: {
+        case SOFTSW_HIRES_MODE:
             render_hires();
             break;
-        }
-        case SOFTSW_HIRES_MODE | SOFTSW_MIX_MODE: {
+        case SOFTSW_HIRES_MODE | SOFTSW_MIX_MODE:
             render_mixed_hires();
             break;
-        }
-        default: {
+        default:
             gpio_put(PICO_DEFAULT_LED_PIN, 0);
             render_text();
             break;
-        }
         }
     }
 }

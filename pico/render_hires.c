@@ -10,14 +10,17 @@ static void render_hires_line(uint line);
 static void render_dhires_line(uint line);
 #endif
 
+
 static inline uint hires_line_to_mem_offset(uint line) {
     return ((line & 0x07) << 10) | ((line & 0x38) << 4) | (((line & 0xc0) >> 6) * 40);
 }
 
+
 void __time_critical_func(render_hires)() {
     vga_prepare_frame();
+
     // Skip 48 lines to center vertically
-    struct vga_scanline* skip_sl = vga_prepare_scanline();
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
     for(int i = 0; i < 48; i++) {
         skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
@@ -37,10 +40,12 @@ void __time_critical_func(render_hires)() {
     }
 }
 
+
 void __time_critical_func(render_mixed_hires)() {
     vga_prepare_frame();
+
     // Skip 48 lines to center vertically
-    struct vga_scanline* skip_sl = vga_prepare_scanline();
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
     for(int i = 0; i < 48; i++) {
         skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
@@ -72,12 +77,13 @@ void __time_critical_func(render_mixed_hires)() {
     }
 }
 
+
 static void __time_critical_func(render_hires_line)(uint line) {
-    struct vga_scanline* sl = vga_prepare_scanline();
+    struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
 
-    const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
-    const uint8_t* line_mem = (const uint8_t*)(page + hires_line_to_mem_offset(line));
+    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
+    const uint8_t *line_mem = (const uint8_t *)(page + hires_line_to_mem_offset(line));
 
     // Pad 40 pixels on the left to center horizontally
     // Pad 40 pixels on the left to center horizontally
@@ -89,16 +95,15 @@ static void __time_critical_func(render_hires_line)(uint line) {
     // That is represented here by 14 'dots' to precisely describe the half-pixel
     // positioning.
     //
-    // For each pixel, inspect a window of 8 dots around the pixel to determine
-    // the precise dot locations and colors.
+    // For each pixel, inspect a window of 8 dots around the pixel to determine the
+    // precise dot locations and colors.
     //
     // Dots would be scanned out to the CRT from MSB to LSB (left to right here):
     //
     //            previous   |        next
     //              dots     |        dots
     //        +-------------------+--------------------------------------------------+
-    // dots:  | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | ... | 14 | 13 | 12 |
-    // ...
+    // dots:  | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | ... | 14 | 13 | 12 | ...
     //        |              |         |              |
     //        \______________|_________|______________/
     //                       |         |
@@ -137,7 +142,8 @@ static void __time_critical_func(render_hires_line)(uint line) {
     sl->repeat_count = 1;
     vga_submit_scanline(sl);
 }
-//#define APPLE_MODEL_IIE
+
+
 #ifdef APPLE_MODEL_IIE
 static void __time_critical_func(render_dhires_line)(uint line) {
     uint sl_pos = 0;
@@ -148,11 +154,11 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     uint32_t pixeldata;
     uint32_t pixelmode = 0;
 
-    const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
-    const uint8_t* aux_page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3);
-    const uint8_t* line_mema = (const uint8_t*)(page + hires_line_to_mem_offset(line));
-    const uint8_t* line_memb = (const uint8_t*)(aux_page + hires_line_to_mem_offset(line));
-    struct vga_scanline* sl = vga_prepare_scanline();
+    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
+    const uint8_t *aux_page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3);
+    const uint8_t *line_mema = (const uint8_t *)(page + hires_line_to_mem_offset(line));
+    const uint8_t *line_memb = (const uint8_t *)(aux_page + hires_line_to_mem_offset(line));
+    struct vga_scanline *sl = vga_prepare_scanline();
 
     // Pad 40 pixels on the left to center horizontally
     if(soft_video7 != VIDEO7_MODE2) {

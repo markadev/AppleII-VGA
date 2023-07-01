@@ -4,6 +4,7 @@
 #include "vga.h"
 #include "lores_dot_patterns.h"
 
+
 static void render_lores_line(uint line);
 #ifdef APPLE_MODEL_IIE
 static void drender_lores_line(uint line);
@@ -14,7 +15,7 @@ void __time_critical_func(render_lores)() {
     vga_prepare_frame();
 
     // Skip 48 lines to center vertically
-    struct vga_scanline* skip_sl = vga_prepare_scanline();
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
     for(int i = 0; i < 48; i++) {
         skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
@@ -34,10 +35,12 @@ void __time_critical_func(render_lores)() {
     }
 }
 
+
 void __time_critical_func(render_mixed_lores)() {
     vga_prepare_frame();
+
     // Skip 48 lines to center vertically
-    struct vga_scanline* skip_sl = vga_prepare_scanline();
+    struct vga_scanline *skip_sl = vga_prepare_scanline();
     for(int i = 0; i < 48; i++) {
         skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
     }
@@ -72,16 +75,17 @@ void __time_critical_func(render_mixed_lores)() {
 #endif
 }
 
+
 static void __time_critical_func(render_lores_line)(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
-    struct vga_scanline* sl1 = vga_prepare_scanline();
-    struct vga_scanline* sl2 = vga_prepare_scanline();
+    struct vga_scanline *sl1 = vga_prepare_scanline();
+    struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
     uint i, j;
     uint32_t color1, color2;
 
-    const uint8_t* page = (const uint8_t*)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
-    const uint8_t* line_buf = (const uint8_t*)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
+    const uint8_t *line_buf = (const uint8_t *)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
     // Pad 40 pixels on the left to center horizontally
     sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
@@ -145,22 +149,24 @@ static void __time_critical_func(render_lores_line)(uint line) {
     sl2->repeat_count = 7;
     vga_submit_scanline(sl2);
 }
+
+
 #ifdef APPLE_MODEL_IIE
 static void __time_critical_func(drender_lores_line)(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
-    struct vga_scanline* sl1 = vga_prepare_scanline();
-    struct vga_scanline* sl2 = vga_prepare_scanline();
+    struct vga_scanline *sl1 = vga_prepare_scanline();
+    struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
     uint i, j;
     uint32_t color1, color2;
     uint_fast8_t dotc = 0;
     uint32_t pixeldata;
 
-    const uint8_t* line_bufa = (const uint8_t*)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1) +
-                                                ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *line_bufa = (const uint8_t *)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1) +
+                                                 ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
-    const uint8_t* line_bufb = (const uint8_t*)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3) +
-                                                ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *line_bufb = (const uint8_t *)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3) +
+                                                 ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
 
     // Pad 40 pixels on the left to center horizontally
     sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word

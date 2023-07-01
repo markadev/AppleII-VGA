@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 import sys
 from math import cos, sin, radians, pi, isclose
 
@@ -173,8 +172,9 @@ def print_stuff_2():
 fp = sys.stdout
 
 fp.write("#pragma once\n\n")
+fp.write("// clang-format off\n")
 fp.write("#define _PIXELS(color1, color2) ((uint32_t)(color1) | ((uint32_t)(color2) << 16))\n")
-fp.write("static uint32_t hires_color_patterns[2*256] = {\n")
+fp.write("static uint32_t hires_color_patterns[2 * 256] = {\n")
 fp.write("    // Even byte pixels\n")
 for bits in range(256):
     col1 = round_int(color_of(0.0, bits >> 1) * 7)

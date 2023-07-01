@@ -6,14 +6,17 @@
 #include "abus.pio.h"
 #include "buffers.h"
 
+
 #if CONFIG_PIN_APPLEBUS_PHI0 != PHI0_GPIO
 #error CONFIG_PIN_APPLEBUS_PHI0 and PHI0_GPIO must be set to the same pin
 #endif
+
 
 enum {
     ABUS_MAIN_SM = 0,
     ABUS_DEVICE_READ_SM = 1,
 };
+
 
 static void abus_device_read_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &abus_device_read_program);
@@ -34,6 +37,7 @@ static void abus_device_read_setup(PIO pio, uint sm) {
 
     // All the GPIOs are shared and setup by the main program
 }
+
 
 static void abus_main_setup(PIO pio, uint sm) {
     uint program_offset = pio_add_program(pio, &abus_program);
@@ -79,6 +83,7 @@ static void abus_main_setup(PIO pio, uint sm) {
     }
 }
 
+
 void abus_init() {
     //! Init states
     soft_switches = SOFTSW_TEXT_MODE;
@@ -100,6 +105,7 @@ void abus_init() {
 
     pio_enable_sm_mask_in_sync(CONFIG_ABUS_PIO, (1 << ABUS_MAIN_SM) | (1 << ABUS_DEVICE_READ_SM));
 }
+
 
 static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
     static int bit0_set = 0;
@@ -219,7 +225,7 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
                 //! controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
                 //! the content of 80COL in the 2 switches
                 //! this is VIDEO7 Mode
-                
+
                 if(!bit0_set) {
                     soft_video7 = (0x01) & (soft_video7 | !soft_80col);
                     bit0_set = 1;
@@ -245,43 +251,36 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
 
         if((address & 0xfff8) == 0xc050) {
             switch(address & 7) {
-            case 0: {
+            case 0:
                 soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
                 break;
-            }
-            case 1: {
+            case 1:
                 soft_switches |= SOFTSW_TEXT_MODE;
                 break;
-            }
-            case 2: {
+            case 2:
                 soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
                 break;
-            }
-            case 3: {
+            case 3:
                 soft_switches |= SOFTSW_MIX_MODE;
                 break;
-            }
-            case 4: {
+            case 4:
                 soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
                 break;
-            }
-            case 5: {
+            case 5:
                 soft_switches |= SOFTSW_PAGE_2;
                 break;
-            }
-            case 6: {
+            case 6:
                 soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
                 break;
-            }
-            case 7: {
+            case 7:
                 soft_switches |= SOFTSW_HIRES_MODE;
                 break;
-            }
             }
         }
         return;
     }
 }
+
 
 void __time_critical_func(abus_loop)() {
     while(1) {
@@ -294,6 +293,7 @@ void __time_critical_func(abus_loop)() {
                 pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, address & 0xf);
             }
         }
+
         shadow_memory(address, value);
     }
 }

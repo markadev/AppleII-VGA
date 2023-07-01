@@ -4,6 +4,10 @@ import sys
 
 fp = sys.stdout
 
+fp.write("#pragma once\n\n")
+fp.write("// clang-format off\n")
+fp.write("#include <stdint.h>\n\n")
+
 fp.write("// Mapping of a hires video byte to 14 half-pixel dots.\n")
 fp.write("// Bits are displayed from MSB to LSB.\n")
 fp.write("static uint16_t hires_dot_patterns[256] = {")

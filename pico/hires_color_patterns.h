@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off
 #define _PIXELS(color1, color2) ((uint32_t)(color1) | ((uint32_t)(color2) << 16))
 static uint32_t hires_color_patterns[2 * 256] = {
     // Even byte pixels

@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off
 #include <stdint.h>
 
 // Mapping of a hires video byte to 14 half-pixel dots.
