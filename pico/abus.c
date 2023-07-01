@@ -1,6 +1,5 @@
 #include <string.h>
 #include <hardware/pio.h>
-#include <pico/stdlib.h>
 #include "config.h"
 #include "abus.h"
 #include "abus.pio.h"
@@ -98,7 +97,6 @@ void abus_init() {
     //! put empty text
     memset(main_memory + 0x400, 0x20, 2 * 1024);
     memset(private_memory + 0x400, 0x20, 2 * 1024);
-    gpio_put(PICO_DEFAULT_LED_PIN, 0);
 
     abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);
     abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
@@ -126,7 +124,6 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         soft_dhires = 0;
         soft_monochrom = 0;
         reset_phase_1_happening = false;
-        gpio_put(PICO_DEFAULT_LED_PIN, 0);
     } else {
         reset_phase_1_happening = false;
     }
@@ -292,6 +289,7 @@ void __time_critical_func(abus_loop)() {
                 // device read access
                 pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, address & 0xf);
             }
+            gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
         }
 
         shadow_memory(address, value);

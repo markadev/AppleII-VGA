@@ -24,6 +24,9 @@ next_bus_cycle:
     set PINS, 0b011                     ; enable AddrHi tranceiver
     wait 1 GPIO, PHI0_GPIO              ; wait for PHI0 to rise. Data propagation through the transceiver should
                                         ; be complete by the time this happens.
+
+    ; the current time is P0+42ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 1 instruction)
+
     in PINS, 8                          ; read AddrHi[7:0]
     set PINS, 0b101  [5]                ; enable AddrLo tranceiver and delay for transceiver propagation delay
     in PINS, 8                          ; read AddrLo[7:0]
@@ -31,7 +34,7 @@ next_bus_cycle:
     jmp PIN, read_cycle                 ; jump based on the state of the R/W pin
 
 write_cycle:
-    ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
+    ; the current time is P0+114ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 10 instructions)
 
     set PINS, 0b110  [15]               ; enable Data tranceiver & wait until both ~DEVSEL and the written data are valid (P0+200ns)
     in PINS, 10                         ; read R/W, ~DEVSEL, and Data[7:0], then autopush
@@ -39,11 +42,11 @@ write_cycle:
     jmp next_bus_cycle
 
 read_cycle:
-    ; the current time is P0+88ns (P0 + 16ns + 2 clocks (input synchronizers) + 7 instructions)
+    ; the current time is P0+114ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 10 instructions)
 
-    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled and delay for ~DEVSEL to become valid (P0+63ns+buffer delay)
     in PINS, 10                         ; read R/W, ~DEVSEL, and dontcare[7:0], then autopush
 
+    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled
     irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
     wait 0 GPIO, PHI0_GPIO   [7]        ; wait for PHI0 to fall
     wait 0 irq DATA_BUSY_IRQ            ; wait for the data handling state machine to complete to avoid contention w/transceiver control
@@ -66,8 +69,8 @@ wait_loop:
     wait 1 irq READ_DATA_TRIGGER_IRQ    ; wait for the data portion of a read cycle (from the main SM)
     jmp PIN, wait_loop                  ; skip if this device is not being addressed
 
-    ; the current time is P0+136ns (P0 + 16ns + 2 clocks (input synchronizers) + 13 instructions) and
-    ; this read cycle is addressed to this device.
+    ; the current time is P0+154ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 15 instructions)
+    ; and this read cycle is addressed to this device.
     ;
     ; Phase 0 is typically 489 ns long.
     ;  * Data from peripherals should be valid on the data bus by 45 nanoseconds before the end of phase 0
@@ -80,14 +83,18 @@ wait_loop:
 
     set PINS, 0b01                      ; enable Data tranceiver with output direction
     mov OSR, ~NULL
-    out PINDIRS, 8  [31]                ; set data pins as outputs
+    out PINDIRS, 8  [29]                ; set data pins as outputs
 
     pull noblock                        ; pull value from the FIFO as late as possible
     out PINS, 8
 
-    ; the current time is P0+440ns (P0 + 16ns + 2 clocks (input synchronizers) + 51 instructions)
+    ; the current time is P0+442ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 51 instructions)
 
-    wait 0 GPIO, PHI0_GPIO  [1]         ; wait for PHI0 to fall then hold for 40ns  (2 clocks (input synchronizers) + 2-3 instructions)
+    wait 0 GPIO, PHI0_GPIO              ; wait for PHI0 to fall
+
+    ; the current time is ~P0+52ns (~P0 + 28ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 1 instruction)
+    ;  - note the 74LS07 tPHL is 19ns typ/30ns max, which is much higher than tPLH (6ns typ/10ns max)
+
     set PINS, 0b10                      ; disable Data tranceiver to tri-state the data bus
 
     mov OSR, NULL
