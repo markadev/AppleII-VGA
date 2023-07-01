@@ -545,7 +545,7 @@ const uint8_t default_character_rom[256 * 8] = {
     0b00001100,
     0b00000010,
     0b00100010,
-    0b00011110,
+    0b00011100,
     0b00000000,
 
     // Inverse '4 at 0x01A0'
@@ -1014,7 +1014,7 @@ const uint8_t default_character_rom[256 * 8] = {
     // Flashing '" at 0x0310'
     0b10010100,
     0b10010100,
-    0b10000000,
+    0b10010100,
     0b10000000,
     0b10000000,
     0b10000000,
@@ -1188,7 +1188,7 @@ const uint8_t default_character_rom[256 * 8] = {
     0b10001100,
     0b10000010,
     0b10100010,
-    0b10011110,
+    0b10011100,
     0b10000000,
 
     // Flashing '4 at 0x03A0'
@@ -1658,7 +1658,7 @@ const uint8_t default_character_rom[256 * 8] = {
     // Normal '" at 0x0510'
     0b00010100,
     0b00010100,
-    0b00000000,
+    0b00010100,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1832,7 +1832,7 @@ const uint8_t default_character_rom[256 * 8] = {
     0b00001100,
     0b00000010,
     0b00100010,
-    0b00011110,
+    0b00011100,
     0b00000000,
 
     // Normal '4 at 0x05A0'
@@ -2946,7 +2946,7 @@ const uint8_t alternate_character_rom[256 * 8] = {
     // Inverse '" at 0x0110'
     0b00010100,
     0b00010100,
-    0b00000000,
+    0b00010100,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -3120,7 +3120,7 @@ const uint8_t alternate_character_rom[256 * 8] = {
     0b00001100,
     0b00000010,
     0b00100010,
-    0b00011110,
+    0b00011100,
     0b00000000,
 
     // Inverse '4 at 0x01A0'
@@ -4238,7 +4238,7 @@ const uint8_t alternate_character_rom[256 * 8] = {
     // Normal '" at 0x0510'
     0b00010100,
     0b00010100,
-    0b00000000,
+    0b00010100,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -4412,7 +4412,7 @@ const uint8_t alternate_character_rom[256 * 8] = {
     0b00001100,
     0b00000010,
     0b00100010,
-    0b00011110,
+    0b00011100,
     0b00000000,
 
     // Normal '4 at 0x05A0'
