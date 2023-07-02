@@ -64,8 +64,8 @@ extern uint8_t character_rom[256 * 8];
 extern uint8_t altcharacter_rom[256 * 8];
 #endif
 
-extern uint8_t main_memory[64 * 1024];
-extern uint8_t private_memory[64 * 1024];
+extern uint8_t main_memory[48 * 1024];
+extern uint8_t aux_memory[48 * 1024];
 extern volatile uint8_t *text_p1;
 extern volatile uint8_t *text_p2;
 extern volatile uint8_t *text_p3;

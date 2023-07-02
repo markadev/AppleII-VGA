@@ -92,11 +92,6 @@ void abus_init() {
     soft_video7 = VIDEO7_MODE0;
     soft_dhires = 0;
     soft_monochrom = 0;
-    memset(private_memory, 0x00, 64 * 1024);
-    memset(main_memory, 0x00, 64 * 1024);
-    //! put empty text
-    memset(main_memory + 0x400, 0x20, 2 * 1024);
-    memset(private_memory + 0x400, 0x20, 2 * 1024);
 
     abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);
     abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
@@ -110,10 +105,12 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
     // Shadow parts of the Apple's memory by observing the bus write cycles
     static bool reset_phase_1_happening = false;
 
+    const bool is_write = ACCESS_WRITE;
+
     //! Reset Detection
-    if((address == 0xFFFC) && (ACCESS_READ)) {
+    if((address == 0xFFFC) && !is_write) {
         reset_phase_1_happening = true;
-    } else if((address == 0xFFFD) && (ACCESS_READ) && (reset_phase_1_happening)) {
+    } else if((address == 0xFFFD) && !is_write && reset_phase_1_happening) {
         //! Reset Clear all buffers
         soft_switches = SOFTSW_TEXT_MODE;
         soft_ramwrt = 0;
@@ -128,32 +125,32 @@ static void __time_critical_func(shadow_memory)(uint address, uint32_t value) {
         reset_phase_1_happening = false;
     }
 
-    if(ACCESS_WRITE) {
-        // Mirror Video Memory from MAIN & AUX banks
+    // Mirror Video Memory from MAIN & AUX banks
+    if(address < 0xc000) {
+        if(! is_write)
+            return;
+
+        // Refer to "Inside the Apple IIe" p.295 for how Aux memory addressing is done
         if(soft_80store) {
             if(soft_switches & SOFTSW_PAGE_2) {
                 if((address >= 0x400) && (address < 0x800)) {
-                    private_memory[address] = value & 0xff;
+                    aux_memory[address] = value & 0xff;
                     return;
                 } else if((soft_switches & SOFTSW_HIRES_MODE) && (address >= 0x2000) && (address < 0x4000)) {
-                    private_memory[address] = value & 0xff;
+                    aux_memory[address] = value & 0xff;
                     return;
                 }
             }
         } else if(soft_ramwrt) {
             if((address >= 0x200) && (address < 0xC000)) {
-                private_memory[address] = value & 0xff;
+                aux_memory[address] = value & 0xff;
                 return;
             }
         }
 
         if((address >= 0x200) && (address < 0xC000)) {
             main_memory[address] = value & 0xff;
-            return;
         }
-    }
-
-    if(address < 0xc000) {
         return;
     }
 
