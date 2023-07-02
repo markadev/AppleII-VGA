@@ -4,10 +4,8 @@
 volatile uint32_t soft_switches;
 volatile uint32_t soft_switches_alt;
 volatile uint32_t soft_80col;
-volatile uint32_t soft_an3;
 volatile uint32_t soft_ioudis;
 volatile uint32_t soft_ramwrt;
-volatile uint32_t soft_ramrd;
 volatile uint32_t soft_80store;
 volatile uint32_t soft_dhires;
 volatile uint32_t soft_monochrom;

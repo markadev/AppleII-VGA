@@ -21,11 +21,6 @@ enum {
 };
 
 enum {
-    SOFTSW_AN3_OFF = 0x00,
-    SOFTSW_AN3_ON = 0x01,
-};
-
-enum {
     SOFTSW_IOUDIS_OFF = 0x00,
     SOFTSW_IOUDIS_ON = 0x01,
 };
@@ -33,8 +28,6 @@ enum {
 enum { SOFTSW_80STORE_OFF = 0x00, SOFTSW_80STORE_ON = 0x01 };
 
 enum { SOFTSW_WRITE_MAIN = 0x00, SOFTSW_WRITE_AUX = 0x01 };
-
-enum { SOFTSW_READ_MAIN = 0x00, SOFTSW_READ_AUX = 0x01 };
 
 enum { SOFTSW_DHIRES_OFF = 0x00, SOFTSW_DHIRES_ON = 0x01 };
 
@@ -51,9 +44,7 @@ extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
 extern volatile uint32_t soft_80col;
 extern volatile uint32_t soft_ioudis;
-extern volatile uint32_t soft_an3;
 extern volatile uint32_t soft_ramwrt;
-extern volatile uint32_t soft_ramrd;
 extern volatile uint32_t soft_80store;
 extern volatile uint32_t soft_dhires;
 extern volatile uint32_t soft_monochrom;
