@@ -1,8 +1,10 @@
+#include "render.h"
+
 #include <pico/stdlib.h>
 #include "buffers.h"
-#include "render.h"
-#include "vga.h"
+#include "colors.h"
 #include "lores_dot_patterns.h"
+#include "vga.h"
 
 
 static void render_lores_line(uint line);
@@ -157,7 +159,7 @@ static void __time_critical_func(drender_lores_line)(uint line) {
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
-    uint i, j;
+    uint i;
     uint32_t color1, color2;
     uint_fast8_t dotc = 0;
     uint32_t pixeldata;

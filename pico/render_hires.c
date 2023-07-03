@@ -1,9 +1,12 @@
+#include "render.h"
+
+#include <pico/stdlib.h>
 #include "buffers.h"
+#include "colors.h"
 #include "hires_color_patterns.h"
 #include "hires_dot_patterns.h"
-#include "render.h"
 #include "vga.h"
-#include <pico/stdlib.h>
+
 
 static void render_hires_line(uint line);
 #ifdef APPLE_MODEL_IIE

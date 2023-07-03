@@ -12,6 +12,8 @@ add_definitions(-DAPPLE_MODEL_${APPLE_MODEL}=1)
 
 pico_sdk_init()
 
+add_compile_options(-Wall -Wextra -Wnull-dereference -Wno-unused-parameter -Wno-unused-function)
+
 
 add_executable(applevga)
 
@@ -24,6 +26,7 @@ target_sources(applevga PUBLIC
     main.c
     abus.c
     buffers.c
+    colors.c
     render.c
     render_hires.c
     render_lores.c
