@@ -19,7 +19,6 @@ enum {
 typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_t data);
 
 
-static bool dhires_bit0_set;
 static shadow_handler softsw_handlers[128];
 
 
@@ -177,20 +176,12 @@ static void __time_critical_func(shadow_softsw_5e)(bool is_write, uint_fast16_t 
 
 static void __time_critical_func(shadow_softsw_5f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(soft_dhires) {
-        // This is the VIDEO7 Magic (Not documented by apple but by a patent US4631692 )
-        // Apple ii has softswitches and also a special 2bit shift register (two flipflops basicly)
-        // controlled with Softwitch 80COL and AN3, AN3 is the Clock, when AN3 goes from clear to set it puts
-        // the content of 80COL in the 2 switches
+        // This is the VIDEO7 Magic (Not documented by apple but by a patent US4631692)
+        // Apple II has softswitches and also a special 2bit shift register (two flipflops basically)
+        // controlled with Softwitch 80COL and AN3. AN3 is the Clock so when AN3 goes from clear to set
+        // it shifts the content of 80COL into the 2 switches.
         // this is VIDEO7 Mode
-
-        if(!dhires_bit0_set) {
-            soft_video7 = (0x01) & (soft_video7 | !soft_80col);
-            dhires_bit0_set = 1;
-        } else {
-            soft_video7 = soft_video7 | ((!soft_80col) << 1);
-            // reset state
-            dhires_bit0_set = 0;
-        }
+        soft_video7_mode = ((soft_video7_mode & 0x01) << 1) | (soft_80col ? 0 : 1);
     }
 
     soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
@@ -294,8 +285,7 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
         soft_ramwrt = 0;
         soft_80col = 0;
         soft_80store = 0;
-        soft_video7 = VIDEO7_MODE0;
-        dhires_bit0_set = 0;
+        soft_video7_mode = VIDEO7_MODE_140x192;
         soft_dhires = 0;
         soft_monochrom = 0;
         reset_phase_1_happening = false;

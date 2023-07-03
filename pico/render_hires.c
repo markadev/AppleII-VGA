@@ -161,7 +161,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     struct vga_scanline *sl = vga_prepare_scanline();
 
     // Pad 40 pixels on the left to center horizontally
-    if(soft_video7 != VIDEO7_MODE2) {
+    if(soft_video7_mode != VIDEO7_MODE_160x192) {
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
         sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
@@ -225,8 +225,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 sl->data[sl_pos++] = pixeldata;
             }
         }
-    } else if(soft_video7 == VIDEO7_MODE2) {
-        // 160x192 Video-7
+    } else if(soft_video7_mode == VIDEO7_MODE_160x192) {
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
@@ -247,8 +246,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 dotc -= 8;
             }
         }
-
-    } else if(soft_video7 == VIDEO7_MODE1) {
+    } else if(soft_video7_mode == VIDEO7_MODE_MIX) {
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
@@ -313,11 +311,12 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         }
     }
 
-    if(soft_video7 != VIDEO7_MODE2) {
+    if(soft_video7_mode != VIDEO7_MODE_160x192) {
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
         sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
     }
+
     sl->length = sl_pos;
     sl->repeat_count = 1;
     vga_submit_scanline(sl);
