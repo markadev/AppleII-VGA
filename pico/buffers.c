@@ -5,11 +5,11 @@ volatile uint32_t soft_switches;
 volatile uint32_t soft_switches_alt;
 volatile uint32_t soft_80col;
 volatile uint32_t soft_ioudis;
-volatile uint32_t soft_ramwrt;
-volatile uint32_t soft_80store;
 volatile uint32_t soft_dhires;
 volatile uint32_t soft_monochrom;
 volatile uint32_t soft_video7_mode;
+volatile bool soft_ramwrt;
+volatile bool soft_80store;
 
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[256 * 8];

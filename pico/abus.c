@@ -90,22 +90,22 @@ static void abus_main_setup(PIO pio, uint sm) {
 
 static void __time_critical_func(shadow_softsw_00)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_80store = ((uint32_t)SOFTSW_80STORE_OFF);
+        soft_80store = false;
 }
 
 static void __time_critical_func(shadow_softsw_01)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_80store = ((uint32_t)SOFTSW_80STORE_ON);
+        soft_80store = true;
 }
 
 static void __time_critical_func(shadow_softsw_04)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_ramwrt = ((uint32_t)SOFTSW_WRITE_MAIN);
+        soft_ramwrt = false;
 }
 
 static void __time_critical_func(shadow_softsw_05)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_ramwrt = ((uint32_t)SOFTSW_WRITE_AUX);
+        soft_ramwrt = true;
 }
 
 static void __time_critical_func(shadow_softsw_0c)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
@@ -244,26 +244,40 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
             return;
 
         // Refer to "Inside the Apple IIe" p.295 for how Aux memory addressing is done
-        if(soft_80store) {
-            if(soft_switches & SOFTSW_PAGE_2) {
-                if((address >= 0x400) && (address < 0x800)) {
-                    aux_memory[address] = value & 0xff;
-                    return;
-                } else if((soft_switches & SOFTSW_HIRES_MODE) && (address >= 0x2000) && (address < 0x4000)) {
-                    aux_memory[address] = value & 0xff;
-                    return;
-                }
+        if((address >= 0x400) && (address < 0x800)) {
+            // text page 1
+            uint8_t *bank;
+            if(soft_80store) {
+                // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
+                bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
+            } else if(soft_ramwrt) {
+                bank = aux_memory;
+            } else {
+                bank = main_memory;
             }
-        } else if(soft_ramwrt) {
-            if((address >= 0x200) && (address < 0xC000)) {
-                aux_memory[address] = value & 0xff;
-                return;
+            bank[address] = value & 0xff;
+        } else if((address >= 0x800) && (address < 0xc00)) {
+            // text page 2
+            uint8_t *bank = soft_ramwrt ? aux_memory : main_memory;
+            bank[address] = value & 0xff;
+        } else if((address >= 0x2000) && (address < 0x4000)) {
+            // hires page 1
+            uint8_t *bank;
+            if(soft_80store && (soft_switches & SOFTSW_HIRES_MODE)) {
+                // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
+                bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
+            } else if(soft_ramwrt) {
+                bank = aux_memory;
+            } else {
+                bank = main_memory;
             }
+            bank[address] = value & 0xff;
+        } else if((address >= 0x4000) && (address < 0x6000)) {
+            // hires page 2
+            uint8_t *bank = soft_ramwrt ? aux_memory : main_memory;
+            bank[address] = value & 0xff;
         }
 
-        if((address >= 0x200) && (address < 0xC000)) {
-            main_memory[address] = value & 0xff;
-        }
         return;
     }
 
@@ -282,12 +296,13 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
     } else if((address == 0xfffd) && !is_write && reset_phase_1_happening) {
         // Reset soft-switches
         soft_switches = SOFTSW_TEXT_MODE;
-        soft_ramwrt = 0;
         soft_80col = 0;
-        soft_80store = 0;
         soft_video7_mode = VIDEO7_MODE_140x192;
         soft_dhires = 0;
         soft_monochrom = 0;
+        soft_ramwrt = false;
+        soft_80store = false;
+
         reset_phase_1_happening = false;
     } else {
         reset_phase_1_happening = false;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
+
 
 enum {
     SOFTSW_TEXT_MODE = 0x01,
@@ -25,10 +27,6 @@ enum {
     SOFTSW_IOUDIS_ON = 0x01,
 };
 
-enum { SOFTSW_80STORE_OFF = 0x00, SOFTSW_80STORE_ON = 0x01 };
-
-enum { SOFTSW_WRITE_MAIN = 0x00, SOFTSW_WRITE_AUX = 0x01 };
-
 enum { SOFTSW_DHIRES_OFF = 0x00, SOFTSW_DHIRES_ON = 0x01 };
 
 enum { SOFTSW_MONO_DIS = 0, SOFTSW_MONO_EN = 1 };
@@ -44,11 +42,11 @@ extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
 extern volatile uint32_t soft_80col;
 extern volatile uint32_t soft_ioudis;
-extern volatile uint32_t soft_ramwrt;
-extern volatile uint32_t soft_80store;
 extern volatile uint32_t soft_dhires;
 extern volatile uint32_t soft_monochrom;
 extern volatile uint32_t soft_video7_mode;
+extern volatile bool soft_ramwrt;
+extern volatile bool soft_80store;
 
 extern uint8_t character_rom[256 * 8];
 #ifdef APPLE_MODEL_IIE
