@@ -187,16 +187,6 @@ static void __time_critical_func(shadow_softsw_5f)(bool is_write, uint_fast16_t 
     soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
 }
 
-static void __time_critical_func(shadow_softsw_7e)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
-    if(is_write)
-        soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_ON);
-}
-
-static void __time_critical_func(shadow_softsw_7f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
-    if(is_write)
-        soft_ioudis = ((uint32_t)SOFTSW_IOUDIS_OFF);
-}
-
 
 void abus_init() {
     // Init states
@@ -223,8 +213,6 @@ void abus_init() {
     softsw_handlers[0x0f] = shadow_softsw_0f;
     softsw_handlers[0x5e] = shadow_softsw_5e;
     softsw_handlers[0x5f] = shadow_softsw_5f;
-    softsw_handlers[0x7e] = shadow_softsw_7e;
-    softsw_handlers[0x7f] = shadow_softsw_7f;
 #endif
 
     abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);

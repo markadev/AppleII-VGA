@@ -41,7 +41,6 @@ enum {
 extern volatile uint32_t soft_switches;
 extern volatile uint32_t soft_switches_alt;
 extern volatile uint32_t soft_80col;
-extern volatile uint32_t soft_ioudis;
 extern volatile uint32_t soft_dhires;
 extern volatile uint32_t soft_monochrom;
 extern volatile uint32_t soft_video7_mode;
