@@ -82,14 +82,8 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
 
 void __time_critical_func(render_text)() {
     vga_prepare_frame();
-
     // Skip 48 lines to center vertically
-    struct vga_scanline *skip_sl = vga_prepare_scanline();
-    for(int i = 0; i < 48; i++) {
-        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
-    }
-    skip_sl->length = 48;
-    vga_submit_scanline(skip_sl);
+    vga_skip_lines(48);
 
 #ifdef APPLE_MODEL_IIE
     if(soft_80col) {

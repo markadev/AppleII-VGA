@@ -176,6 +176,7 @@ void vga_init() {
     pio_enable_sm_mask_in_sync(CONFIG_VGA_PIO, (1 << VGA_HSYNC_SM) | (1 << VGA_VSYNC_SM) | (1 << VGA_DATA_SM));
 }
 
+
 // Set up for a new display frame
 void vga_prepare_frame() {
     // Populate a 'scanline' with multiple sync instructions to synchronize with the
@@ -193,6 +194,7 @@ void vga_prepare_frame() {
 
     vga_submit_scanline(sl);
 }
+
 
 // Set up and return a new display scanline
 struct vga_scanline *vga_prepare_scanline() {
@@ -213,6 +215,7 @@ struct vga_scanline *vga_prepare_scanline() {
     return scanline;
 }
 
+
 // Mark the scanline as ready so it can be displayed
 void vga_submit_scanline(struct vga_scanline *scanline) {
     spin_lock_t *lock = spin_lock_instance(CONFIG_VGA_SPINLOCK_ID);
@@ -223,4 +226,21 @@ void vga_submit_scanline(struct vga_scanline *scanline) {
     scanline->_flags |= FLAG_READY;
     trigger_ready_scanline_dma();
     spin_unlock(lock, irq_status);
+}
+
+
+// Skip the given number of scanlines
+void vga_skip_lines(unsigned int n) {
+    if(n == 0)
+        return;
+
+    struct vga_scanline *sl = vga_prepare_scanline();
+
+    // A scanline implicitly includes one wait for hsync so add n-1 additional
+    for(unsigned int i = 0; i < n - 1; i++) {
+        sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
+    }
+
+    sl->length = n - 1;
+    vga_submit_scanline(sl);
 }

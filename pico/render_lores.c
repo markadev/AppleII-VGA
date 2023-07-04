@@ -15,14 +15,8 @@ static void drender_lores_line(uint line);
 
 void __time_critical_func(render_lores)() {
     vga_prepare_frame();
-
     // Skip 48 lines to center vertically
-    struct vga_scanline *skip_sl = vga_prepare_scanline();
-    for(int i = 0; i < 48; i++) {
-        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
-    }
-    skip_sl->length = 48;
-    vga_submit_scanline(skip_sl);
+    vga_skip_lines(48);
 
     for(uint line = 0; line < 24; line++) {
 #ifdef APPLE_MODEL_IIE
@@ -40,14 +34,8 @@ void __time_critical_func(render_lores)() {
 
 void __time_critical_func(render_mixed_lores)() {
     vga_prepare_frame();
-
     // Skip 48 lines to center vertically
-    struct vga_scanline *skip_sl = vga_prepare_scanline();
-    for(int i = 0; i < 48; i++) {
-        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
-    }
-    skip_sl->length = 48;
-    vga_submit_scanline(skip_sl);
+    vga_skip_lines(48);
 
     for(uint line = 0; line < 20; line++) {
 #ifdef APPLE_MODEL_IIE

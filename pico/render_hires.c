@@ -21,14 +21,8 @@ static inline uint hires_line_to_mem_offset(uint line) {
 
 void __time_critical_func(render_hires)() {
     vga_prepare_frame();
-
     // Skip 48 lines to center vertically
-    struct vga_scanline *skip_sl = vga_prepare_scanline();
-    for(int i = 0; i < 48; i++) {
-        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
-    }
-    skip_sl->length = 48;
-    vga_submit_scanline(skip_sl);
+    vga_skip_lines(48);
 
     for(uint line = 0; line < 192; line++) {
 #ifdef APPLE_MODEL_IIE
@@ -46,14 +40,8 @@ void __time_critical_func(render_hires)() {
 
 void __time_critical_func(render_mixed_hires)() {
     vga_prepare_frame();
-
     // Skip 48 lines to center vertically
-    struct vga_scanline *skip_sl = vga_prepare_scanline();
-    for(int i = 0; i < 48; i++) {
-        skip_sl->data[i] = (uint32_t)THEN_WAIT_HSYNC << 16;
-    }
-    skip_sl->length = 48;
-    vga_submit_scanline(skip_sl);
+    vga_skip_lines(48);
 
     for(uint line = 0; line < 160; line++) {
 #ifdef APPLE_MODEL_IIE

@@ -35,3 +35,4 @@ void vga_init();
 void vga_prepare_frame();
 struct vga_scanline *vga_prepare_scanline();
 void vga_submit_scanline(struct vga_scanline *scanline);
+void vga_skip_lines(unsigned int n);
