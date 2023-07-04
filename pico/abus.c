@@ -110,30 +110,30 @@ static void __time_critical_func(shadow_softsw_05)(bool is_write, uint_fast16_t 
 
 static void __time_critical_func(shadow_softsw_0c)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_80col = ((uint32_t)SOFTSW_80COL_OFF);
+        soft_80col = false;
 }
 
 static void __time_critical_func(shadow_softsw_0d)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_80col = ((uint32_t)SOFTSW_80COL_ON);
+        soft_80col = true;
 }
 
 static void __time_critical_func(shadow_softsw_0e)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_OFF);
+        soft_altcharset = false;
 }
 
 static void __time_critical_func(shadow_softsw_0f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
-        soft_switches_alt = ((uint32_t)SOFTSW_ALTCHAR_ON);
+        soft_altcharset = true;
 }
 
 static void __time_critical_func(shadow_softsw_21)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write) {
         if(data & 0x80) {
-            soft_monochrom = SOFTSW_MONO_EN;
+            soft_monochrom = true;
         } else {
-            soft_monochrom = SOFTSW_MONO_DIS;
+            soft_monochrom = false;
         }
     }
 }
@@ -171,7 +171,7 @@ static void __time_critical_func(shadow_softsw_57)(bool is_write, uint_fast16_t 
 }
 
 static void __time_critical_func(shadow_softsw_5e)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
-    soft_dhires = ((uint32_t)SOFTSW_DHIRES_ON);
+    soft_dhires = true;
 }
 
 static void __time_critical_func(shadow_softsw_5f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
@@ -184,7 +184,7 @@ static void __time_critical_func(shadow_softsw_5f)(bool is_write, uint_fast16_t 
         soft_video7_mode = ((soft_video7_mode & 0x01) << 1) | (soft_80col ? 0 : 1);
     }
 
-    soft_dhires = ((uint32_t)SOFTSW_DHIRES_OFF);
+    soft_dhires = false;
 }
 
 
@@ -284,12 +284,12 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
     } else if((address == 0xfffd) && !is_write && reset_phase_1_happening) {
         // Reset soft-switches
         soft_switches = SOFTSW_TEXT_MODE;
-        soft_80col = 0;
         soft_video7_mode = VIDEO7_MODE_140x192;
-        soft_dhires = 0;
-        soft_monochrom = 0;
-        soft_ramwrt = false;
+        soft_dhires = false;
+        soft_80col = false;
         soft_80store = false;
+        soft_altcharset = false;
+        soft_ramwrt = false;
 
         reset_phase_1_happening = false;
     } else {

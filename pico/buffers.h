@@ -13,25 +13,6 @@ enum {
 };
 
 enum {
-    SOFTSW_ALTCHAR_OFF = 0x00,
-    SOFTSW_ALTCHAR_ON = 0x01,
-};
-
-enum {
-    SOFTSW_80COL_OFF = 0x00,
-    SOFTSW_80COL_ON = 0x01,
-};
-
-enum {
-    SOFTSW_IOUDIS_OFF = 0x00,
-    SOFTSW_IOUDIS_ON = 0x01,
-};
-
-enum { SOFTSW_DHIRES_OFF = 0x00, SOFTSW_DHIRES_ON = 0x01 };
-
-enum { SOFTSW_MONO_DIS = 0, SOFTSW_MONO_EN = 1 };
-
-enum {
     VIDEO7_MODE_140x192 = 0,
     VIDEO7_MODE_160x192 = 1,
     VIDEO7_MODE_MIX = 2,
@@ -39,13 +20,14 @@ enum {
 };
 
 extern volatile uint32_t soft_switches;
-extern volatile uint32_t soft_switches_alt;
-extern volatile uint32_t soft_80col;
-extern volatile uint32_t soft_dhires;
-extern volatile uint32_t soft_monochrom;
 extern volatile uint32_t soft_video7_mode;
-extern volatile bool soft_ramwrt;
+extern volatile bool soft_80col;
 extern volatile bool soft_80store;
+extern volatile bool soft_altcharset;
+extern volatile bool soft_dhires;
+extern volatile bool soft_monochrom;
+extern volatile bool soft_ramwrt;
+
 
 extern uint8_t character_rom[256 * 8];
 #ifdef APPLE_MODEL_IIE

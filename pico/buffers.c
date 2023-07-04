@@ -2,13 +2,14 @@
 
 // Shadow copy of the Apple soft-switches
 volatile uint32_t soft_switches;
-volatile uint32_t soft_switches_alt;
-volatile uint32_t soft_80col;
-volatile uint32_t soft_dhires;
-volatile uint32_t soft_monochrom;
 volatile uint32_t soft_video7_mode;
-volatile bool soft_ramwrt;
+volatile bool soft_80col;
 volatile bool soft_80store;
+volatile bool soft_altcharset;
+volatile bool soft_dhires;
+volatile bool soft_monochrom;
+volatile bool soft_ramwrt;
+
 
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[256 * 8];

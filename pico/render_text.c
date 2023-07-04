@@ -28,7 +28,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
     uint_fast8_t bits = 0;
 #ifdef APPLE_MODEL_IIE
     //! Added Alternate ROM support
-    if(soft_switches_alt) {
+    if(soft_altcharset) {
         bits = altcharacter_rom[((uint_fast16_t)ch << 3) | glyph_line];
     } else {
         bits = character_rom[((uint_fast16_t)ch << 3) | glyph_line];
@@ -55,7 +55,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
         // inverse character
         int_fast8_t output = 0;
 #ifdef APPLE_MODEL_IIE
-        if(soft_switches_alt) {
+        if(soft_altcharset) {
             //! Need to check is not MouseText
             if((ch > 0x3F) & (ch <= 0x5F)) {
                 //! This is MouseText output normal
