@@ -77,10 +77,9 @@ static void __time_critical_func(render_hires_line)(uint line) {
     const uint8_t *line_mem = (const uint8_t *)(page + hires_line_to_mem_offset(line));
 
     // Pad 40 pixels on the left to center horizontally
-    // Pad 40 pixels on the left to center horizontally
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
 
     // Each hires byte contains 7 pixels which may be shifted right 1/2 a pixel.
     // That is represented here by 14 'dots' to precisely describe the half-pixel
@@ -125,9 +124,6 @@ static void __time_critical_func(render_hires_line)(uint line) {
             oddness ^= 0x100;
         }
     }
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
 
     sl->length = sl_pos;
     sl->repeat_count = 1;
@@ -153,9 +149,9 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
     // Pad 40 pixels on the left to center horizontally
     if(soft_video7_mode != VIDEO7_MODE_160x192) {
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
     }
     i = 0;
 
@@ -300,12 +296,6 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 dotc -= 8;
             }
         }
-    }
-
-    if(soft_video7_mode != VIDEO7_MODE_160x192) {
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 16 pixels per word
     }
 
     sl->length = sl_pos;
