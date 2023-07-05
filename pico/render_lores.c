@@ -3,14 +3,26 @@
 #include <pico/stdlib.h>
 #include "buffers.h"
 #include "colors.h"
-#include "lores_dot_patterns.h"
 #include "vga.h"
 
 
 static void render_lores_line(uint line);
 #ifdef APPLE_MODEL_IIE
-static void drender_lores_line(uint line);
+static void render_dlores_line(uint line);
 #endif
+
+
+// clang-format off
+static uint16_t lores_mono_dot_pattern[16] = {
+    0x0000, 0x2222, 0x1111, 0x3333, 0x0888, 0x2aaa, 0x1999, 0x3bbb,
+    0x0444, 0x2666, 0x1555, 0x3777, 0x0ccc, 0x2eee, 0x1ddd, 0x3fff,
+};
+// clang-format on
+
+
+static inline uint __time_critical_func(lores_line_to_mem_offset)(uint line) {
+    return ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
+}
 
 
 void __time_critical_func(render_lores)() {
@@ -18,16 +30,17 @@ void __time_critical_func(render_lores)() {
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
 
-    for(uint line = 0; line < 24; line++) {
 #ifdef APPLE_MODEL_IIE
-        if(soft_dhires) {
-            drender_lores_line(line);
-        } else {
+    if(soft_80col && soft_dhires) {
+        for(uint line = 0; line < 24; line++) {
+            render_dlores_line(line);
+        }
+    } else
+#endif
+    {
+        for(uint line = 0; line < 24; line++) {
             render_lores_line(line);
         }
-#else
-        render_lores_line(line);
-#endif
     }
 }
 
@@ -37,32 +50,26 @@ void __time_critical_func(render_mixed_lores)() {
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
 
-    for(uint line = 0; line < 20; line++) {
 #ifdef APPLE_MODEL_IIE
-        if(soft_dhires) {
-            drender_lores_line(line);
-        } else {
-            render_lores_line(line);
+    if(soft_80col && soft_dhires) {
+        for(uint line = 0; line < 20; line++) {
+            render_dlores_line(line);
         }
-#else
-        render_lores_line(line);
-#endif
-    }
-#ifdef APPLE_MODEL_IIE
-    if(soft_80col || soft_dhires) {
+
         for(uint line = 20; line < 24; line++) {
             render_text80_line(line);
         }
-    } else {
+    } else
+#endif
+    {
+        for(uint line = 0; line < 20; line++) {
+            render_lores_line(line);
+        }
+
         for(uint line = 20; line < 24; line++) {
             render_text_line(line);
         }
     }
-#else
-    for(uint line = 20; line < 24; line++) {
-        render_text_line(line);
-    }
-#endif
 }
 
 
@@ -71,11 +78,9 @@ static void __time_critical_func(render_lores_line)(uint line) {
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
-    uint i, j;
-    uint32_t color1, color2;
 
-    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1);
-    const uint8_t *line_buf = (const uint8_t *)(page + ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1;
+    const uint8_t *line_buf = page + lores_line_to_mem_offset(line);
 
     // Pad 40 pixels on the left to center horizontally
     sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
@@ -89,13 +94,13 @@ static void __time_critical_func(render_lores_line)(uint line) {
     sl_pos++;
 
     if(soft_monochrom) {
-        for(i = 0; i < 40; i += 2) {
-            color1 = lores_dot_pattern[line_buf[i] & 0xf] << 14;
-            color2 = lores_dot_pattern[(line_buf[i] >> 4) & 0xf] << 14;
-            color1 |= lores_dot_pattern[line_buf[i + 1] & 0xf];
-            color2 |= lores_dot_pattern[(line_buf[i + 1] >> 4) & 0xf];
+        for(int i = 0; i < 40; i += 2) {
+            uint32_t color1 = lores_mono_dot_pattern[line_buf[i] & 0xf] << 14;
+            uint32_t color2 = lores_mono_dot_pattern[(line_buf[i] >> 4) & 0xf] << 14;
+            color1 |= lores_mono_dot_pattern[line_buf[i + 1] & 0xf];
+            color2 |= lores_mono_dot_pattern[(line_buf[i + 1] >> 4) & 0xf];
 
-            for(j = 0; j < 14; j++) {
+            for(int j = 0; j < 14; j++) {
                 uint32_t pixeldata;
 
                 pixeldata = (color1 & 0x8000000) ? (lores_palette[15]) : (lores_palette[0]);
@@ -122,15 +127,7 @@ static void __time_critical_func(render_lores_line)(uint line) {
             sl_pos++;
         }
     }
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl_pos++;
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl_pos++;
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels per word
-    sl_pos++;
+
     sl1->length = sl_pos;
     sl1->repeat_count = 7;
     vga_submit_scanline(sl1);
@@ -142,21 +139,17 @@ static void __time_critical_func(render_lores_line)(uint line) {
 
 
 #ifdef APPLE_MODEL_IIE
-static void __time_critical_func(drender_lores_line)(uint line) {
+static void __time_critical_func(render_dlores_line)(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
-    uint i;
-    uint32_t color1, color2;
-    uint_fast8_t dotc = 0;
-    uint32_t pixeldata;
 
-    const uint8_t *line_bufa = (const uint8_t *)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1) +
-                                                 ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
-
-    const uint8_t *line_bufb = (const uint8_t *)((((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3) +
-                                                 ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40));
+    const uint8_t *page_main = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1;
+    const uint8_t *page_aux = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3;
+    const uint line_offset = lores_line_to_mem_offset(line);
+    const uint8_t *line_main = page_main + line_offset;
+    const uint8_t *line_aux = page_aux + line_offset;
 
     // Pad 40 pixels on the left to center horizontally
     sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
@@ -169,70 +162,20 @@ static void __time_critical_func(drender_lores_line)(uint line) {
     sl2->data[sl_pos] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels per word
     sl_pos++;
 
-    i = 0;
-    color1 = 0;
-    color2 = 0;
+    for(int i = 0; i < 40; i++) {
+        // First pixel data is from aux memory
+        uint32_t color_aux1 = dhgr_palette[line_aux[i] & 0xf];
+        uint32_t color_aux2 = dhgr_palette[(line_aux[i] >> 4) & 0xf];
 
-    while(i < 40) {
-        while((dotc <= 14) && (i < 40)) {
-            color1 |= dgr_dot_pattern[((i & 1) << 4) | (line_bufb[i] & 0xf)] << dotc;
-            color2 |= dgr_dot_pattern[((i & 1) << 4) | ((line_bufb[i] >> 4) & 0xf)] << dotc;
-            dotc += 7;
-            color1 |= dgr_dot_pattern[((i & 1) << 4) | (line_bufa[i] & 0xf)] << dotc;
-            color2 |= dgr_dot_pattern[((i & 1) << 4) | ((line_bufa[i] >> 4) & 0xf)] << dotc;
-            dotc += 7;
-            i++;
-        }
+        // Next pixel data is from main memory
+        uint32_t color_main1 = lores_palette[line_main[i] & 0xf];
+        uint32_t color_main2 = lores_palette[(line_main[i] >> 4) & 0xf];
 
-        // Consume pixels
-        while((dotc >= 8) || ((dotc > 0) && (i == 40))) {
-            color1 &= 0xfffffffe;
-            color1 |= (color1 >> 4) & 1;
-            pixeldata = dhgr_palette[color1 & 0xf];
-            color1 &= 0xfffffffc;
-            color1 |= (color1 >> 4) & 3;
-            pixeldata |= dhgr_palette[color1 & 0xf] << 16;
-            sl1->data[sl_pos] = pixeldata;
-
-            color2 &= 0xfffffffe;
-            color2 |= (color2 >> 4) & 1;
-            pixeldata = dhgr_palette[color2 & 0xf];
-            color2 &= 0xfffffffc;
-            color2 |= (color2 >> 4) & 3;
-            pixeldata |= dhgr_palette[color2 & 0xf] << 16;
-            sl2->data[sl_pos] = pixeldata;
-
-            sl_pos++;
-
-            color1 &= 0xfffffff8;
-            color1 |= (color1 >> 4) & 7;
-            pixeldata = dhgr_palette[color1 & 0xf];
-            color1 >>= 4;
-            pixeldata |= dhgr_palette[color1 & 0xf] << 16;
-            sl1->data[sl_pos] = pixeldata;
-
-            color2 &= 0xfffffff8;
-            color2 |= (color2 >> 4) & 7;
-            pixeldata = dhgr_palette[color2 & 0xf];
-            color2 >>= 4;
-            pixeldata |= dhgr_palette[color2 & 0xf] << 16;
-            sl2->data[sl_pos] = pixeldata;
-
-            sl_pos++;
-            dotc -= 4;
-        }
+        // Each double-lores pixel is 3.5 hires pixels, or 7 VGA pixels wide
+        sl1->data[sl_pos] = (color_aux1 | THEN_EXTEND_6) | ((color_main1 | THEN_EXTEND_6) << 16);
+        sl2->data[sl_pos] = (color_aux2 | THEN_EXTEND_6) | ((color_main2 | THEN_EXTEND_6) << 16);
+        sl_pos++;
     }
-
-    // Pad 40 pixels on the right to center horizontally
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl_pos++;
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels per word
-    sl_pos++;
-    sl1->data[sl_pos] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels per word
-    sl2->data[sl_pos] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels per word
-    sl_pos++;
 
     sl1->length = sl_pos;
     sl1->repeat_count = 7;
