@@ -56,15 +56,7 @@ void __time_critical_func(render_mixed_hires)() {
     }
 
     for(uint line = 20; line < 24; line++) {
-#ifdef APPLE_MODEL_IIE
-        if(soft_80col || soft_dhires) {
-            render_text80_line(line);
-        } else {
-            render_text_line(line);
-        }
-#else
         render_text_line(line);
-#endif
     }
 }
 

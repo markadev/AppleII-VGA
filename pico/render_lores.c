@@ -55,20 +55,16 @@ void __time_critical_func(render_mixed_lores)() {
         for(uint line = 0; line < 20; line++) {
             render_dlores_line(line);
         }
-
-        for(uint line = 20; line < 24; line++) {
-            render_text80_line(line);
-        }
     } else
 #endif
     {
         for(uint line = 0; line < 20; line++) {
             render_lores_line(line);
         }
+    }
 
-        for(uint line = 20; line < 24; line++) {
-            render_text_line(line);
-        }
+    for(uint line = 20; line < 24; line++) {
+        render_text_line(line);
     }
 }
 
