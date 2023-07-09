@@ -24,16 +24,17 @@ void __time_critical_func(render_hires)() {
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
 
-    for(uint line = 0; line < 192; line++) {
 #ifdef APPLE_MODEL_IIE
-        if(soft_dhires) {
+    if(soft_80col && soft_dhires) {
+        for(uint line = 0; line < 192; line++) {
             render_dhires_line(line);
-        } else {
+        }
+    } else
+#endif
+    {
+        for(uint line = 0; line < 192; line++) {
             render_hires_line(line);
         }
-#else
-        render_hires_line(line);
-#endif
     }
 }
 
@@ -43,16 +44,17 @@ void __time_critical_func(render_mixed_hires)() {
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
 
-    for(uint line = 0; line < 160; line++) {
 #ifdef APPLE_MODEL_IIE
-        if(soft_dhires) {
+    if(soft_80col && soft_dhires) {
+        for(uint line = 0; line < 160; line++) {
             render_dhires_line(line);
-        } else {
+        }
+    } else
+#endif
+    {
+        for(uint line = 0; line < 160; line++) {
             render_hires_line(line);
         }
-#else
-        render_hires_line(line);
-#endif
     }
 
     for(uint line = 20; line < 24; line++) {
