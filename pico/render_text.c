@@ -106,12 +106,12 @@ void __time_critical_func(render_text_line)(unsigned int line) {
 
     const uint8_t *line_aux = 0;
     if(soft_80col) {
-        // Read even-columned characters from the aux memory bank in 80 column mode
+        // Read odd-column characters from the aux memory bank in 80 column mode
         const uint8_t *page_aux = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3;
         line_aux = page_aux + line_offset;
     } else {
         // else just double the pixel width in 40 column mode
-        for(int i=0; i < 4; i++) {
+        for(int i = 0; i < 4; i++) {
             bits_to_pixelpair[i] |= (THEN_EXTEND_1 | (THEN_EXTEND_1 << 16));
         }
     }
@@ -131,7 +131,8 @@ void __time_critical_func(render_text_line)(unsigned int line) {
             uint_fast8_t char_a = (line_aux != NULL) ? line_aux[col] : line_main[col++];
             uint_fast8_t char_b = line_main[col++];
 
-            uint_fast16_t bits = ((uint_fast16_t)char_text_bits(char_a, glyph_line) << 7) | (uint_fast16_t)char_text_bits(char_b, glyph_line);
+            uint_fast16_t bits =
+                ((uint_fast16_t)char_text_bits(char_a, glyph_line) << 7) | (uint_fast16_t)char_text_bits(char_b, glyph_line);
 
             // Translate each pair of bits into a pair of pixels
             for(int i = 0; i < 7; i++) {
