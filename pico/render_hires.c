@@ -128,63 +128,62 @@ static void __time_critical_func(render_hires_line)(uint line) {
 #ifdef APPLE_MODEL_IIE
 static void __time_critical_func(render_dhires_line)(uint line) {
     uint sl_pos = 0;
-    uint i, j;
+    uint i;
     uint_fast8_t dotc = 0;
     uint32_t dots = 0;
-    uint32_t color1, color2, color3, color4;
     uint32_t pixeldata;
-    uint32_t pixelmode = 0;
 
-    const uint8_t *page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1);
-    const uint8_t *aux_page = (const uint8_t *)(((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3);
-    const uint8_t *line_mema = (const uint8_t *)(page + hires_line_to_mem_offset(line));
-    const uint8_t *line_memb = (const uint8_t *)(aux_page + hires_line_to_mem_offset(line));
+    const int mode = soft_monochrom ? VIDEO7_MODE_560x192 : soft_video7_mode;
+
+    const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1;
+    const uint8_t *aux_page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3;
+    const uint8_t *line_mem_even = page + hires_line_to_mem_offset(line);
+    const uint8_t *line_mem_odd = aux_page + hires_line_to_mem_offset(line);
+
     struct vga_scanline *sl = vga_prepare_scanline();
 
     // Pad 40 pixels on the left to center horizontally
-    if(soft_video7_mode != VIDEO7_MODE_160x192) {
+    if(mode != VIDEO7_MODE_160x192) {
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
         sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
     }
     i = 0;
 
-    // Video 7 F/B HiRes
-    if(soft_monochrom) {
-        while(i < 40) {
-            // Load in as many subpixels as possible
-            while((dotc < 28) && (i < 40)) {
-                dots |= (line_memb[i] & 0x7f) << dotc;
-                dotc += 7;
-                dots |= (line_mema[i] & 0x7f) << dotc;
-                dotc += 7;
-                i++;
-            }
+    if(mode == VIDEO7_MODE_560x192) {
+        // 560x192 monochrome mode - Extended 80-column text/AppleColor adapter card
+        const uint32_t bits_to_pixels[4] = {
+            0,
+            (uint32_t)0x1ff,
+            (uint32_t)0x1ff << 16,
+            ((uint32_t)0x1ff << 16 | 0x1ff),
+        };
 
-            // Consume pixels
-            while(dotc) {
-                pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
-                dots >>= 1;
-                pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
-                dots >>= 1;
-                sl->data[sl_pos++] = pixeldata;
-                dotc -= 2;
+        for(i = 0; i < 40; i++) {
+            // Extract 14 bits from the next 2 display bytes
+            dots = (line_mem_odd[i] & 0x7f) | ((uint32_t)line_mem_even[i] & 0x7f) << 7;
+
+            // Render out the pixels, least significant bit first
+            for(int j = 0; j < 7; j++) {
+                sl->data[sl_pos] = bits_to_pixels[dots & 0x03];
+                sl_pos++;
+                dots >>= 2;
             }
         }
     } else if(soft_80store && !soft_80col) {
         // Video 7 F/B HiRes
         while(i < 40) {
-            dots = (line_mema[i] & 0x7f);
-            color1 = lores_palette[(line_memb[i] >> 4) & 0xF];
-            color2 = lores_palette[(line_memb[i] >> 0) & 0xF];
+            dots = (line_mem_even[i] & 0x7f);
+            uint32_t color1 = lores_palette[(line_mem_odd[i] >> 4) & 0xF];
+            uint32_t color2 = lores_palette[(line_mem_odd[i] >> 0) & 0xF];
             i++;
 
-            dots |= (line_mema[i] & 0x7f) << 7;
-            color3 = lores_palette[(line_memb[i] >> 4) & 0xF];
-            color4 = lores_palette[(line_memb[i] >> 0) & 0xF];
+            dots |= (line_mem_even[i] & 0x7f) << 7;
+            uint32_t color3 = lores_palette[(line_mem_odd[i] >> 4) & 0xF];
+            uint32_t color4 = lores_palette[(line_mem_odd[i] >> 0) & 0xF];
             i++;
 
-            for(j = 0; j < 3; j++) {
+            for(int j = 0; j < 3; j++) {
                 pixeldata = ((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1;
                 dots >>= 1;
                 pixeldata |= (((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1) << 16;
@@ -198,7 +197,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             dots >>= 1;
             sl->data[sl_pos++] = pixeldata;
 
-            for(j = 0; j < 3; j++) {
+            for(int j = 0; j < 3; j++) {
                 pixeldata = ((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1;
                 dots >>= 1;
                 pixeldata |= (((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1) << 16;
@@ -206,13 +205,13 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 sl->data[sl_pos++] = pixeldata;
             }
         }
-    } else if(soft_video7_mode == VIDEO7_MODE_160x192) {
+    } else if(mode == VIDEO7_MODE_160x192) {
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
-                dots |= (line_memb[i] & 0xff) << dotc;
+                dots |= (line_mem_odd[i] & 0xff) << dotc;
                 dotc += 7;
-                dots |= (line_mema[i] & 0xff) << dotc;
+                dots |= (line_mem_even[i] & 0xff) << dotc;
                 dotc += 7;
                 i++;
             }
@@ -227,15 +226,16 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 dotc -= 8;
             }
         }
-    } else if(soft_video7_mode == VIDEO7_MODE_MIX) {
+    } else if(mode == VIDEO7_MODE_MIX) {
+        uint32_t pixelmode = 0;
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
-                dots |= (line_memb[i] & 0x7f) << dotc;
-                pixelmode |= ((line_memb[i] & 0x80) ? 0x7f : 0x00) << dotc;
+                dots |= (line_mem_odd[i] & 0x7f) << dotc;
+                pixelmode |= ((line_mem_odd[i] & 0x80) ? 0x7f : 0x00) << dotc;
                 dotc += 7;
-                dots |= (line_mema[i] & 0x7f) << dotc;
-                pixelmode |= ((line_mema[i] & 0x80) ? 0x7f : 0x00) << dotc;
+                dots |= (line_mem_even[i] & 0x7f) << dotc;
+                pixelmode |= ((line_mem_even[i] & 0x80) ? 0x7f : 0x00) << dotc;
                 dotc += 7;
                 i++;
             }
@@ -273,9 +273,9 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
-                dots |= (line_memb[i] & 0x7f) << dotc;
+                dots |= (line_mem_odd[i] & 0x7f) << dotc;
                 dotc += 7;
-                dots |= (line_mema[i] & 0x7f) << dotc;
+                dots |= (line_mem_even[i] & 0x7f) << dotc;
                 dotc += 7;
                 i++;
             }
