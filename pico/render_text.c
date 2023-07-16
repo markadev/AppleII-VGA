@@ -143,8 +143,12 @@ void __time_critical_func(render_text_line)(unsigned int line) {
             }
         }
 
-        sl->length = sl_pos;
+#ifdef ENABLE_SCANLINE_EFFECT
+        sl->data[sl_pos++] = THEN_WAIT_HSYNC;  // Insert one blank line to visually separate the rendered lines
+#else
         sl->repeat_count = 1;
+#endif
+        sl->length = sl_pos;
         vga_submit_scanline(sl);
     }
 }
