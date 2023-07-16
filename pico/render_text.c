@@ -2,6 +2,7 @@
 
 #include <pico/stdlib.h>
 #include "buffers.h"
+#include "colors.h"
 #include "textfont.h"
 #include "vga.h"
 
@@ -93,10 +94,10 @@ void __time_critical_func(render_text)() {
 
 void __time_critical_func(render_text_line)(unsigned int line) {
     uint32_t bits_to_pixelpair[4] = {
-        0,
-        (uint32_t)0x1ff << 16,
-        (uint32_t)0x1ff,
-        ((uint32_t)0x1ff << 16 | 0x1ff),
+        ((uint32_t)mono_bg_color << 16) | mono_bg_color,
+        ((uint32_t)mono_fg_color << 16) | mono_bg_color,
+        ((uint32_t)mono_bg_color << 16) | mono_fg_color,
+        ((uint32_t)mono_fg_color << 16) | mono_fg_color,
     };
 
     const uint line_offset = text_line_to_mem_offset(line);

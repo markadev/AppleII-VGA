@@ -23,6 +23,9 @@
 #define COLOR_YELLOW    RGB333(0xff, 0xff, 0x00)
 #define COLOR_AQUA      RGB333(0x44, 0xff, 0x99)
 #define COLOR_WHITE     RGB333(0xff, 0xff, 0xff)
+
+#define COLOR_MONO_AMBER  RGB333(0xff, 0xb0, 0x00)
+#define COLOR_MONO_GREEN  RGB333(0x33, 0xff, 0x33)
 // clang-format on
 
 const uint16_t lores_palette[16] = {
@@ -62,3 +65,6 @@ const uint16_t dhgr_palette[16] = {
     COLOR_YELLOW,
     COLOR_WHITE,
 };
+
+uint16_t mono_bg_color = COLOR_BLACK;
+uint16_t mono_fg_color = COLOR_WHITE;

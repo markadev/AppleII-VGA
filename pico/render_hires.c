@@ -150,12 +150,14 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     i = 0;
 
     if(mode == VIDEO7_MODE_560x192) {
-        // 560x192 monochrome mode - Extended 80-column text/AppleColor adapter card
+        // 560x192 monochrome mode - Ref: VIDEO-7 User's Manual section 7.6.1 and US Patent 4631692
+        // Supported by the Extended 80-column text/AppleColor adapter card
+
         const uint32_t bits_to_pixels[4] = {
-            0,
-            (uint32_t)0x1ff,
-            (uint32_t)0x1ff << 16,
-            ((uint32_t)0x1ff << 16 | 0x1ff),
+            ((uint32_t)mono_bg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_bg_color << 16) | mono_fg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_fg_color,
         };
 
         for(i = 0; i < 40; i++) {
@@ -209,18 +211,18 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                     sl->data[sl_pos++] = pixeldata;
                     dotc -= 4;
                 } else {
-                    uint32_t pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
+                    uint32_t pixeldata = (dots & 1) ? dhgr_palette[15] : dhgr_palette[0];
                     dots >>= 1;
                     pixelmode >>= 1;
-                    pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
+                    pixeldata |= (uint32_t)((dots & 1) ? dhgr_palette[15] : dhgr_palette[0]) << 16;
                     dots >>= 1;
                     pixelmode >>= 1;
                     sl->data[sl_pos++] = pixeldata;
                     dotc -= 2;
-                    pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
+                    pixeldata = (dots & 1) ? dhgr_palette[15] : dhgr_palette[0];
                     dots >>= 1;
                     pixelmode >>= 1;
-                    pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
+                    pixeldata |= (uint32_t)((dots & 1) ? dhgr_palette[15] : dhgr_palette[0]) << 16;
                     dots >>= 1;
                     pixelmode >>= 1;
                     sl->data[sl_pos++] = pixeldata;
