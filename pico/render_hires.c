@@ -170,25 +170,20 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             }
         }
     } else if(mode == VIDEO7_MODE_160x192) {
-        while(i < 40) {
-            // Load in as many subpixels as possible
-            while((dotc <= 18) && (i < 40)) {
-                dots |= (line_mem_odd[i] & 0xff) << dotc;
-                dotc += 7;
-                dots |= (line_mem_even[i] & 0xff) << dotc;
-                dotc += 7;
-                i++;
-            }
+        // 160x192 16-color mode - Ref: VIDEO-7 User's Manual section 7.6.3 and US Patent 4631692
+        for(i = 0; i < 40; i++) {
+            // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
+            uint_fast8_t b = line_mem_odd[i];
+            uint_fast16_t pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
+            uint_fast16_t pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
+            sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
+            sl_pos++;
 
-            // Consume pixels
-            while(dotc >= 8) {
-                uint32_t pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
-                dots >>= 4;
-                pixeldata |= (lores_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
-                dots >>= 4;
-                sl->data[sl_pos++] = pixeldata;
-                dotc -= 8;
-            }
+            b = line_mem_even[i];
+            pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
+            pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
+            sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
+            sl_pos++;
         }
     } else if(mode == VIDEO7_MODE_MIX) {
         uint32_t pixelmode = 0;
@@ -234,6 +229,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             }
         }
     } else {
+        // Standard 140x192 16-color double-hires mode
         while(i < 40) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
