@@ -131,7 +131,6 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     uint i;
     uint_fast8_t dotc = 0;
     uint32_t dots = 0;
-    uint32_t pixeldata;
 
     const int mode = soft_monochrom ? VIDEO7_MODE_560x192 : soft_video7_mode;
 
@@ -170,41 +169,6 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 dots >>= 2;
             }
         }
-    } else if(soft_80store && !soft_80col) {
-        // Video 7 F/B HiRes
-        while(i < 40) {
-            dots = (line_mem_even[i] & 0x7f);
-            uint32_t color1 = lores_palette[(line_mem_odd[i] >> 4) & 0xF];
-            uint32_t color2 = lores_palette[(line_mem_odd[i] >> 0) & 0xF];
-            i++;
-
-            dots |= (line_mem_even[i] & 0x7f) << 7;
-            uint32_t color3 = lores_palette[(line_mem_odd[i] >> 4) & 0xF];
-            uint32_t color4 = lores_palette[(line_mem_odd[i] >> 0) & 0xF];
-            i++;
-
-            for(int j = 0; j < 3; j++) {
-                pixeldata = ((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1;
-                dots >>= 1;
-                pixeldata |= (((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1) << 16;
-                dots >>= 1;
-                sl->data[sl_pos++] = pixeldata;
-            }
-
-            pixeldata = ((dots & 1) ? (color1) : (color2)) | THEN_EXTEND_1;
-            dots >>= 1;
-            pixeldata |= (((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1) << 16;
-            dots >>= 1;
-            sl->data[sl_pos++] = pixeldata;
-
-            for(int j = 0; j < 3; j++) {
-                pixeldata = ((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1;
-                dots >>= 1;
-                pixeldata |= (((dots & 1) ? (color3) : (color4)) | THEN_EXTEND_1) << 16;
-                dots >>= 1;
-                sl->data[sl_pos++] = pixeldata;
-            }
-        }
     } else if(mode == VIDEO7_MODE_160x192) {
         while(i < 40) {
             // Load in as many subpixels as possible
@@ -218,7 +182,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
             // Consume pixels
             while(dotc >= 8) {
-                pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
+                uint32_t pixeldata = (lores_palette[dots & 0xf] | THEN_EXTEND_3);
                 dots >>= 4;
                 pixeldata |= (lores_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
                 dots >>= 4;
@@ -243,14 +207,14 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             // Consume pixels
             while(dotc >= 4) {
                 if(pixelmode) {
-                    pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
+                    uint32_t pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
                     pixeldata |= pixeldata << 16;
                     dots >>= 4;
                     pixelmode >>= 4;
                     sl->data[sl_pos++] = pixeldata;
                     dotc -= 4;
                 } else {
-                    pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
+                    uint32_t pixeldata = ((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]));
                     dots >>= 1;
                     pixelmode >>= 1;
                     pixeldata |= (((dots & 1) ? (dhgr_palette[15]) : (dhgr_palette[0]))) << 16;
@@ -282,7 +246,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
             // Consume pixels
             while(dotc >= 8) {
-                pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
+                uint32_t pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
                 dots >>= 4;
                 pixeldata |= (dhgr_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
                 dots >>= 4;
