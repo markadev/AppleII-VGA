@@ -10,6 +10,9 @@ volatile bool soft_dhires;
 volatile bool soft_monochrom;
 volatile bool soft_ramwrt;
 
+// Custom device soft-switches
+volatile bool soft_scanline_emulation;
+
 
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[256 * 8];

@@ -1,10 +1,7 @@
 #pragma once
 
-// Uncomment to enable test patter generator
+// Uncomment to enable test pattern generator
 // #define RENDER_TEST_PATTERN
-
-// Experimental!
-// #define ENABLE_SCANLINE_EFFECT 1
 
 extern void render_init();
 extern void render_loop();

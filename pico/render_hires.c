@@ -119,11 +119,12 @@ static void __time_critical_func(render_hires_line)(uint line) {
         }
     }
 
-#ifdef ENABLE_SCANLINE_EFFECT
-    sl->data[sl_pos++] = THEN_WAIT_HSYNC;  // Insert one blank line to visually separate the rendered lines
-#else
-    sl->repeat_count = 1;
-#endif
+    if(soft_scanline_emulation) {
+        // Just insert a blank scanline between each rendered scanline
+        sl->data[sl_pos++] = THEN_WAIT_HSYNC;
+    } else {
+        sl->repeat_count = 1;
+    }
     sl->length = sl_pos;
     vga_submit_scanline(sl);
 }
@@ -258,11 +259,12 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         }
     }
 
-#ifdef ENABLE_SCANLINE_EFFECT
-    sl->data[sl_pos++] = THEN_WAIT_HSYNC;  // Insert one blank line to visually separate the rendered lines
-#else
-    sl->repeat_count = 1;
-#endif
+    if(soft_scanline_emulation) {
+        // Just insert a blank scanline between each rendered scanline
+        sl->data[sl_pos++] = THEN_WAIT_HSYNC;
+    } else {
+        sl->repeat_count = 1;
+    }
     sl->length = sl_pos;
     vga_submit_scanline(sl);
 }

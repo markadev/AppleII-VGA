@@ -28,6 +28,8 @@ extern volatile bool soft_dhires;
 extern volatile bool soft_monochrom;
 extern volatile bool soft_ramwrt;
 
+extern volatile bool soft_scanline_emulation;
+
 
 extern uint8_t character_rom[256 * 8];
 #ifdef APPLE_MODEL_IIE

@@ -222,6 +222,17 @@ void abus_init() {
 }
 
 
+// Handle a write to one of the registers on this device's slot
+static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t data) {
+    switch(reg) {
+    case 0x00:
+        soft_scanline_emulation = !!(data & 0x01);
+        break;
+    default:;
+    }
+}
+
+
 static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t address, uint32_t value) {
     // Shadow parts of the Apple's memory by observing the bus write cycles
     static bool reset_phase_1_happening = false;
@@ -299,20 +310,28 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
 
 
 void __time_critical_func(abus_loop)() {
+    const uint32_t devsel_rw_mask = (1u << (CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE)) |
+                                    (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE));
+    const uint32_t is_devsel_read = (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE));
+    const uint32_t is_devsel_write = 0;
+
     while(1) {
         uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
 
-        uint_fast16_t address = (value >> 10) & 0xffff;
-        bool is_write = ((value & (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
-
-        if(((value & (1u << (CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0)) {
-            if(!is_write) {
-                // device read access
-                pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, address & 0xf);
-            }
+        uint_fast8_t device_reg = (value >> 10) & 0xf;
+        if((value & devsel_rw_mask) == is_devsel_read) {
+            // device read access - for testing, just respond with the I/O register's offset
+            pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, device_reg);
             gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
+        } else if((value & devsel_rw_mask) == is_devsel_write) {
+            // device write access
+            device_write(device_reg, value & 0xff);
+            gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
+        } else {
+            // some other bus cycle - handle memory & soft-switch shadowing
+            bool is_write = ((value & (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
+            uint_fast16_t address = (value >> 10) & 0xffff;
+            shadow_memory(is_write, address, value);
         }
-
-        shadow_memory(is_write, address, value);
     }
 }

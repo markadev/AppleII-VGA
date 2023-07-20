@@ -124,12 +124,22 @@ static void __time_critical_func(render_lores_line)(uint line) {
         }
     }
 
-    sl1->length = sl_pos;
-    sl1->repeat_count = 7;
-    vga_submit_scanline(sl1);
+    if(soft_scanline_emulation) {
+        // Just insert a blank scanline between each rendered scanline
+        sl1->data[sl_pos] = THEN_WAIT_HSYNC;
+        sl2->data[sl_pos] = THEN_WAIT_HSYNC;
+        sl_pos++;
 
+        sl1->repeat_count = 3;
+        sl2->repeat_count = 3;
+    } else {
+        sl1->repeat_count = 7;
+        sl2->repeat_count = 7;
+    }
+
+    sl1->length = sl_pos;
     sl2->length = sl_pos;
-    sl2->repeat_count = 7;
+    vga_submit_scanline(sl1);
     vga_submit_scanline(sl2);
 }
 
@@ -173,12 +183,22 @@ static void __time_critical_func(render_dlores_line)(uint line) {
         sl_pos++;
     }
 
-    sl1->length = sl_pos;
-    sl1->repeat_count = 7;
-    vga_submit_scanline(sl1);
+    if(soft_scanline_emulation) {
+        // Just insert a blank scanline between each rendered scanline
+        sl1->data[sl_pos] = THEN_WAIT_HSYNC;
+        sl2->data[sl_pos] = THEN_WAIT_HSYNC;
+        sl_pos++;
 
+        sl1->repeat_count = 3;
+        sl2->repeat_count = 3;
+    } else {
+        sl1->repeat_count = 7;
+        sl2->repeat_count = 7;
+    }
+
+    sl1->length = sl_pos;
     sl2->length = sl_pos;
-    sl2->repeat_count = 7;
+    vga_submit_scanline(sl1);
     vga_submit_scanline(sl2);
 }
 #endif
