@@ -16,8 +16,9 @@ signal.
                             +-----------+
 
 This project is currently in a pretty raw state so consider it useful for informational
-purposes only. I've built a prototype card and it works on my Apple II+ but I only have
-one Apple II+ and one VGA monitor so my testing is very limited.
+purposes only. I've built one prototype card and several other people have also been able to
+build a working card so it has been tested on a handful of Apple II+/IIe's and VGA monitors
+but YMMV.
 
 These features are currently supported:
  * Generates a 640x480@60 VGA signal with 3 bits per color channel using resistor DACs
@@ -44,8 +45,8 @@ I had these goals in mind during design:
 I also wanted to see if a Pi Pico could actually work on an 8-bit CPU bus, since the docs
 say it should work but there were no code examples.
 
-Included in the repo here are the schematics (KiCAD project, [schematics PDF](AppleVGA/AppleVGA.pdf) and [Bill-Of-Materials CSV](AppleVGA/AppleVGA_BOM.csv)) and the source code for the Pi Pico
-microcontroller. I used the unrouted PCB layout to wire up the initial prototype
+Included in the repo here are the schematics (KiCAD project, [schematics PDF](AppleVGA/AppleVGA.pdf) and [Bill-Of-Materials CSV](AppleVGA/AppleVGA_BOM.csv)) and the [source code for the Pi Pico
+microcontroller](pico/). I used the unrouted PCB layout to wire up the initial prototype
 board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
 
 ![Prototype Card](docs/prototype_card.jpg)
@@ -70,6 +71,7 @@ a cheap composite -> HDMI adapter
 
 **80 Columms**
 ![80 Columms Mode](docs/composite_vs_vga_80columms.jpg)
+
 
 ## Future work
 
