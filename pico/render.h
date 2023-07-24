@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdbool.h>
+
+
 // Uncomment to enable test pattern generator
 // #define RENDER_TEST_PATTERN
 
@@ -15,5 +18,4 @@ extern void render_text_line(unsigned int line);
 extern void render_lores();
 extern void render_mixed_lores();
 
-extern void render_hires();
-extern void render_mixed_hires();
+extern void render_hires(bool mixed);
