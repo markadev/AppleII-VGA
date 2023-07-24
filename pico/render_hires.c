@@ -120,9 +120,6 @@ static void __time_critical_func(render_hires_line)(uint line) {
 #ifdef APPLE_MODEL_IIE
 static void __time_critical_func(render_dhires_line)(uint line) {
     uint sl_pos = 0;
-    uint i;
-    uint_fast8_t dotc = 0;
-    uint32_t dots = 0;
 
     const int mode = soft_monochrom ? VIDEO7_MODE_560x192 : soft_video7_mode;
 
@@ -139,7 +136,6 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
         sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
     }
-    i = 0;
 
     if(mode == VIDEO7_MODE_560x192) {
         // 560x192 monochrome mode - Ref: VIDEO-7 User's Manual section 7.6.1 and US Patent 4631692
@@ -152,9 +148,9 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             ((uint32_t)mono_fg_color << 16) | mono_fg_color,
         };
 
-        for(i = 0; i < 40; i++) {
+        for(uint i = 0; i < 40; i++) {
             // Extract 14 bits from the next 2 display bytes
-            dots = (line_mem_odd[i] & 0x7f) | ((uint32_t)line_mem_even[i] & 0x7f) << 7;
+            uint32_t dots = (line_mem_odd[i] & 0x7f) | ((uint32_t)line_mem_even[i] & 0x7f) << 7;
 
             // Render out the pixels, least significant bit first
             for(int j = 0; j < 7; j++) {
@@ -165,7 +161,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         }
     } else if(mode == VIDEO7_MODE_160x192) {
         // 160x192 16-color mode - Ref: VIDEO-7 User's Manual section 7.6.3 and US Patent 4631692
-        for(i = 0; i < 40; i++) {
+        for(uint i = 0; i < 40; i++) {
             // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
             uint_fast8_t b = line_mem_odd[i];
             uint_fast16_t pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
@@ -182,20 +178,24 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     } else if(mode == VIDEO7_MODE_MIX) {
         // 160x192 mixed color/mono mode - Ref: VIDEO-7 User's Manual section 7.6.4 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
-        uint32_t pixelmode = 0;
-        while(i < 40) {
-            // Load in as many subpixels as possible
-            while((dotc <= 18) && (i < 40)) {
-                dots |= (line_mem_odd[i] & 0x7f) << dotc;
-                pixelmode |= ((line_mem_odd[i] & 0x80) ? 0x7f : 0x00) << dotc;
-                dotc += 7;
-                dots |= (line_mem_even[i] & 0x7f) << dotc;
-                pixelmode |= ((line_mem_even[i] & 0x80) ? 0x7f : 0x00) << dotc;
-                dotc += 7;
-                i++;
-            }
+        for(uint i = 0; i < 40; i += 2) {
+            // Load in 28 dots from the next 4 video data bytes
+            uint_fast8_t vid0 = line_mem_odd[i];
+            uint_fast8_t vid1 = line_mem_even[i];
+            uint_fast8_t vid2 = line_mem_odd[i+1];
+            uint_fast8_t vid3 = line_mem_even[i+1];
+
+            uint32_t dots = (vid0 & 0x7f);
+            uint32_t pixelmode = ((vid0 & 0x80) ? 0x7f : 0);
+            dots |= (uint32_t)(vid1 & 0x7f) << 7;
+            pixelmode |= ((vid1 & 0x80) ? (0x7f << 7) : 0);
+            dots |= (uint32_t)(vid2 & 0x7f) << 14;
+            pixelmode |= ((vid2 & 0x80) ? (0x7f << 14) : 0);
+            dots |= (uint32_t)(vid3 & 0x7f) << 21;
+            pixelmode |= ((vid3 & 0x80) ? (0x7f << 21) : 0);
 
             // Consume pixels
+            uint_fast8_t dotc = 28;
             while(dotc >= 4) {
                 if(pixelmode) {
                     uint32_t pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
@@ -226,7 +226,10 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         }
     } else {
         // Standard 140x192 16-color double-hires mode
-        while(i < 40) {
+        uint32_t dots = 0;
+        uint_fast8_t dotc = 0;
+
+        for(uint i = 0; i < 40; ) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
                 dots |= (line_mem_odd[i] & 0x7f) << dotc;
