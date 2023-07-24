@@ -11,6 +11,7 @@
 static void render_hires_line(uint line);
 #ifdef APPLE_MODEL_IIE
 static void render_dhires_line(uint line);
+static void render_video7_fb_hires_line(uint line);
 #endif
 
 
@@ -28,6 +29,8 @@ void __time_critical_func(render_hires)(bool mixed) {
 #ifdef APPLE_MODEL_IIE
     if(soft_80col && soft_dhires) {
         render_hgr_line = render_dhires_line;
+    } else if(soft_dhires && !soft_80col && soft_80store) {
+        render_hgr_line = render_video7_fb_hires_line;
     }
 #endif
 
@@ -177,6 +180,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             sl_pos++;
         }
     } else if(mode == VIDEO7_MODE_MIX) {
+        // 160x192 mixed color/mono mode - Ref: VIDEO-7 User's Manual section 7.6.4 and US Patent 4631692
+        // Supported by the Extended 80-column text/AppleColor adapter card
         uint32_t pixelmode = 0;
         while(i < 40) {
             // Load in as many subpixels as possible
@@ -240,6 +245,70 @@ static void __time_critical_func(render_dhires_line)(uint line) {
                 sl->data[sl_pos++] = pixeldata;
                 dotc -= 8;
             }
+        }
+    }
+
+    if(soft_scanline_emulation) {
+        // Just insert a blank scanline between each rendered scanline
+        sl->data[sl_pos++] = THEN_WAIT_HSYNC;
+    } else {
+        sl->repeat_count = 1;
+    }
+    sl->length = sl_pos;
+    vga_submit_scanline(sl);
+}
+
+
+// Render one line of foreground/background hires mode - Ref: VIDEO-7 User's Manual section 7.5
+// Supported (but not documented?) by the Extended 80-column text/AppleColor adapter card.
+// Test using the Extended 80-column text/AppleColor demo disk.
+static void render_video7_fb_hires_line(uint line) {
+    uint32_t pixeldata;
+
+    const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1;
+    const uint8_t *aux_page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3;
+    const uint8_t *mem_main = page + hires_line_to_mem_offset(line);
+    const uint8_t *mem_aux = aux_page + hires_line_to_mem_offset(line);
+
+    struct vga_scanline *sl = vga_prepare_scanline();
+    uint sl_pos = 0;
+
+    // Pad 40 pixels on the left to center horizontally
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+    sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
+
+    for(uint i = 0; i < 40;) {
+        uint32_t dots = (mem_main[i] & 0x7f);
+        uint32_t color1 = lores_palette[(mem_aux[i] >> 4) & 0xf];
+        uint32_t color2 = lores_palette[(mem_aux[i] >> 0) & 0xf];
+        i++;
+
+        dots |= (mem_main[i] & 0x7f) << 7;
+        uint32_t color3 = lores_palette[(mem_aux[i] >> 4) & 0xf];
+        uint32_t color4 = lores_palette[(mem_aux[i] >> 0) & 0xf];
+        i++;
+
+        for(int j = 0; j < 3; j++) {
+            pixeldata = ((dots & 1) ? color1 : color2) | THEN_EXTEND_1;
+            dots >>= 1;
+            pixeldata |= (((dots & 1) ? color1 : color2) | THEN_EXTEND_1) << 16;
+            dots >>= 1;
+            sl->data[sl_pos++] = pixeldata;
+        }
+
+        pixeldata = ((dots & 1) ? color1 : color2) | THEN_EXTEND_1;
+        dots >>= 1;
+        pixeldata |= (((dots & 1) ? color3 : color4) | THEN_EXTEND_1) << 16;
+        dots >>= 1;
+        sl->data[sl_pos++] = pixeldata;
+
+        for(int j = 0; j < 3; j++) {
+            pixeldata = ((dots & 1) ? color3 : color4) | THEN_EXTEND_1;
+            dots >>= 1;
+            pixeldata |= (((dots & 1) ? color3 : color4) | THEN_EXTEND_1) << 16;
+            dots >>= 1;
+            sl->data[sl_pos++] = pixeldata;
         }
     }
 
