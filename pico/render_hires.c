@@ -178,50 +178,120 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     } else if(mode == VIDEO7_MODE_MIX) {
         // 160x192 mixed color/mono mode - Ref: VIDEO-7 User's Manual section 7.6.4 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
+
+        const uint32_t bits_to_monopixels[4] = {
+            ((uint32_t)mono_bg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_bg_color << 16) | mono_fg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_fg_color,
+        };
+
         for(uint i = 0; i < 40; i += 2) {
-            // Load in 28 dots from the next 4 video data bytes
-            uint_fast8_t vid0 = line_mem_odd[i];
-            uint_fast8_t vid1 = line_mem_even[i];
-            uint_fast8_t vid2 = line_mem_odd[i+1];
-            uint_fast8_t vid3 = line_mem_even[i+1];
+            // Load in 28 dots from the next 4 video data bytes. Also load in the 'mode' for each 7 bit
+            // sequence that controls whether each 7 bit sequence is rendered as mono or color.
+            uint_fast8_t vdata0 = line_mem_odd[i];
+            uint_fast8_t vdata1 = line_mem_even[i];
+            uint_fast8_t vdata2 = line_mem_odd[i+1];
+            uint_fast8_t vdata3 = line_mem_even[i+1];
 
-            uint32_t dots = (vid0 & 0x7f);
-            uint32_t pixelmode = ((vid0 & 0x80) ? 0x7f : 0);
-            dots |= (uint32_t)(vid1 & 0x7f) << 7;
-            pixelmode |= ((vid1 & 0x80) ? (0x7f << 7) : 0);
-            dots |= (uint32_t)(vid2 & 0x7f) << 14;
-            pixelmode |= ((vid2 & 0x80) ? (0x7f << 14) : 0);
-            dots |= (uint32_t)(vid3 & 0x7f) << 21;
-            pixelmode |= ((vid3 & 0x80) ? (0x7f << 21) : 0);
+            uint32_t dots = (vdata0 & 0x7f);
+            uint32_t pixelmode = ((vdata0 & 0x80) ? 0x7f : 0);
+            dots |= (uint32_t)(vdata1 & 0x7f) << 7;
+            pixelmode |= ((vdata1 & 0x80) ? (0x7f << 7) : 0);
+            dots |= (uint32_t)(vdata2 & 0x7f) << 14;
+            pixelmode |= ((vdata2 & 0x80) ? (0x7f << 14) : 0);
+            dots |= (uint32_t)(vdata3 & 0x7f) << 21;
+            pixelmode |= ((vdata3 & 0x80) ? (0x7f << 21) : 0);
 
-            // Consume pixels
-            uint_fast8_t dotc = 28;
-            while(dotc >= 4) {
-                if(pixelmode) {
-                    uint32_t pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_1);
+            // In this "mixed" mode, bit 7 of each video memory byte controls whether the bits in the byte should be rendered as
+            // color or monochrome.
+            //
+            // This is really weird when you get into the corner case of having an unaligned 'mode' bit change that causes what
+            // would normally be a sequence of 4 colored dots (a.k.a. a dhires pixel) to be split into a fractional dhires pixel
+            // and some monochrome dots.
+            //
+            // Since the 'mode' can be changed every 7 bits and a color is represented with 4 bits then we know that the mode bit &
+            // color bit boundaries coincide every 28 bits (4 video memory bytes). So we only really need to worry about these
+            // fractional dhires pixels within each quad of video data bytes.
+            //
+            // Given the 28 bits taken from the 7 LSBs of a quad of video data bytes (bits are shifted out from LSB to MSB):
+            //
+            //   +---------------------------------------------------------------------------------------------------------------+
+            //   | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |   |   |   |   |   |   |   |   |   |   |
+            //   | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+            //   +---------------------------------------------------------------------------------------------------------------+
+            //   |               |           |   |               |       |       |               |   |           |               |
+            //   \_______________/\__________|___/\______________/\______|_______/\______________/\__|___________/\______________/
+            //   |   pixel 'g'       pixel 'f'       pixel 'e'       pixel 'd'        pixel 'c'      |pixel 'b'       pixel 'a'  |
+            //   |                           |                           |                           |                           |
+            //   |                           |                           |                           |                           |
+            //   \___________________________/\__________________________/\__________________________/\__________________________/
+            //         video data byte 3            video data byte 2          video data byte 1           video data byte 0
+            //
+            //  * pixels 'a', 'c', 'e', and 'g' will always be either one full dhires colored pixel or 4 monochrome dots,
+            //    based on the mode of the byte that it came from
+            //  * pixel 'b' can be split into either 3 mono dots + 1/4 of a colored dhires pixel, or 3/4 of a colored dhires pixel + 1
+            //    monochrome dot, depending on the direction that the mode bit changes
+            //  * pixel 'd' can be split similarly as pixel 'b' but in half instead of quartered, paired with two monochrome dots
+            //  * pixel 'f' can be split similarly as pixel 'b'
+            //
+            // Additionally, the color chosen for the fractional dhires pixels is always going to be the discrete color defined by the
+            // bits in 'b', 'd', or 'f'. It's not like hires artifact coloring where the dot positions define the colors.
+
+            // FIXME XXX: This is functionaly correct, but too slow!
+            uint32_t pixeldata;
+            for(uint j = 0; j < 7; j++) {
+                const uint32_t color = dhgr_palette[dots & 0xf];
+                const uint32_t mono_dots1 = bits_to_monopixels[dots & 0x03];
+                const uint32_t mono_dots2 = bits_to_monopixels[(dots >> 2) & 0x03];
+
+                switch(pixelmode & 0x0f) {
+                case 0b0111:
+                    // pixel 'b' mode transitioning 1 -> 0 (3/4 dhires pixel + one monochrome dot)
+                    pixeldata = color | THEN_EXTEND_2 | (mono_dots2 & 0xffff0000);
+                    sl->data[sl_pos++] = pixeldata;
+                    break;
+                case 0b1000:
+                    // pixel 'b' mode transitioning 0 -> 1 (3 monochrome dots + 1/4 dhires pixel)
+                    sl->data[sl_pos++] = mono_dots1;
+                    sl->data[sl_pos++] = (mono_dots2 & 0x0000ffff) | (color << 16);
+                    break;
+                case 0b0011:
+                    // pixel 'd' mode transitioning 1 -> 0 (1/2 dhires pixel + 2 monochrome dots)
+                    sl->data[sl_pos++] = color | (color << 16);
+                    sl->data[sl_pos++] = mono_dots2;
+                    break;
+                case 0b1100:
+                    // pixel 'd' mode transitioning 0 -> 1 (2 monochrome dots + 1/2 dhires pixel)
+                    sl->data[sl_pos++] = mono_dots1;
+                    sl->data[sl_pos++] = color | (color << 16);
+                    break;
+                case 0b0001:
+                    // pixel 'f' mode transitioning 1 -> 0 (1/4 dhires pixel + 3 monochrome dots)
+                    sl->data[sl_pos++] = color | (mono_dots1 & 0xffff0000);
+                    sl->data[sl_pos++] = mono_dots2;
+                    break;
+                case 0b1110:
+                    // pixel 'f' mode transitioning 0 -> 1 (1 monochrome dot + 3/4 dhires pixel)
+                    sl->data[sl_pos++] = (mono_dots1 & 0x0000ffff) | ((color | THEN_EXTEND_2) << 16);
+                    break;
+                case 0b0000:
+                    // no mode transition - four monochrome dots
+                    sl->data[sl_pos++] = mono_dots1;
+                    sl->data[sl_pos++] = mono_dots2;
+                    break;
+                case 0b1111:
+                    // no mode transition - one dhires pixel
+                    pixeldata = (color | THEN_EXTEND_1);
                     pixeldata |= pixeldata << 16;
-                    dots >>= 4;
-                    pixelmode >>= 4;
                     sl->data[sl_pos++] = pixeldata;
-                    dotc -= 4;
-                } else {
-                    uint32_t pixeldata = (dots & 1) ? dhgr_palette[15] : dhgr_palette[0];
-                    dots >>= 1;
-                    pixelmode >>= 1;
-                    pixeldata |= (uint32_t)((dots & 1) ? dhgr_palette[15] : dhgr_palette[0]) << 16;
-                    dots >>= 1;
-                    pixelmode >>= 1;
-                    sl->data[sl_pos++] = pixeldata;
-                    dotc -= 2;
-                    pixeldata = (dots & 1) ? dhgr_palette[15] : dhgr_palette[0];
-                    dots >>= 1;
-                    pixelmode >>= 1;
-                    pixeldata |= (uint32_t)((dots & 1) ? dhgr_palette[15] : dhgr_palette[0]) << 16;
-                    dots >>= 1;
-                    pixelmode >>= 1;
-                    sl->data[sl_pos++] = pixeldata;
-                    dotc -= 2;
+                    break;
+                default:;
+                    // other mode patterns are impossible
                 }
+
+                pixelmode >>= 4;
+                dots >>= 4;
             }
         }
     } else {
