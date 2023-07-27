@@ -13,6 +13,8 @@ void render_init() {
 #ifdef APPLE_MODEL_IIE
     memcpy(altcharacter_rom, alternate_character_rom, sizeof(altcharacter_rom));
 #endif
+
+    generate_hires_tables();
 }
 
 void render_loop() {

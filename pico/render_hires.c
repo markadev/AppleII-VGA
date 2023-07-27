@@ -12,11 +12,41 @@ static void render_hires_line(uint line);
 #ifdef APPLE_MODEL_IIE
 static void render_dhires_line(uint line);
 static void render_video7_fb_hires_line(uint line);
+
+static uint32_t video7_mixed_lookup1[64];
+static uint32_t video7_mixed_lookup2[64];
 #endif
 
 
 static inline uint hires_line_to_mem_offset(uint line) {
     return ((line & 0x07) << 10) | ((line & 0x38) << 4) | (((line & 0xc0) >> 6) * 40);
+}
+
+
+void generate_hires_tables() {
+#ifdef APPLE_MODEL_IIE
+    // Construct the video7_mixed_lookup1 and video7_mixed_lookup2 tables
+    for(uint idx = 0; idx < 64; idx++) {
+        uint32_t color1, color2;
+
+        // The low 4 bits of the array index are the latched color that is the same for one dhires
+        // pixel time (4 monochrome dots). The high 2 bits are the 'mode' bits for the 2 dots being
+        // rendered (0 = monochrome, 1 = color)
+        const uint32_t color = dhgr_palette[idx & 0xf];
+
+        // video7_mixed_lookup1 contains the pre-computed VGA pixel data for the screen dots
+        // corresponding to idx[1:0] with the color mode depending on the mode bits in idx[5:4]
+        color1 = (idx & 0x10) ? color : (idx & 0x01) ? dhgr_palette[15] : dhgr_palette[0];
+        color2 = (idx & 0x20) ? color : (idx & 0x02) ? dhgr_palette[15] : dhgr_palette[0];
+        video7_mixed_lookup1[idx] = color1 | (color2 << 16);
+
+        // video7_mixed_lookup2 contains the pre-computed VGA pixel data for the screen dots
+        // corresponding to idx[3:2] with the color mode depending on the mode bits in idx[5:4]
+        color1 = (idx & 0x10) ? color : (idx & 0x04) ? dhgr_palette[15] : dhgr_palette[0];
+        color2 = (idx & 0x20) ? color : (idx & 0x08) ? dhgr_palette[15] : dhgr_palette[0];
+        video7_mixed_lookup2[idx] = color1 | (color2 << 16);
+    }
+#endif
 }
 
 
@@ -179,29 +209,28 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         // 160x192 mixed color/mono mode - Ref: VIDEO-7 User's Manual section 7.6.4 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
 
-        const uint32_t bits_to_monopixels[4] = {
-            ((uint32_t)mono_bg_color << 16) | mono_bg_color,
-            ((uint32_t)mono_bg_color << 16) | mono_fg_color,
-            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
-            ((uint32_t)mono_fg_color << 16) | mono_fg_color,
-        };
-
         for(uint i = 0; i < 40; i += 2) {
             // Load in 28 dots from the next 4 video data bytes. Also load in the 'mode' for each 7 bit
             // sequence that controls whether each 7 bit sequence is rendered as mono or color.
             uint_fast8_t vdata0 = line_mem_odd[i];
             uint_fast8_t vdata1 = line_mem_even[i];
-            uint_fast8_t vdata2 = line_mem_odd[i+1];
-            uint_fast8_t vdata3 = line_mem_even[i+1];
+            uint_fast8_t vdata2 = line_mem_odd[i + 1];
+            uint_fast8_t vdata3 = line_mem_even[i + 1];
 
-            uint32_t dots = (vdata0 & 0x7f);
-            uint32_t pixelmode = ((vdata0 & 0x80) ? 0x7f : 0);
-            dots |= (uint32_t)(vdata1 & 0x7f) << 7;
-            pixelmode |= ((vdata1 & 0x80) ? (0x7f << 7) : 0);
-            dots |= (uint32_t)(vdata2 & 0x7f) << 14;
-            pixelmode |= ((vdata2 & 0x80) ? (0x7f << 14) : 0);
-            dots |= (uint32_t)(vdata3 & 0x7f) << 21;
-            pixelmode |= ((vdata3 & 0x80) ? (0x7f << 21) : 0);
+            uint32_t dots = (vdata3 & 0x7f);
+            dots = (dots << 7) | (vdata2 & 0x7f);
+            dots = (dots << 7) | (vdata1 & 0x7f);
+            dots = (dots << 7) | (vdata0 & 0x7f);
+
+            uint32_t pixelmode = (vdata3 & 0x80);
+            pixelmode = (pixelmode << 7) | (vdata2 & 0x80);
+            pixelmode = (pixelmode << 7) | (vdata1 & 0x80);
+            pixelmode = (pixelmode << 7) | (vdata0 & 0x80);
+            // Bits 7, 14, 21 & 28 contain the mode bits from the video data bytes
+            // Extend them to fill bit ranges [10:4], [17:11], [24:18] & [31:25] respectively.
+            pixelmode |= (pixelmode << 1);
+            pixelmode |= (pixelmode << 2);
+            pixelmode |= (pixelmode >> 3);
 
             // In this "mixed" mode, bit 7 of each video memory byte controls whether the bits in the byte should be rendered as
             // color or monochrome.
@@ -238,59 +267,15 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             // Additionally, the color chosen for the fractional dhires pixels is always going to be the discrete color defined by the
             // bits in 'b', 'd', or 'f'. It's not like hires artifact coloring where the dot positions define the colors.
 
-            // FIXME XXX: This is functionaly correct, but too slow!
-            uint32_t pixeldata;
             for(uint j = 0; j < 7; j++) {
-                const uint32_t color = dhgr_palette[dots & 0xf];
-                const uint32_t mono_dots1 = bits_to_monopixels[dots & 0x03];
-                const uint32_t mono_dots2 = bits_to_monopixels[(dots >> 2) & 0x03];
+                sl->data[sl_pos] = video7_mixed_lookup1[(pixelmode & 0x30) | (dots & 0xf)];
+                sl_pos++;
+                pixelmode >>= 2;
 
-                switch(pixelmode & 0x0f) {
-                case 0b0111:
-                    // pixel 'b' mode transitioning 1 -> 0 (3/4 dhires pixel + one monochrome dot)
-                    pixeldata = color | THEN_EXTEND_2 | (mono_dots2 & 0xffff0000);
-                    sl->data[sl_pos++] = pixeldata;
-                    break;
-                case 0b1000:
-                    // pixel 'b' mode transitioning 0 -> 1 (3 monochrome dots + 1/4 dhires pixel)
-                    sl->data[sl_pos++] = mono_dots1;
-                    sl->data[sl_pos++] = (mono_dots2 & 0x0000ffff) | (color << 16);
-                    break;
-                case 0b0011:
-                    // pixel 'd' mode transitioning 1 -> 0 (1/2 dhires pixel + 2 monochrome dots)
-                    sl->data[sl_pos++] = color | (color << 16);
-                    sl->data[sl_pos++] = mono_dots2;
-                    break;
-                case 0b1100:
-                    // pixel 'd' mode transitioning 0 -> 1 (2 monochrome dots + 1/2 dhires pixel)
-                    sl->data[sl_pos++] = mono_dots1;
-                    sl->data[sl_pos++] = color | (color << 16);
-                    break;
-                case 0b0001:
-                    // pixel 'f' mode transitioning 1 -> 0 (1/4 dhires pixel + 3 monochrome dots)
-                    sl->data[sl_pos++] = color | (mono_dots1 & 0xffff0000);
-                    sl->data[sl_pos++] = mono_dots2;
-                    break;
-                case 0b1110:
-                    // pixel 'f' mode transitioning 0 -> 1 (1 monochrome dot + 3/4 dhires pixel)
-                    sl->data[sl_pos++] = (mono_dots1 & 0x0000ffff) | ((color | THEN_EXTEND_2) << 16);
-                    break;
-                case 0b0000:
-                    // no mode transition - four monochrome dots
-                    sl->data[sl_pos++] = mono_dots1;
-                    sl->data[sl_pos++] = mono_dots2;
-                    break;
-                case 0b1111:
-                    // no mode transition - one dhires pixel
-                    pixeldata = (color | THEN_EXTEND_1);
-                    pixeldata |= pixeldata << 16;
-                    sl->data[sl_pos++] = pixeldata;
-                    break;
-                default:;
-                    // other mode patterns are impossible
-                }
+                sl->data[sl_pos] = video7_mixed_lookup2[(pixelmode & 0x30) | (dots & 0xf)];
+                sl_pos++;
+                pixelmode >>= 2;
 
-                pixelmode >>= 4;
                 dots >>= 4;
             }
         }
@@ -299,7 +284,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         uint32_t dots = 0;
         uint_fast8_t dotc = 0;
 
-        for(uint i = 0; i < 40; ) {
+        for(uint i = 0; i < 40;) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
                 dots |= (line_mem_odd[i] & 0x7f) << dotc;

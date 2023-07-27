@@ -18,4 +18,5 @@ extern void render_text_line(unsigned int line);
 extern void render_lores();
 extern void render_mixed_lores();
 
+extern void generate_hires_tables();
 extern void render_hires(bool mixed);
