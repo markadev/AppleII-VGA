@@ -12,12 +12,24 @@ static void render_dlores_line(uint line);
 #endif
 
 
-// clang-format off
-static uint16_t lores_mono_dot_pattern[16] = {
-    0x0000, 0x2222, 0x1111, 0x3333, 0x0888, 0x2aaa, 0x1999, 0x3bbb,
-    0x0444, 0x2666, 0x1555, 0x3777, 0x0ccc, 0x2eee, 0x1ddd, 0x3fff,
+static const uint16_t lores_mono_dot_pattern[16] = {
+    0b00000000000000,
+    0b10001000100010,
+    0b01000100010001,
+    0b11001100110011,
+    0b00100010001000,
+    0b10101010101010,
+    0b01100110011001,
+    0b11101110111011,
+    0b00010001000100,
+    0b10011001100110,
+    0b01010101010101,
+    0b11011101110111,
+    0b00110011001100,
+    0b10111011101110,
+    0b01110111011101,
+    0b11111111111111,
 };
-// clang-format on
 
 
 static inline uint __time_critical_func(lores_line_to_mem_offset)(uint line) {
@@ -99,13 +111,13 @@ static void __time_critical_func(render_lores_line)(uint line) {
             for(int j = 0; j < 14; j++) {
                 uint32_t pixeldata;
 
-                pixeldata = (color1 & 0x8000000) ? (lores_palette[15]) : (lores_palette[0]);
-                pixeldata |= (color1 & 0x4000000) ? ((lores_palette[15]) << 16) : ((lores_palette[0]) << 16);
+                pixeldata = (color1 & 0x8000000) ? mono_fg_color : mono_bg_color;
+                pixeldata |= (color1 & 0x4000000) ? ((uint32_t)mono_fg_color << 16) : ((uint32_t)mono_bg_color << 16);
                 color1 <<= 2;
                 sl1->data[sl_pos] = pixeldata;
 
-                pixeldata = (color2 & 0x8000000) ? (lores_palette[15]) : (lores_palette[0]);
-                pixeldata |= (color2 & 0x4000000) ? ((lores_palette[15]) << 16) : ((lores_palette[0]) << 16);
+                pixeldata = (color2 & 0x8000000) ? mono_fg_color : mono_bg_color;
+                pixeldata |= (color2 & 0x4000000) ? ((uint32_t)mono_fg_color << 16) : ((uint32_t)mono_bg_color << 16);
                 sl2->data[sl_pos] = pixeldata;
                 color2 <<= 2;
 

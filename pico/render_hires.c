@@ -151,7 +151,9 @@ static void __time_critical_func(render_hires_line)(uint line) {
 static void __time_critical_func(render_dhires_line)(uint line) {
     uint sl_pos = 0;
 
-    const int mode = soft_monochrom ? VIDEO7_MODE_560x192 : soft_video7_mode;
+    // Don't support soft-monochrome mode for the 160x192 RGB mode. It could be done but it would
+    // be a nonstandard extension of the Video-7 mode, which itself is rarely used.
+    const int mode = (soft_monochrom && (soft_video7_mode != VIDEO7_MODE_160x192)) ? VIDEO7_MODE_560x192 : soft_video7_mode;
 
     const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1;
     const uint8_t *aux_page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3;
@@ -168,14 +170,17 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     }
 
     if(mode == VIDEO7_MODE_560x192) {
-        // 560x192 monochrome mode - Ref: VIDEO-7 User's Manual section 7.6.1 and US Patent 4631692
+        // 560x192 monochrome mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.1 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
 
+        // In soft monochrome mode use the configured "monochrome" color, otherwise use the color palette
+        const uint32_t bg_color = soft_monochrom ? mono_bg_color : dhgr_palette[0];
+        const uint32_t fg_color = soft_monochrom ? mono_fg_color : dhgr_palette[15];
         const uint32_t bits_to_pixels[4] = {
-            ((uint32_t)mono_bg_color << 16) | mono_bg_color,
-            ((uint32_t)mono_bg_color << 16) | mono_fg_color,
-            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
-            ((uint32_t)mono_fg_color << 16) | mono_fg_color,
+            (bg_color << 16) | bg_color,
+            (bg_color << 16) | fg_color,
+            (fg_color << 16) | bg_color,
+            (fg_color << 16) | fg_color,
         };
 
         for(uint i = 0; i < 40; i++) {
@@ -190,7 +195,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             }
         }
     } else if(mode == VIDEO7_MODE_160x192) {
-        // 160x192 16-color mode - Ref: VIDEO-7 User's Manual section 7.6.3 and US Patent 4631692
+        // 160x192 16-color mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.3 and US Patent 4631692
+        // Supported by the Extended 80-column text/AppleColor adapter card but not documented in the manual
         for(uint i = 0; i < 40; i++) {
             // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
             uint_fast8_t b = line_mem_odd[i];
@@ -206,7 +212,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
             sl_pos++;
         }
     } else if(mode == VIDEO7_MODE_MIX) {
-        // 160x192 mixed color/mono mode - Ref: VIDEO-7 User's Manual section 7.6.4 and US Patent 4631692
+        // 160x192 mixed color/mono mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.4 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
 
         for(uint i = 0; i < 40; i += 2) {
@@ -317,7 +323,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 }
 
 
-// Render one line of foreground/background hires mode - Ref: VIDEO-7 User's Manual section 7.5
+// Render one line of foreground/background hires mode - Ref: Video-7 RGB-SL7 User's Manual section 7.5
 // Supported (but not documented?) by the Extended 80-column text/AppleColor adapter card.
 // Test using the Extended 80-column text/AppleColor demo disk.
 static void render_video7_fb_hires_line(uint line) {
