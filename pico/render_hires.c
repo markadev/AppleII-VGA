@@ -111,28 +111,54 @@ static void __time_critical_func(render_hires_line)(uint line) {
     //                       \_________/
     //                         current
     //                          pixel
-    uint32_t dots = 0;
-    uint oddness = 0;
 
     // Load in the first 14 dots
-    dots |= (uint32_t)hires_dot_patterns[line_mem[0]] << 15;
+    uint32_t dots = (uint32_t)hires_dot_patterns[line_mem[0]] << 15;
 
-    for(uint i = 1; i < 41; i++) {
-        // Load in the next 14 dots
-        uint b = (i < 40) ? line_mem[i] : 0;
-        if(b & 0x80) {
-            // Extend the last bit from the previous byte
-            dots |= (dots & (1u << 15)) >> 1;
+    if(soft_monochrom) {
+        // translate bits to rendered pixels (MSB first)
+        const uint32_t bits_to_pixels[4] = {
+            ((uint32_t)mono_bg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
+            ((uint32_t)mono_bg_color << 16) | mono_fg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_fg_color,
+        };
+
+        for(uint i = 1; i < 41; i++) {
+            // Load in the next 14 dots
+            uint b = (i < 40) ? line_mem[i] : 0;
+            if(b & 0x80) {
+                // Extend the last bit from the previous byte
+                dots |= (dots & (1u << 15)) >> 1;
+            }
+            dots |= (uint32_t)hires_dot_patterns[b] << 1;
+
+            // Render the next 14 pixels
+            for(uint j = 0; j < 7; j++) {
+                sl->data[sl_pos] = bits_to_pixels[((dots >> 27) & 0x3)];
+                sl_pos++;
+                dots <<= 2;
+            }
         }
-        dots |= (uint32_t)hires_dot_patterns[b] << 1;
+    } else {
+        uint oddness = 0;
+        for(uint i = 1; i < 41; i++) {
+            // Load in the next 14 dots
+            uint b = (i < 40) ? line_mem[i] : 0;
+            if(b & 0x80) {
+                // Extend the last bit from the previous byte
+                dots |= (dots & (1u << 15)) >> 1;
+            }
+            dots |= (uint32_t)hires_dot_patterns[b] << 1;
 
-        // Consume 14 dots
-        for(uint j = 0; j < 7; j++) {
-            uint dot_pattern = oddness | ((dots >> 24) & 0xff);
-            sl->data[sl_pos] = hires_color_patterns[dot_pattern];
-            sl_pos++;
-            dots <<= 2;
-            oddness ^= 0x100;
+            // Consume 14 dots
+            for(uint j = 0; j < 7; j++) {
+                uint dot_pattern = oddness | ((dots >> 24) & 0xff);
+                sl->data[sl_pos] = hires_color_patterns[dot_pattern];
+                sl_pos++;
+                dots <<= 2;
+                oddness ^= 0x100;
+            }
         }
     }
 
