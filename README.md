@@ -29,6 +29,8 @@ These features are currently supported:
  * Double Hi-res mode (Apple IIe only)
  * Mixed lo-res and hi-res modes with monochrome text and no color fringing
  * 80 Columms text support (Apple IIe only)
+ * Soft-monochrome mode to force hires display as if on a monochrome monitor
+ * Some Video-7 RGB card extended graphical modes
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for

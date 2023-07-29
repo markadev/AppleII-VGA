@@ -1,0 +1,59 @@
+Results of testing combinations of soft-switches and their result on video output.
+
+
+text 80col hires dhires mixed |    IIe platinum result
+  0     0     0      0     0  | STD: lores
+  0     0     0      0     1  | STD: lores+text40
+  0     0     0      1     0  | strange lores w/hires colors
+  0     0     0      1     1  | ^+text40
+  0     0     1      0     0  | STD: hires
+  0     0     1      0     1  | STD: hires+text40
+  0     0     1      1     0  | hires
+  0     0     1      1     1  | ^+text40
+  0     1     0      0     0  | lores
+  0     1     0      0     1  | lores+text80, text is 1 column too far left but would
+                              | align properly in dlores mode
+  0     1     0      1     0  | STD: dlores
+  0     1     0      1     1  | STD: dlores+text80
+  0     1     1      0     0  | hires
+  0     1     1      0     1  | ^+text80, text is 1 column too far left but would align
+                              | if the graphical mode was dhires
+  0     1     1      1     0  | STD: dhires
+  0     1     1      1     1  | STD: ^+text80
+  1     0     0      0     0  | text40    \
+  1     0     0      0     1  | text40    |
+  1     0     0      1     0  | text40    |
+  1     0     0      1     1  | text40    |
+  1     0     1      0     0  | text40    |
+  1     0     1      0     1  | text40    |
+  1     0     1      1     0  | text40    |
+  1     0     1      1     1  | text40    | Nothing noteworthy so omitted from future testing
+  1     1     0      0     0  | text80    |
+  1     1     0      0     1  | text80    |
+  1     1     0      1     0  | text80    |
+  1     1     0      1     1  | text80    |
+  1     1     1      0     0  | text80    |
+  1     1     1      0     1  | text80    |
+  1     1     1      1     0  | text80    |
+  1     1     1      1     1  | text80    /
+
+
+
+text 80col hires dhires mixed |    AppleWin 1.30.14.1 result (Options: 'RGB Card' video mode)
+  0     0     0      0     0  | STD: lores
+  0     0     0      0     1  | STD: lores+text40
+  0     0     0      1     0  | lores
+  0     0     0      1     1  | ^+text40 with strange text background color (video-7 F/B text?)
+  0     0     1      0     0  | STD: hires
+  0     0     1      0     1  | STD: hires+text40
+  0     0     1      1     0  | some novel doublehires mode (video-7 F/B hires?)
+  0     0     1      1     1  | ^+text40 with strange text background color (video-7 F/B text?)
+  0     1     0      0     0  | lores
+  0     1     0      0     1  | lores+text80
+  0     1     0      1     0  | STD: dlores
+  0     1     0      1     1  | STD: dlores+text80
+  0     1     1      0     0  | hires
+  0     1     1      0     1  | ^+text80
+  0     1     1      1     0  | STD: some dhires mode
+  0     1     1      1     1  | STD: ^+text80
+
