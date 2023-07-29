@@ -24,8 +24,10 @@
 #define COLOR_AQUA      RGB333(0x44, 0xff, 0x99)
 #define COLOR_WHITE     RGB333(0xff, 0xff, 0xff)
 
-#define COLOR_MONO_AMBER  RGB333(0xff, 0xb0, 0x00)
-#define COLOR_MONO_GREEN  RGB333(0x33, 0xff, 0x33)
+#define COLOR_MONO_AMBER_BG  RGB333(0x12, 0x12, 0x00)
+#define COLOR_MONO_AMBER_FG  RGB333(0xff, 0xb0, 0x00)
+#define COLOR_MONO_GREEN_BG  RGB333(0x00, 0x12, 0x00)
+#define COLOR_MONO_GREEN_FG  RGB333(0x33, 0xff, 0x33)
 // clang-format on
 
 const uint16_t lores_palette[16] = {
