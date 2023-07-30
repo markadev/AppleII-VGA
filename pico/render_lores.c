@@ -67,7 +67,7 @@ static void __time_critical_func(render_lores_line)(uint line) {
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
 
-    const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1;
+    const uint8_t *page = is_page2_display_enabled() ? text_p2 : text_p1;
     const uint8_t *line_buf = page + lores_line_to_mem_offset(line);
 
     // Pad 40 pixels on the left to center horizontally
@@ -149,8 +149,8 @@ static void __time_critical_func(render_dlores_line)(uint line) {
     struct vga_scanline *sl2 = vga_prepare_scanline();
     uint sl_pos = 0;
 
-    const uint8_t *page_main = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1;
-    const uint8_t *page_aux = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3;
+    const uint8_t *page_main = is_page2_display_enabled() ? text_p2 : text_p1;
+    const uint8_t *page_aux = is_page2_display_enabled() ? text_p4 : text_p3;
     const uint line_offset = lores_line_to_mem_offset(line);
     const uint8_t *line_main = page_main + line_offset;
     const uint8_t *line_aux = page_aux + line_offset;

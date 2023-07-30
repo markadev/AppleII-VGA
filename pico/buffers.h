@@ -46,3 +46,8 @@ extern uint8_t *hgr_p1;
 extern uint8_t *hgr_p2;
 extern uint8_t *hgr_p3;
 extern uint8_t *hgr_p4;
+
+
+static inline bool is_page2_display_enabled() {
+    return ((soft_switches & SOFTSW_PAGE_2) && !soft_80store);
+}

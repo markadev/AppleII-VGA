@@ -104,13 +104,13 @@ void __time_critical_func(render_text_line)(unsigned int line) {
 
     const uint line_offset = text_line_to_mem_offset(line);
 
-    const uint8_t *page_main = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p2 : text_p1;
+    const uint8_t *page_main = is_page2_display_enabled() ? text_p2 : text_p1;
     const uint8_t *line_main = page_main + line_offset;
 
     const uint8_t *line_aux = 0;
     if(soft_80col) {
         // Read odd-column characters from the aux memory bank in 80 column mode
-        const uint8_t *page_aux = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? text_p4 : text_p3;
+        const uint8_t *page_aux = is_page2_display_enabled() ? text_p4 : text_p3;
         line_aux = page_aux + line_offset;
     } else {
         // else just double the pixel width in 40 column mode
