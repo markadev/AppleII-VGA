@@ -316,17 +316,14 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         uint32_t dots = 0;
         uint_fast8_t dotc = 0;
 
-        for(uint i = 0; i < 40;) {
-            // Load in as many subpixels as possible
-            while((dotc <= 18) && (i < 40)) {
-                dots |= (line_aux[i] & 0x7f) << dotc;
-                dotc += 7;
-                dots |= (line_main[i] & 0x7f) << dotc;
-                dotc += 7;
-                i++;
-            }
+        for(uint i = 0; i < 40; i++) {
+            // Load in 14 more bits from the next 2 video data bytes
+            dots |= (line_aux[i] & 0x7f) << dotc;
+            dotc += 7;
+            dots |= (line_main[i] & 0x7f) << dotc;
+            dotc += 7;
 
-            // Consume pixels
+            // Convert each 4-bit sequence into the dhires colored pixel
             while(dotc >= 8) {
                 uint32_t pixeldata = (ntsc90_palette[dots & 0xf] | THEN_EXTEND_3);
                 dots >>= 4;
