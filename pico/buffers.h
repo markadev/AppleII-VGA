@@ -38,14 +38,14 @@ extern uint8_t altcharacter_rom[256 * 8];
 
 extern uint8_t main_memory[48 * 1024];
 extern uint8_t aux_memory[48 * 1024];
-extern uint8_t *text_p1;
-extern uint8_t *text_p2;
-extern uint8_t *text_p3;
-extern uint8_t *text_p4;
-extern uint8_t *hgr_p1;
-extern uint8_t *hgr_p2;
-extern uint8_t *hgr_p3;
-extern uint8_t *hgr_p4;
+extern uint8_t *text_mainmem_page1;
+extern uint8_t *text_mainmem_page2;
+extern uint8_t *text_auxmem_page1;
+extern uint8_t *text_auxmem_page2;
+extern uint8_t *hires_mainmem_page1;
+extern uint8_t *hires_mainmem_page2;
+extern uint8_t *hires_auxmem_page1;
+extern uint8_t *hires_auxmem_page2;
 
 
 static inline bool is_page2_display_enabled() {

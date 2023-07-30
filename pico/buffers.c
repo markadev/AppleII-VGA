@@ -24,11 +24,11 @@ uint8_t main_memory[48 * 1024];
 uint8_t aux_memory[48 * 1024];
 
 
-uint8_t *text_p1 = main_memory + 0x0400;
-uint8_t *text_p2 = main_memory + 0x0800;
-uint8_t *text_p3 = aux_memory + 0x0400;
-uint8_t *text_p4 = aux_memory + 0x0800;
-uint8_t *hgr_p1 = main_memory + 0x2000;
-uint8_t *hgr_p2 = main_memory + 0x4000;
-uint8_t *hgr_p3 = aux_memory + 0x2000;
-uint8_t *hgr_p4 = aux_memory + 0x4000;
+uint8_t *text_mainmem_page1 = main_memory + 0x0400;
+uint8_t *text_mainmem_page2 = main_memory + 0x0800;
+uint8_t *text_auxmem_page1 = aux_memory + 0x0400;
+uint8_t *text_auxmem_page2 = aux_memory + 0x0800;
+uint8_t *hires_mainmem_page1 = main_memory + 0x2000;
+uint8_t *hires_mainmem_page2 = main_memory + 0x4000;
+uint8_t *hires_auxmem_page1 = aux_memory + 0x2000;
+uint8_t *hires_auxmem_page2 = aux_memory + 0x4000;

@@ -84,7 +84,7 @@ static void __time_critical_func(render_hires_line)(uint line) {
     struct vga_scanline *sl = vga_prepare_scanline();
     uint sl_pos = 0;
 
-    const uint8_t *page = is_page2_display_enabled() ? hgr_p2 : hgr_p1;
+    const uint8_t *page = is_page2_display_enabled() ? hires_mainmem_page2 : hires_mainmem_page1;
     const uint8_t *line_mem = page + hires_line_to_mem_offset(line);
 
     // Pad 40 pixels on the left to center horizontally
@@ -181,8 +181,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
     // be a nonstandard extension of the Video-7 mode, which itself is rarely used.
     const int mode = (soft_monochrom && (soft_video7_mode != VIDEO7_MODE_160x192)) ? VIDEO7_MODE_560x192 : soft_video7_mode;
 
-    const uint8_t *page = is_page2_display_enabled() ? hgr_p2 : hgr_p1;
-    const uint8_t *aux_page = is_page2_display_enabled() ? hgr_p4 : hgr_p3;
+    const uint8_t *page = is_page2_display_enabled() ? hires_mainmem_page2 : hires_mainmem_page1;
+    const uint8_t *aux_page = is_page2_display_enabled() ? hires_auxmem_page2 : hires_auxmem_page1;
     const uint8_t *line_main = page + hires_line_to_mem_offset(line);
     const uint8_t *line_aux = aux_page + hires_line_to_mem_offset(line);
 
@@ -355,8 +355,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 static void render_video7_fb_hires_line(uint line) {
     uint32_t pixeldata;
 
-    const uint8_t *page = is_page2_display_enabled() ? hgr_p2 : hgr_p1;
-    const uint8_t *aux_page = is_page2_display_enabled() ? hgr_p4 : hgr_p3;
+    const uint8_t *page = is_page2_display_enabled() ? hires_mainmem_page2 : hires_mainmem_page1;
+    const uint8_t *aux_page = is_page2_display_enabled() ? hires_auxmem_page2 : hires_auxmem_page1;
     const uint8_t *mem_main = page + hires_line_to_mem_offset(line);
     const uint8_t *mem_aux = aux_page + hires_line_to_mem_offset(line);
 
