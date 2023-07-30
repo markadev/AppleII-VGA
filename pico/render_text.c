@@ -93,8 +93,8 @@ void __time_critical_func(render_text)() {
 
 
 void __time_critical_func(render_text_line)(unsigned int line) {
-    const uint32_t bg_color = soft_monochrom ? mono_bg_color : lores_palette[0];
-    const uint32_t fg_color = soft_monochrom ? mono_fg_color : lores_palette[15];
+    const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
+    const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
     uint32_t bits_to_pixelpair[4] = {
         (bg_color << 16) | bg_color,
         (fg_color << 16) | bg_color,

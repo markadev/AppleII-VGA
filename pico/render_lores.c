@@ -112,8 +112,8 @@ static void __time_critical_func(render_lores_line)(uint line) {
         }
     } else {
         for(int i = 0; i < 40; i++) {
-            uint32_t color1 = lores_palette[line_buf[i] & 0xf];
-            uint32_t color2 = lores_palette[(line_buf[i] >> 4) & 0xf];
+            uint32_t color1 = ntsc_palette[line_buf[i] & 0xf];
+            uint32_t color2 = ntsc_palette[(line_buf[i] >> 4) & 0xf];
 
             // Each lores pixel is 7 hires pixels, or 14 VGA pixels wide
             sl1->data[sl_pos] = (color1 | THEN_EXTEND_6) | ((color1 | THEN_EXTEND_6) << 16);
@@ -196,12 +196,12 @@ static void __time_critical_func(render_dlores_line)(uint line) {
     } else {
         for(int i = 0; i < 40; i++) {
             // First pixel data is from aux memory
-            uint32_t color_aux1 = dhgr_palette[line_aux[i] & 0xf];
-            uint32_t color_aux2 = dhgr_palette[(line_aux[i] >> 4) & 0xf];
+            uint32_t color_aux1 = ntsc90_palette[line_aux[i] & 0xf];
+            uint32_t color_aux2 = ntsc90_palette[(line_aux[i] >> 4) & 0xf];
 
             // Next pixel data is from main memory
-            uint32_t color_main1 = lores_palette[line_main[i] & 0xf];
-            uint32_t color_main2 = lores_palette[(line_main[i] >> 4) & 0xf];
+            uint32_t color_main1 = ntsc_palette[line_main[i] & 0xf];
+            uint32_t color_main2 = ntsc_palette[(line_main[i] >> 4) & 0xf];
 
             // Each double-lores pixel is 3.5 hires pixels, or 7 VGA pixels wide
             sl1->data[sl_pos] = (color_aux1 | THEN_EXTEND_6) | ((color_main1 | THEN_EXTEND_6) << 16);

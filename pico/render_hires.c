@@ -32,18 +32,18 @@ void generate_hires_tables() {
         // The low 4 bits of the array index are the latched color that is the same for one dhires
         // pixel time (4 monochrome dots). The high 2 bits are the 'mode' bits for the 2 dots being
         // rendered (0 = monochrome, 1 = color)
-        const uint32_t color = dhgr_palette[idx & 0xf];
+        const uint32_t color = ntsc90_palette[idx & 0xf];
 
         // video7_mixed_lookup1 contains the pre-computed VGA pixel data for the screen dots
         // corresponding to idx[1:0] with the color mode depending on the mode bits in idx[5:4]
-        color1 = (idx & 0x10) ? color : (idx & 0x01) ? dhgr_palette[15] : dhgr_palette[0];
-        color2 = (idx & 0x20) ? color : (idx & 0x02) ? dhgr_palette[15] : dhgr_palette[0];
+        color1 = (idx & 0x10) ? color : (idx & 0x01) ? ntsc90_palette[15] : ntsc90_palette[0];
+        color2 = (idx & 0x20) ? color : (idx & 0x02) ? ntsc90_palette[15] : ntsc90_palette[0];
         video7_mixed_lookup1[idx] = color1 | (color2 << 16);
 
         // video7_mixed_lookup2 contains the pre-computed VGA pixel data for the screen dots
         // corresponding to idx[3:2] with the color mode depending on the mode bits in idx[5:4]
-        color1 = (idx & 0x10) ? color : (idx & 0x04) ? dhgr_palette[15] : dhgr_palette[0];
-        color2 = (idx & 0x20) ? color : (idx & 0x08) ? dhgr_palette[15] : dhgr_palette[0];
+        color1 = (idx & 0x10) ? color : (idx & 0x04) ? ntsc90_palette[15] : ntsc90_palette[0];
+        color2 = (idx & 0x20) ? color : (idx & 0x08) ? ntsc90_palette[15] : ntsc90_palette[0];
         video7_mixed_lookup2[idx] = color1 | (color2 << 16);
     }
 #endif
@@ -200,8 +200,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         // Supported by the Extended 80-column text/AppleColor adapter card
 
         // In soft monochrome mode use the configured "monochrome" color, otherwise use the color palette
-        const uint32_t bg_color = soft_monochrom ? mono_bg_color : dhgr_palette[0];
-        const uint32_t fg_color = soft_monochrom ? mono_fg_color : dhgr_palette[15];
+        const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
+        const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
         const uint32_t bits_to_pixels[4] = {
             (bg_color << 16) | bg_color,
             (bg_color << 16) | fg_color,
@@ -226,14 +226,14 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         for(uint i = 0; i < 40; i++) {
             // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
             uint_fast8_t b = line_aux[i];
-            uint_fast16_t pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
-            uint_fast16_t pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
+            uint_fast16_t pix1 = ntsc_palette[b & 0xf] | THEN_EXTEND_3;
+            uint_fast16_t pix2 = ntsc_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
             sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
             sl_pos++;
 
             b = line_main[i];
-            pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
-            pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
+            pix1 = ntsc_palette[b & 0xf] | THEN_EXTEND_3;
+            pix2 = ntsc_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
             sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
             sl_pos++;
         }
@@ -328,9 +328,9 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
             // Consume pixels
             while(dotc >= 8) {
-                uint32_t pixeldata = (dhgr_palette[dots & 0xf] | THEN_EXTEND_3);
+                uint32_t pixeldata = (ntsc90_palette[dots & 0xf] | THEN_EXTEND_3);
                 dots >>= 4;
-                pixeldata |= (dhgr_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
+                pixeldata |= (ntsc90_palette[dots & 0xf] | THEN_EXTEND_3) << 16;
                 dots >>= 4;
                 sl->data[sl_pos++] = pixeldata;
                 dotc -= 8;
@@ -370,13 +370,13 @@ static void render_video7_fb_hires_line(uint line) {
 
     for(uint i = 0; i < 40;) {
         uint32_t dots = (mem_main[i] & 0x7f);
-        uint32_t color1 = lores_palette[(mem_aux[i] >> 4) & 0xf];
-        uint32_t color2 = lores_palette[(mem_aux[i] >> 0) & 0xf];
+        uint32_t color1 = ntsc_palette[(mem_aux[i] >> 4) & 0xf];
+        uint32_t color2 = ntsc_palette[(mem_aux[i] >> 0) & 0xf];
         i++;
 
         dots |= (mem_main[i] & 0x7f) << 7;
-        uint32_t color3 = lores_palette[(mem_aux[i] >> 4) & 0xf];
-        uint32_t color4 = lores_palette[(mem_aux[i] >> 0) & 0xf];
+        uint32_t color3 = ntsc_palette[(mem_aux[i] >> 4) & 0xf];
+        uint32_t color4 = ntsc_palette[(mem_aux[i] >> 0) & 0xf];
         i++;
 
         for(int j = 0; j < 3; j++) {
