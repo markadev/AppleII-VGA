@@ -183,8 +183,8 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
     const uint8_t *page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p2 : hgr_p1;
     const uint8_t *aux_page = ((soft_switches & SOFTSW_PAGE_2) && !soft_80store) ? hgr_p4 : hgr_p3;
-    const uint8_t *line_mem_even = page + hires_line_to_mem_offset(line);
-    const uint8_t *line_mem_odd = aux_page + hires_line_to_mem_offset(line);
+    const uint8_t *line_main = page + hires_line_to_mem_offset(line);
+    const uint8_t *line_aux = aux_page + hires_line_to_mem_offset(line);
 
     struct vga_scanline *sl = vga_prepare_scanline();
 
@@ -211,7 +211,7 @@ static void __time_critical_func(render_dhires_line)(uint line) {
 
         for(uint i = 0; i < 40; i++) {
             // Extract 14 bits from the next 2 display bytes
-            uint32_t dots = (line_mem_odd[i] & 0x7f) | ((uint32_t)line_mem_even[i] & 0x7f) << 7;
+            uint32_t dots = (line_aux[i] & 0x7f) | ((uint32_t)line_main[i] & 0x7f) << 7;
 
             // Render out the pixels, least significant bit first
             for(int j = 0; j < 7; j++) {
@@ -225,13 +225,13 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         // Supported by the Extended 80-column text/AppleColor adapter card but not documented in the manual
         for(uint i = 0; i < 40; i++) {
             // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
-            uint_fast8_t b = line_mem_odd[i];
+            uint_fast8_t b = line_aux[i];
             uint_fast16_t pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
             uint_fast16_t pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
             sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
             sl_pos++;
 
-            b = line_mem_even[i];
+            b = line_main[i];
             pix1 = lores_palette[b & 0xf] | THEN_EXTEND_3;
             pix2 = lores_palette[(b >> 4) & 0xf] | THEN_EXTEND_3;
             sl->data[sl_pos] = (uint32_t)pix1 | ((uint32_t)pix2 << 16);
@@ -244,10 +244,10 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         for(uint i = 0; i < 40; i += 2) {
             // Load in 28 dots from the next 4 video data bytes. Also load in the 'mode' for each 7 bit
             // sequence that controls whether each 7 bit sequence is rendered as mono or color.
-            uint_fast8_t vdata0 = line_mem_odd[i];
-            uint_fast8_t vdata1 = line_mem_even[i];
-            uint_fast8_t vdata2 = line_mem_odd[i + 1];
-            uint_fast8_t vdata3 = line_mem_even[i + 1];
+            uint_fast8_t vdata0 = line_aux[i];
+            uint_fast8_t vdata1 = line_main[i];
+            uint_fast8_t vdata2 = line_aux[i + 1];
+            uint_fast8_t vdata3 = line_main[i + 1];
 
             uint32_t dots = (vdata3 & 0x7f);
             dots = (dots << 7) | (vdata2 & 0x7f);
@@ -319,9 +319,9 @@ static void __time_critical_func(render_dhires_line)(uint line) {
         for(uint i = 0; i < 40;) {
             // Load in as many subpixels as possible
             while((dotc <= 18) && (i < 40)) {
-                dots |= (line_mem_odd[i] & 0x7f) << dotc;
+                dots |= (line_aux[i] & 0x7f) << dotc;
                 dotc += 7;
-                dots |= (line_mem_even[i] & 0x7f) << dotc;
+                dots |= (line_main[i] & 0x7f) << dotc;
                 dotc += 7;
                 i++;
             }
