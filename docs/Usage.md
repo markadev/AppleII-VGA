@@ -54,5 +54,6 @@ This register controls some features of the card
 
 | bit(s) | Description
 | ------ | -----------
+|  7:2   | reserved
+|   1    | Setting to 1 will disable simulated scanline rendering
 |   0    | Setting to 1 will enable simulated scanline rendering
-|  7:1   | reserved
