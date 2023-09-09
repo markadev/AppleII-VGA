@@ -211,8 +211,10 @@ void abus_init() {
 static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t data) {
     switch(reg) {
     case 0x00:
-        if(data & 0x01) soft_scanline_emulation = true;
-        if(data & 0x02) soft_scanline_emulation = false;
+        if(data & 0x01)
+            soft_scanline_emulation = true;
+        if(data & 0x02)
+            soft_scanline_emulation = false;
         break;
     default:;
     }
