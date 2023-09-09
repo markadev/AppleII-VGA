@@ -239,6 +239,8 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
 
     // Mirror Video Memory from MAIN & AUX banks
     if(address < 0xc000) {
+        reset_phase_1_happening = false;
+
         if(!is_write)
             return;
 
@@ -282,6 +284,8 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
 
     // Handling shadowing of the soft switches in the range 0xc000 - 0xc07f
     if(address < 0xc080) {
+        reset_phase_1_happening = false;
+
         shadow_handler h = softsw_handlers[address & 0x7f];
         if(h) {
             h(is_write, address, value & 0xff);
