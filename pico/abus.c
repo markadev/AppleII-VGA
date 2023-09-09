@@ -13,34 +13,12 @@
 
 enum {
     ABUS_MAIN_SM = 0,
-    ABUS_DEVICE_READ_SM = 1,
 };
 
 typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_t data);
 
 
 static shadow_handler softsw_handlers[128];
-
-
-static void abus_device_read_setup(PIO pio, uint sm) {
-    uint program_offset = pio_add_program(pio, &abus_device_read_program);
-    pio_sm_claim(pio, sm);
-
-    pio_sm_config c = abus_device_read_program_get_default_config(program_offset);
-
-    // set the "device selected" pin as the jump pin
-    sm_config_set_jmp_pin(&c, CONFIG_PIN_APPLEBUS_DEVSEL);
-
-    // map the OUT pin group to the data signals
-    sm_config_set_out_pins(&c, CONFIG_PIN_APPLEBUS_DATA_BASE, 8);
-
-    // map the SET pin group to the Data transceiver control signals
-    sm_config_set_set_pins(&c, CONFIG_PIN_APPLEBUS_CONTROL_BASE, 2);
-
-    pio_sm_init(pio, sm, program_offset, &c);
-
-    // All the GPIOs are shared and setup by the main program
-}
 
 
 static void abus_main_setup(PIO pio, uint sm) {
@@ -56,7 +34,7 @@ static void abus_main_setup(PIO pio, uint sm) {
     sm_config_set_in_pins(&c, CONFIG_PIN_APPLEBUS_DATA_BASE);
 
     // map the SET pin group to the bus transceiver enable signals
-    sm_config_set_set_pins(&c, CONFIG_PIN_APPLEBUS_CONTROL_BASE + 1, 3);
+    sm_config_set_set_pins(&c, CONFIG_PIN_APPLEBUS_CONTROL_BASE, 3);
 
     // configure left shift into ISR & autopush every 26 bits
     sm_config_set_in_shift(&c, false, true, 26);
@@ -64,11 +42,19 @@ static void abus_main_setup(PIO pio, uint sm) {
     pio_sm_init(pio, sm, program_offset, &c);
 
     // configure the GPIOs
-    // Ensure all transceivers will start disabled, with Data transceiver direction set to 'in'
+    // Ensure all transceivers will start disabled
     pio_sm_set_pins_with_mask(
-        pio, sm, (uint32_t)0xe << CONFIG_PIN_APPLEBUS_CONTROL_BASE, (uint32_t)0xf << CONFIG_PIN_APPLEBUS_CONTROL_BASE);
-    pio_sm_set_pindirs_with_mask(pio, sm, (0xf << CONFIG_PIN_APPLEBUS_CONTROL_BASE),
-        (1 << CONFIG_PIN_APPLEBUS_PHI0) | (0xf << CONFIG_PIN_APPLEBUS_CONTROL_BASE) | (0x3ff << CONFIG_PIN_APPLEBUS_DATA_BASE));
+        pio, sm, (uint32_t)0x7 << CONFIG_PIN_APPLEBUS_CONTROL_BASE, (uint32_t)0x7 << CONFIG_PIN_APPLEBUS_CONTROL_BASE);
+    pio_sm_set_pindirs_with_mask(pio, sm, (0x7 << CONFIG_PIN_APPLEBUS_CONTROL_BASE),
+        (1 << CONFIG_PIN_APPLEBUS_PHI0) | (0x7 << CONFIG_PIN_APPLEBUS_CONTROL_BASE) | (0x3ff << CONFIG_PIN_APPLEBUS_DATA_BASE));
+
+    // In the rev A schematic this pin was originally used to control the data bus pins transceiver direction
+    // so that bus reads could be responded to with data. This code has since been removed so the GPIO could be
+    // repurposed.
+    //
+    // A pull-down is set on this pin to remain compatible with these rev A based designs. This will ensure that
+    // by default the data transceiver direction in "inward".
+    gpio_set_pulls(CONFIG_PIN_APPLEBUS_SYNC, false, true);
 
     // Disable input synchronization on input pins that are sampled at known stable times
     // to shave off two clock cycles of input latency
@@ -77,7 +63,7 @@ static void abus_main_setup(PIO pio, uint sm) {
     pio_gpio_init(pio, CONFIG_PIN_APPLEBUS_PHI0);
     gpio_set_pulls(CONFIG_PIN_APPLEBUS_PHI0, false, false);
 
-    for(int pin = CONFIG_PIN_APPLEBUS_CONTROL_BASE; pin < CONFIG_PIN_APPLEBUS_CONTROL_BASE + 4; pin++) {
+    for(int pin = CONFIG_PIN_APPLEBUS_CONTROL_BASE; pin < CONFIG_PIN_APPLEBUS_CONTROL_BASE + 3; pin++) {
         pio_gpio_init(pio, pin);
     }
 
@@ -215,10 +201,9 @@ void abus_init() {
     softsw_handlers[0x5f] = shadow_softsw_5f;
 #endif
 
-    abus_device_read_setup(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM);
     abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
 
-    pio_enable_sm_mask_in_sync(CONFIG_ABUS_PIO, (1 << ABUS_MAIN_SM) | (1 << ABUS_DEVICE_READ_SM));
+    pio_enable_sm_mask_in_sync(CONFIG_ABUS_PIO, (1 << ABUS_MAIN_SM));
 }
 
 
@@ -308,32 +293,28 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
 
         reset_phase_1_happening = false;
     } else {
+        // FIXME: this case should execute every time any address != 0xfffd is
+        // seen, otherwise it gets "stuck" as true for any number of machine cycles
         reset_phase_1_happening = false;
     }
 }
 
 
 void __time_critical_func(abus_loop)() {
-    const uint32_t devsel_rw_mask = (1u << (CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE)) |
-                                    (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE));
-    const uint32_t is_devsel_read = (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE));
-    const uint32_t is_devsel_write = 0;
-
     while(1) {
         uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
 
-        uint_fast8_t device_reg = (value >> 10) & 0xf;
-        if((value & devsel_rw_mask) == is_devsel_read) {
-            // device read access - for testing, just respond with the I/O register's offset
-            pio_sm_put_blocking(CONFIG_ABUS_PIO, ABUS_DEVICE_READ_SM, device_reg);
-            gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
-        } else if((value & devsel_rw_mask) == is_devsel_write) {
-            // device write access
-            device_write(device_reg, value & 0xff);
+        const bool is_devsel = ((value & (1u << (CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
+        const bool is_write = ((value & (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
+        if(is_devsel) {
+            // device slot access
+            if(is_write) {
+                uint_fast8_t device_reg = (value >> 10) & 0xf;
+                device_write(device_reg, value & 0xff);
+            }
             gpio_xor_mask(1u << PICO_DEFAULT_LED_PIN);
         } else {
             // some other bus cycle - handle memory & soft-switch shadowing
-            bool is_write = ((value & (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
             uint_fast16_t address = (value >> 10) & 0xffff;
             shadow_memory(is_write, address, value);
         }

@@ -1,6 +1,4 @@
 .define public PHI0_GPIO 26
-.define READ_DATA_TRIGGER_IRQ 4
-.define DATA_BUSY_IRQ 5
 
 ; Apple II bus interface
 ; Ref: Understanding the Apple II, pages 4-7, 7-8
@@ -45,60 +43,5 @@ read_cycle:
     ; the current time is P0+114ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 10 instructions)
 
     in PINS, 10                         ; read R/W, ~DEVSEL, and dontcare[7:0], then autopush
-
-    set PINS, 0b111                     ; ensure AddrLo transceiver is disabled
-    irq set READ_DATA_TRIGGER_IRQ       ; trigger the data read state machine to put data on the data bus
     wait 0 GPIO, PHI0_GPIO   [7]        ; wait for PHI0 to fall
-    wait 0 irq DATA_BUSY_IRQ            ; wait for the data handling state machine to complete to avoid contention w/transceiver control
-.wrap
-
-
-.program abus_device_read
-; Prerequisites:
-;  * Bus clock used is PHI0, wired to GPIO 26
-;  * JMP pin is the ~DEVSEL signal
-;  * OUT pins are the 8 data signals
-;  * SET pins are the Data transceiver control signals
-;
-; SET bits for tranceiver control:
-;  0bxx
-;    x  - select Data transceiver (active low)
-;     x - Data transceiver direction (0=input, 1=output)
-.wrap_target
-wait_loop:
-    wait 1 irq READ_DATA_TRIGGER_IRQ    ; wait for the data portion of a read cycle (from the main SM)
-    jmp PIN, wait_loop                  ; skip if this device is not being addressed
-
-    ; the current time is P0+154ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 15 instructions)
-    ; and this read cycle is addressed to this device.
-    ;
-    ; Phase 0 is typically 489 ns long.
-    ;  * Data from peripherals should be valid on the data bus by 45 nanoseconds before the end of phase 0
-    ;  * Data should be held for 40ns after phase 0 ends
-    ;  * Data bus should be tri-stated within 60ns after phase 0 ends
-
-    irq set DATA_BUSY_IRQ
-
-    pull noblock                        ; extra early pull to clear out any standing values from the FIFO
-
-    set PINS, 0b01                      ; enable Data tranceiver with output direction
-    mov OSR, ~NULL
-    out PINDIRS, 8  [29]                ; set data pins as outputs
-
-    pull noblock                        ; pull value from the FIFO as late as possible
-    out PINS, 8
-
-    ; the current time is P0+442ns (P0 + 18ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 51 instructions)
-
-    wait 0 GPIO, PHI0_GPIO              ; wait for PHI0 to fall
-
-    ; the current time is ~P0+52ns (~P0 + 28ns (buffer + clock input delays) + 2 clocks (input synchronizers) + 1 instruction)
-    ;  - note the 74LS07 tPHL is 19ns typ/30ns max, which is much higher than tPLH (6ns typ/10ns max)
-
-    set PINS, 0b10                      ; disable Data tranceiver to tri-state the data bus
-
-    mov OSR, NULL
-    out PINDIRS, 8                      ; reset data pins as inputs
-
-    irq clear DATA_BUSY_IRQ
 .wrap
