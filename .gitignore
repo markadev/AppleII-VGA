@@ -3,3 +3,4 @@
 *.o
 .vscode
 build
+fp-info-cache
