@@ -50,10 +50,23 @@ The various register offsets can then be written to:
 ### Register 0 - Feature Select
 
 **[write-only]**
-This register controls some features of the card
+This register controls enablement of some features of the card
 
 | bit(s) | Description
 | ------ | -----------
 |  7:2   | reserved
 |   1    | Setting to 1 will disable simulated scanline rendering
 |   0    | Setting to 1 will enable simulated scanline rendering
+
+
+### Register 1 - Monochrome color selection
+
+**[write-only]**
+This register controls the output color when soft-monochrome mode is enabled
+
+| bit(s) | Description
+| ------ | -----------
+|  7:6   | reserved
+|  5:4   | Setting non-zero will choose a background color (black, green, amber)
+|  3:2   | reserved
+|  1:0   | Setting non-zero will choose a foreground color (black, green, amber)

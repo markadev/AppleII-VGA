@@ -82,5 +82,19 @@ const uint16_t ntsc90_palette[16] = {
     COLOR_WHITE,
 };
 
+const uint16_t mono_bg_colors[4] = {
+    COLOR_BLACK,  // entry 0 is unusable
+    COLOR_BLACK,
+    COLOR_MONO_GREEN_BG,
+    COLOR_MONO_AMBER_BG,
+};
+
+const uint16_t mono_fg_colors[4] = {
+    COLOR_WHITE,  // entry 0 is unusable
+    COLOR_WHITE,
+    COLOR_MONO_GREEN_FG,
+    COLOR_MONO_AMBER_FG,
+};
+
 uint16_t mono_bg_color = COLOR_BLACK;
 uint16_t mono_fg_color = COLOR_WHITE;

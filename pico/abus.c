@@ -4,6 +4,7 @@
 #include "abus.h"
 #include "abus.pio.h"
 #include "buffers.h"
+#include "colors.h"
 
 
 #if CONFIG_PIN_APPLEBUS_PHI0 != PHI0_GPIO
@@ -215,6 +216,15 @@ static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t da
             soft_scanline_emulation = true;
         if(data & 0x02)
             soft_scanline_emulation = false;
+        break;
+
+    case 0x01:
+        if(data & 0xf) {
+            mono_fg_color = mono_fg_colors[data & 0x3];
+        }
+        if(data & 0xf0) {
+            mono_bg_color = mono_bg_colors[(data >> 4) & 0x3];
+        }
         break;
     default:;
     }

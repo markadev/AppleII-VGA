@@ -80,7 +80,6 @@ a cheap composite -> HDMI adapter
 There are a few things that I think are easily possible with this design and I might
 try to implement:
  * loading custom character ROMs from Basic
- * Palettes for hires mode (color/mono-white/mono-green)
 
 
 ## Limitations
