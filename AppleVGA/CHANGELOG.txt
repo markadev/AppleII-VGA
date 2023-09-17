@@ -18,6 +18,10 @@ Functional/breaking changes:
    There is jumper block JP1 with cuttable & bridgeable pads for reconfiguring GPIO10 back
    to the Rev A behavior (U3 direction control) (Big thanks to Brian @swetland for this idea)
 
+**Do not use older firmware on this board revision**. If you are reusing a Pico from a build
+of the rev A circuit then make sure to install the latest firmware first. The latest firmware
+will work with both rev A and rev B circuit designs.
+
 
 # Rev A - Jan 2, 2022
 

@@ -59,6 +59,8 @@ Included in this repo are:
    and [Gerber files](AppleVGA-Connector/outputs/). (You could also build a custom cable instead)
  * The [source code for the Pi Pico microcontroller](pico/)
 
+If you're going to build a card then check the schematics and [hardware changelog](AppleVGA/CHANGELOG.txt) for important notes.
+
 Many thanks go to the folks in the Discussion area to help push this project forward with bug
 fixes & reports, and design ideas!
 
