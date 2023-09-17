@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "AppleVGA-Connector")(type "KiCad")(uri "${KIPRJMOD}/AppleVGA-Connector.pretty")(options "")(descr ""))
+)

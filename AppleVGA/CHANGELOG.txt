@@ -1,0 +1,28 @@
+Hardware Changelog
+
+# Rev B - Sept 9, 2023
+
+Updated design suitable for PCB manufacturing and hand-soldering
+
+Non-functional changes:
+ * The 74LS07 and related pull-up resistors have been replaced with another 74LVC245
+   to reduce unique part count and waste less power
+ * The dedicated 3.3v regulator has been removed in favor of using the voltage
+   regulator on the Pico
+ * MOSFET Q1 may be used instead of diode D1 in the Pico's power supply which
+   will reduce wasted power
+
+Functional/breaking changes:
+ * The VGA connector J2 was changed from a 1x8 pin header to a 2x4 pin header/IDC connector
+ * Pico GPIO10 is now connected to the Apple bus SYNC signal (via U4 for voltage translation).
+   There is jumper block JP1 with cuttable & bridgeable pads for reconfiguring GPIO10 back
+   to the Rev A behavior (U3 direction control) (Big thanks to Brian @swetland for this idea)
+
+**Do not use older firmware on this board revision**. If you are reusing a Pico from a build
+of the rev A circuit then make sure to install the latest firmware first. The latest firmware
+will work with both rev A and rev B circuit designs.
+
+
+# Rev A - Jan 2, 2022
+
+Initial design for laying out and wiring chips on a protoboard
