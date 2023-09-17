@@ -15,22 +15,15 @@ signal.
                             |  Pi Pico  |   640x480 VGA   /
                             +-----------+
 
-This project is currently in a pretty raw state so consider it useful for informational
-purposes only. I've built one prototype card and several other people have also been able to
-build a working card so it has been tested on a handful of Apple II+/IIe's and VGA monitors
-but YMMV.
-
 These features are currently supported:
  * Generates a 640x480@60 VGA signal with 3 bits per color channel using resistor DACs
  * Text mode (monochrome)
  * Lo-res mode with no color fringing between the chunky pixels
- * Double Lo-res mode (Apple IIe only)
  * Hi-res mode with simulated NTSC artifact color
- * Double Hi-res mode (Apple IIe only)
  * Mixed lo-res and hi-res modes with monochrome text and no color fringing
- * 80 Columms text support (Apple IIe only)
- * Soft-monochrome mode to force hires display as if on a monochrome monitor
- * Some Video-7 RGB card extended graphical modes
+ * Apple IIe video modes: 80-column text, double-lores, & double-hires
+ * Soft-monochrome mode to force display as if on a monochrome monitor
+ * Some Video-7 RGB card extended graphical modes are implemented
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -47,11 +40,34 @@ I had these goals in mind during design:
 I also wanted to see if a Pi Pico could actually work on an 8-bit CPU bus, since the docs
 say it should work but there were no code examples.
 
-Included in the repo here are the schematics (KiCAD project, [schematics PDF](AppleVGA/AppleVGA.pdf) and [Bill-Of-Materials CSV](AppleVGA/AppleVGA_BOM.csv)) and the [source code for the Pi Pico
-microcontroller](pico/). I used the unrouted PCB layout to wire up the initial prototype
-board on a [Glitchworks Apple II Prototyping Board](https://www.tindie.com/products/glitchwrks/gw-a2-1-glitchworks-apple-ii-prototyping-board/).
+Included in this repo are:
+ * The main expansion board [KiCad Project](AppleVGA/), [Schematics](AppleVGA/AppleVGA.pdf),
+   [BOM](AppleVGA/AppleVGA_BOM.csv), and [Gerber files](AppleVGA/outputs/)
+ * An optional connector board [KiCad Project](AppleVGA-Connector/),
+   [Schematics](AppleVGA-Connector/AppleVGA-Connector.pdf),
+   [BOM](AppleVGA-Connector/AppleVGA-Connector_BOM.csv),
+   and [Gerber files](AppleVGA-Connector/outputs/)
+ * The [source code for the Pi Pico microcontroller](pico/)
 
-![Prototype Card](docs/prototype_card.jpg)
+This is currently a DIY project that several folks have built on their own, ranging from
+[hand-wired prototype boards](docs/prototype_card.jpg) to
+[custom](https://user-images.githubusercontent.com/7944844/243266290-d05ce815-0a3d-4464-a4da-49dd44d71e92.jpg)
+[PCBs](https://user-images.githubusercontent.com/94628/253134471-0d5ad359-75ae-400a-acfa-885c80c36e78.jpg)
+and run in their Apple II+'s and IIe's. I consider it to be pretty stable at this point.
+
+Many thanks go to the folks in the Discussion area to help push this project forward with bug
+fixes & reports, and design ideas!
+
+
+**Main board**
+![Main board](docs/board_rev_b.jpg)
+
+**Connector board**
+_credit goes to `@swetland` for [this idea](https://github.com/markadev/AppleII-VGA/discussions/15#discussioncomment-6432841)_
+![Connector board](docs/connector_board.jpg)
+
+**In the wild**
+![Live action shot](docs/installed_in_iie.jpg)
 
 
 ## Comparisons
@@ -80,13 +96,5 @@ a cheap composite -> HDMI adapter
 There are a few things that I think are easily possible with this design and I might
 try to implement:
  * loading custom character ROMs from Basic
-
-
-## Limitations
-
-This VGA card design currently does have some limitations:
- * The VGA signal vsync is not synchronized with the Apple II video memory scanning so
-   software that tries to detect the composite video vsync using 'vapor lock' may not
-   look good.
- * All the Pi Pico GPIOs are being used so connecting to slot 7's SYNC or any other bus
-   signal is a bit of a challenge without adding more chips or optimizing the DACs.
+ * Synchronize the VGA signal with the Apple II sync so that IIe software can avoid
+   screen tearing.
