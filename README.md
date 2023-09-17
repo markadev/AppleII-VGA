@@ -22,6 +22,7 @@ These features are currently supported:
  * Hi-res mode with simulated NTSC artifact color
  * Mixed lo-res and hi-res modes with monochrome text and no color fringing
  * Apple IIe video modes: 80-column text, double-lores, & double-hires
+   (thanks to @dkgrizzly and @Paco1979)
  * Soft-monochrome mode to force display as if on a monochrome monitor
  * Some Video-7 RGB card extended graphical modes are implemented
 
@@ -40,14 +41,8 @@ I had these goals in mind during design:
 I also wanted to see if a Pi Pico could actually work on an 8-bit CPU bus, since the docs
 say it should work but there were no code examples.
 
-Included in this repo are:
- * The main expansion board [KiCad Project](AppleVGA/), [Schematics](AppleVGA/AppleVGA.pdf),
-   [BOM](AppleVGA/AppleVGA_BOM.csv), and [Gerber files](AppleVGA/outputs/)
- * An optional connector board [KiCad Project](AppleVGA-Connector/),
-   [Schematics](AppleVGA-Connector/AppleVGA-Connector.pdf),
-   [BOM](AppleVGA-Connector/AppleVGA-Connector_BOM.csv),
-   and [Gerber files](AppleVGA-Connector/outputs/)
- * The [source code for the Pi Pico microcontroller](pico/)
+
+## Project Status
 
 This is currently a DIY project that several folks have built on their own, ranging from
 [hand-wired prototype boards](docs/prototype_card.jpg) to
@@ -55,15 +50,24 @@ This is currently a DIY project that several folks have built on their own, rang
 [PCBs](https://user-images.githubusercontent.com/94628/253134471-0d5ad359-75ae-400a-acfa-885c80c36e78.jpg)
 and run in their Apple II+'s and IIe's. I consider it to be pretty stable at this point.
 
+Included in this repo are:
+ * The main expansion board [KiCad Project](AppleVGA/), [Schematics](AppleVGA/AppleVGA.pdf),
+   [BOM](AppleVGA/AppleVGA_BOM.csv), and [Gerber files](AppleVGA/outputs/)
+ * An optional connector board [KiCad Project](AppleVGA-Connector/),
+   [Schematics](AppleVGA-Connector/AppleVGA-Connector.pdf),
+   [BOM](AppleVGA-Connector/AppleVGA-Connector_BOM.csv),
+   and [Gerber files](AppleVGA-Connector/outputs/). (You could also build a custom cable instead)
+ * The [source code for the Pi Pico microcontroller](pico/)
+
 Many thanks go to the folks in the Discussion area to help push this project forward with bug
 fixes & reports, and design ideas!
-
 
 **Main board**
 ![Main board](docs/board_rev_b.jpg)
 
 **Connector board**
-_credit goes to `@swetland` for [this idea](https://github.com/markadev/AppleII-VGA/discussions/15#discussioncomment-6432841)_
+_thanks to @swetland for [this idea](https://github.com/markadev/AppleII-VGA/discussions/15#discussioncomment-6432841)_
+
 ![Connector board](docs/connector_board.jpg)
 
 **In the wild**
@@ -96,5 +100,5 @@ a cheap composite -> HDMI adapter
 There are a few things that I think are easily possible with this design and I might
 try to implement:
  * loading custom character ROMs from Basic
- * Synchronize the VGA signal with the Apple II sync so that IIe software can avoid
-   screen tearing.
+ * synchronizing the VGA signal with the Apple II sync so that IIe software can avoid
+   screen tearing
