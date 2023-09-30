@@ -44,6 +44,10 @@ You will also need a ribbon cable to connect to the main board which can be made
  * 2 * [2x4 wire housings](https://www.mouser.com/ProductDetail/710-61200823021)
  * about 6 inches of 8 conductor ribbon cable
 
+And if you want to mount the connector to the back of a IIe then you'll also want to get some hex standoffs to
+screw into the VGA connector. Sorry I don't have a source for this, just a drawer of 'em that I've collected
+over the years. The manufacturer of the connector you buy should have a corresponding part.
+
 
 ### VGA connector cable
 
