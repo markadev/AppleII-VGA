@@ -16,9 +16,6 @@ volatile bool soft_scanline_emulation;
 
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[256 * 8];
-#ifdef APPLE_MODEL_IIE
-uint8_t altcharacter_rom[256 * 8];
-#endif
 
 uint8_t main_memory[48 * 1024];
 uint8_t aux_memory[48 * 1024];

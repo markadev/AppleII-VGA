@@ -32,9 +32,6 @@ extern volatile bool soft_scanline_emulation;
 
 
 extern uint8_t character_rom[256 * 8];
-#ifdef APPLE_MODEL_IIE
-extern uint8_t altcharacter_rom[256 * 8];
-#endif
 
 extern uint8_t main_memory[48 * 1024];
 extern uint8_t aux_memory[48 * 1024];
