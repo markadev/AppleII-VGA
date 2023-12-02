@@ -19,6 +19,7 @@ enum {
 typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_t data);
 
 
+static unsigned int char_write_offset;
 static shadow_handler softsw_handlers[128];
 
 
@@ -218,6 +219,7 @@ static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t da
             soft_scanline_emulation = false;
         break;
 
+    // soft-monochrome color setting
     case 0x01:
         if(data & 0xf) {
             mono_fg_color = mono_fg_colors[data & 0x3];
@@ -226,6 +228,18 @@ static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t da
             mono_bg_color = mono_bg_colors[(data >> 4) & 0x3];
         }
         break;
+
+    // character generator write offset
+    case 0x02:
+        char_write_offset = data << 3;
+        break;
+
+    // character generator write
+    case 0x03:
+        character_rom[char_write_offset] = data;
+        char_write_offset = (char_write_offset + 1) % sizeof(character_rom);
+        break;
+
     default:;
     }
 }

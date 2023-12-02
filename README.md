@@ -100,8 +100,9 @@ a cheap composite -> HDMI adapter
 
 ## Future work
 
-There are a few things that I think are easily possible with this design and I might
-try to implement:
- * loading custom character ROMs from Basic
- * synchronizing the VGA signal with the Apple II sync so that IIe software can avoid
-   screen tearing
+With the Rev B hardware design, the firmware has access to the Apple bus' SYNC signal
+when installed in slot 7. Theoretically the firmware could synchronize the VGA display
+scans with the video hardware in the Apple II.
+
+Though possible, it looks like it would be a large overhaul to implement this synchronization
+and I've found no real-world use for it so I don't plan on completing this functionality.
