@@ -19,6 +19,7 @@ enum {
 typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_t data);
 
 
+static int reset_detect_state = 0;
 static unsigned int char_write_offset;
 static shadow_handler softsw_handlers[128];
 
@@ -245,84 +246,111 @@ static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t da
 }
 
 
+// Shadow parts of the Apple's memory by observing the bus write cycles
 static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t address, uint32_t value) {
-    // Shadow parts of the Apple's memory by observing the bus write cycles
-    static bool reset_phase_1_happening = false;
+    uint8_t *bank;
 
-    // Mirror Video Memory from MAIN & AUX banks
-    if(address < 0xc000) {
-        reset_phase_1_happening = false;
-
+    switch((address & 0xfc00) >> 10) {
+    case 0x0400 >> 10:
+        // text page 1
+        reset_detect_state = 0;
         if(!is_write)
-            return;
+            break;
 
         // Refer to "Inside the Apple IIe" p.295 for how Aux memory addressing is done
-        if((address >= 0x400) && (address < 0x800)) {
-            // text page 1
-            uint8_t *bank;
-            if(soft_80store) {
-                // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
-                bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
-            } else if(soft_ramwrt) {
-                bank = aux_memory;
-            } else {
-                bank = main_memory;
-            }
-            bank[address] = value & 0xff;
-        } else if((address >= 0x800) && (address < 0xc00)) {
-            // text page 2
-            uint8_t *bank = soft_ramwrt ? aux_memory : main_memory;
-            bank[address] = value & 0xff;
-        } else if((address >= 0x2000) && (address < 0x4000)) {
-            // hires page 1
-            uint8_t *bank;
-            if(soft_80store && (soft_switches & SOFTSW_HIRES_MODE)) {
-                // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
-                bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
-            } else if(soft_ramwrt) {
-                bank = aux_memory;
-            } else {
-                bank = main_memory;
-            }
-            bank[address] = value & 0xff;
-        } else if((address >= 0x4000) && (address < 0x6000)) {
-            // hires page 2
-            uint8_t *bank = soft_ramwrt ? aux_memory : main_memory;
-            bank[address] = value & 0xff;
+        if(soft_80store) {
+            // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
+            bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
+        } else if(soft_ramwrt) {
+            bank = aux_memory;
+        } else {
+            bank = main_memory;
         }
+        bank[address] = value & 0xff;
+        break;
 
-        return;
-    }
+    case 0x0800 >> 10:
+        // text page 2
+        reset_detect_state = 0;
+        if(!is_write)
+            break;
 
-    // Handling shadowing of the soft switches in the range 0xc000 - 0xc07f
-    if(address < 0xc080) {
-        reset_phase_1_happening = false;
+        bank = soft_ramwrt ? aux_memory : main_memory;
+        bank[address] = value & 0xff;
+        break;
 
-        shadow_handler h = softsw_handlers[address & 0x7f];
-        if(h) {
-            h(is_write, address, value & 0xff);
+    case 0x2000 >> 10 ... 0x3c00 >> 10:
+        // hires page 1
+        reset_detect_state = 0;
+        if(!is_write)
+            break;
+
+        if(soft_80store && (soft_switches & SOFTSW_HIRES_MODE)) {
+            // 80STORE takes precedence - bank is then controlled by the PAGE2 switch
+            bank = (soft_switches & SOFTSW_PAGE_2) ? aux_memory : main_memory;
+        } else if(soft_ramwrt) {
+            bank = aux_memory;
+        } else {
+            bank = main_memory;
         }
-        return;
-    }
+        bank[address] = value & 0xff;
+        break;
 
-    // Reset detection
-    if((address == 0xfffc) && !is_write) {
-        reset_phase_1_happening = true;
-    } else if((address == 0xfffd) && !is_write && reset_phase_1_happening) {
-        // Reset soft-switches
-        soft_switches = SOFTSW_TEXT_MODE;
-        soft_video7_mode = VIDEO7_MODE_140x192;
-        soft_dhires = false;
-        soft_80col = false;
-        soft_80store = false;
-        soft_altcharset = false;
-        soft_ramwrt = false;
+    case 0x4000 >> 10 ... 0x5c00 >> 10:
+        // hires page 2
+        reset_detect_state = 0;
+        if(!is_write)
+            break;
 
-        reset_phase_1_happening = false;
-    } else {
-        // FIXME: this case should execute every time any address != 0xfffd is
-        // seen, otherwise it gets "stuck" as true for any number of machine cycles
-        reset_phase_1_happening = false;
+        bank = soft_ramwrt ? aux_memory : main_memory;
+        bank[address] = value & 0xff;
+        break;
+
+    case 0xc000 >> 10:
+        reset_detect_state = 0;
+
+        // Handle shadowing of the soft switches in the range 0xc000 - 0xc07f
+        if(address < 0xc080) {
+            shadow_handler h = softsw_handlers[address & 0x7f];
+            if(h) {
+                h(is_write, address, value & 0xff);
+            }
+        }
+        break;
+
+    case 0x0000 >> 10:
+    case 0xfc00 >> 10:
+        // reset detection - the IOU chip on the Apple IIe cleverly detects a CPU reset by monitoring bus activity
+        // for a sequence usually only seen when the CPU resets: three page 1 accesses followed by an access to
+        // address $FFFC (see "Understanding the Apple IIe" pages 4-14 and 5-29).
+        if((address >> 8) == 0x01) {
+            // count the consecutive page 1 accesses, up to 3
+            if(reset_detect_state < 3) {
+                reset_detect_state++;
+            } else if(reset_detect_state > 3) {
+                reset_detect_state = 1;
+            }
+        } else if((reset_detect_state == 3) && (address == 0xfffc)) {
+            reset_detect_state++;
+        } else if((reset_detect_state == 4) && (address == 0xfffd)) {
+            // reset soft-switches
+            soft_switches = SOFTSW_TEXT_MODE;
+            soft_video7_mode = VIDEO7_MODE_140x192;
+            soft_dhires = false;
+            soft_80col = false;
+            soft_80store = false;
+            soft_altcharset = false;
+            soft_ramwrt = false;
+
+            reset_detect_state = 0;
+        } else {
+            reset_detect_state = 0;
+        }
+        break;
+
+    default:
+        reset_detect_state = 0;
+        break;
     }
 }
 
