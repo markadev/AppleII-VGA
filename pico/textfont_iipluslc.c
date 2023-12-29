@@ -1,7 +1,6 @@
 #include "textfont.h"
 
-
-#ifdef APPLE_MODEL_IIPLUS
+#ifdef APPLE_MODEL_IIPLUSLC
 const uint8_t default_character_rom[256 * 8] = {
     //
     // Inverse alphabet Set

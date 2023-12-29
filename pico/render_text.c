@@ -39,7 +39,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
 
     uint_fast8_t bits = character_rom[((uint_fast16_t)ch << 3) + glyph_line];
 
-#ifdef APPLE_MODEL_IIPLUS
+#if defined APPLE_MODEL_IIPLUS || defined APPLE_MODEL_IIPLUSLC
     // For II+ characters:
     //  characters 0x00-0x7f: direct mapping to ROM address; when O7=1 then invert the output based on the flasher
     //  characters 0x80-0xff: direct mapping to ROM address

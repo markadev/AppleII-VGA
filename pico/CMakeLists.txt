@@ -34,6 +34,7 @@ target_sources(applevga PUBLIC
     render_text.c
     textfont_iie.c
     textfont_iiplus.c
+    textfont_iipluslc.c
     vga.c
 )
 target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
