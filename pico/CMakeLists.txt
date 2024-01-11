@@ -16,6 +16,7 @@ add_compile_options(-Wall -Wextra -Wnull-dereference -Wno-unused-parameter -Wno-
 
 
 add_executable(applevga)
+pico_set_binary_type(applevga copy_to_ram)
 
 pico_generate_pio_header(applevga
     ${CMAKE_CURRENT_SOURCE_DIR}/vga.pio)

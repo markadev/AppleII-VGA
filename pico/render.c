@@ -1,10 +1,8 @@
 #include "render.h"
 
 #include <string.h>
-#include <hardware/timer.h>
 #include "buffers.h"
 #include "textfont.h"
-#include "vga.h"
 
 
 void render_init() {
