@@ -1,8 +1,8 @@
 #include <string.h>
 #include <hardware/pio.h>
-#include "config.h"
 #include "abus.h"
 #include "abus.pio.h"
+#include "board_config.h"
 #include "buffers.h"
 #include "colors.h"
 

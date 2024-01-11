@@ -1,7 +1,7 @@
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
 #include "abus.h"
-#include "config.h"
+#include "board_config.h"
 #include "render.h"
 #include "vga.h"
 
