@@ -28,6 +28,7 @@ target_sources(applevga PUBLIC
     abus.c
     buffers.c
     colors.c
+    device_regs.c
     render.c
     render_hires.c
     render_lores.c
