@@ -2,6 +2,7 @@
 #include <pico/multicore.h>
 #include "abus.h"
 #include "board_config.h"
+#include "config.h"
 #include "render.h"
 #include "vga.h"
 
@@ -19,6 +20,8 @@ int main() {
     // Setup the on-board LED for debugging
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+
+    config_load();
 
     multicore_launch_core1(core1_main);
 

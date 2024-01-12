@@ -30,8 +30,9 @@ extern volatile bool soft_ramwrt;
 
 extern volatile bool soft_scanline_emulation;
 
+#define CHARACTER_ROM_SIZE 2048
 
-extern uint8_t character_rom[256 * 8];
+extern uint8_t character_rom[CHARACTER_ROM_SIZE];
 
 extern uint8_t main_memory[24 * 1024];
 extern uint8_t aux_memory[24 * 1024];

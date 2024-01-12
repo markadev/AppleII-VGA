@@ -1,16 +1,11 @@
 #include "render.h"
-
-#include <string.h>
 #include "buffers.h"
-#include "textfont.h"
 
 
 void render_init() {
-    // Initialize the character generator ROM
-    memcpy(character_rom, default_character_rom, sizeof(character_rom));
-
     generate_hires_tables();
 }
+
 
 void render_loop() {
     while(1) {
