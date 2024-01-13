@@ -28,20 +28,21 @@ const uint8_t *character_roms[16] = {
 #define DEFAULT_CHARACTER_ROM textfont_iiplus_us
 const uint8_t *default_character_rom = DEFAULT_CHARACTER_ROM;
 const uint8_t *character_roms[16] = {
-    textfont_iiplus_us, textfont_iiplus_videx_lowercase1,
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
-    DEFAULT_CHARACTER_ROM,  // slot available for use
+    textfont_iiplus_us,
+    textfont_iiplus_videx_lowercase1,
+    textfont_iiplus_videx_lowercase2,
+    textfont_iiplus_pigfont,
+    textfont_iiplus_jp_katakana,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
+    DEFAULT_CHARACTER_ROM,
 };
 #endif

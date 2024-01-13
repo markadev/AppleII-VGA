@@ -6,7 +6,7 @@ import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Reads an Apple II video character ROM and transforms it to the internal format used by the AppleII-VGA firmware')
-    parser.add_argument('-t', choices=['ii+', 'iie'], required=True, help='Machine type of the character ROM')
+    parser.add_argument('-t', choices=['ii+', 'iij+', 'iie'], required=True, help='Machine type of the character ROM')
     parser.add_argument('filename', help='Name of the ROM file to dump')
     return parser.parse_args()
 
@@ -45,6 +45,15 @@ def main():
             0xc0: 'Normal upper',
             0xe0: 'Normal lower',
         }
+    elif args.t == 'iij+':
+        charset_offsets = {
+            0x00: 'Normal katakana',
+            0x40: 'Flashing katakana',
+            0x80: 'Normal control',
+            0xa0: 'Normal symbols',
+            0xc0: 'Upper alpha',
+            0xe0: 'Lower alpha',
+        }
 
     charset_name = ""
     print("const uint8_t default_character_rom[256 * 8] = {")
@@ -80,9 +89,27 @@ def main():
                 # bit 7 is not used in the upper half of II+ characters sets so just clear it
                 if ch >= 0x80:
                     char_byte &= 0x7f
+            elif args.t == 'iij+':
+                # Translate with katakana always enabled, so map 0x40-0x7f to 0x00-0x3f
+                if ch >= 0x40 and ch <= 0x7f:
+                    char_byte = char_bytes[8*(ch-0x40) + i]
+
+                # 0x00 to 0x3f are supposed to be normal characters so make the bits right
+                if ch <= 0x3f:
+                    char_byte ^= 0x7f
+                    char_byte &= 0x7f
+
+                # II+ inverse character ROM patterns are stored with 0 representing an on pixel and bit7==0 to indicate
+                # that the hardware should invert the pattern. Just invert those patterns here.
+                #if ch < 0x80 and (char_byte & 0x80) == 0:
+                #    char_byte ^= 0x7f
+
+                # bit 7 is not used in the upper half of II+ characters sets so just clear it
+                if ch >= 0x80:
+                    char_byte &= 0x7f
 
             char_bits = f"{char_byte:08b}"
-            if args.t == 'ii+':
+            if args.t in ('ii+', 'iij+'):
                 # II+ ROMs store the character pattern from left to right in bit6 to bit0 (the most significant
                 # bit is drawn to screen first). The AppleII-VGA firmware expect the pattern to be in the opposite
                 # bit order so reverse those bits here.
