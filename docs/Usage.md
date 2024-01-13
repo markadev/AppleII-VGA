@@ -110,6 +110,7 @@ to execute.
 |    $00    | Load the default configuration values
 |    $01    | Load the stored configuration from flash. This automatically happens on power-up.
 |    $02    | Save the current configuration to flash
+| $10 - $1f | Load one of the built-in character ROMs
 
 
 

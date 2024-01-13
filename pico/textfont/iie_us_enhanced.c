@@ -2,8 +2,7 @@
 #include <pico/platform.h>
 
 
-#ifdef APPLE_MODEL_IIE
-const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
+const uint8_t __in_flash("chr_rom") textfont_iie_us_enhanced[256 * 8] = {
     //
     // Inverse control (upper) Set
     //
@@ -2596,4 +2595,3 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
 };
-#endif
