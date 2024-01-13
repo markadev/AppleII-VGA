@@ -20,12 +20,12 @@ void update_text_flasher() {
 }
 
 
-static inline uint __time_critical_func(text_line_to_mem_offset)(uint line) {
+static inline uint text_line_to_mem_offset(uint line) {
     return ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
 }
 
 
-static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch, uint_fast8_t glyph_line) {
+static inline uint_fast8_t char_text_bits(uint_fast8_t ch, uint_fast8_t glyph_line) {
 #ifdef APPLE_MODEL_IIE
     // Apple IIe character ROM addressing, see "Understanding the Apple IIe" table 8.3 on page 8-14
     //  characters 0x00-0x3f: direct mapping to ROM address
@@ -53,7 +53,7 @@ static inline uint_fast8_t __time_critical_func(char_text_bits)(uint_fast8_t ch,
 }
 
 
-void __time_critical_func(render_text)() {
+void render_text() {
     vga_prepare_frame();
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
@@ -64,7 +64,7 @@ void __time_critical_func(render_text)() {
 }
 
 
-void __time_critical_func(render_text_line)(unsigned int line) {
+void render_text_line(unsigned int line) {
     const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
     const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
     uint32_t bits_to_pixelpair[4] = {

@@ -2,7 +2,7 @@
 #include <hardware/irq.h>
 #include <hardware/pio.h>
 #include <hardware/sync.h>
-#include "config.h"
+#include "board_config.h"
 #include "vga.pio.h"
 #include "vga.h"
 

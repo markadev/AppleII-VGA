@@ -17,8 +17,9 @@ volatile bool soft_scanline_emulation;
 // The currently programmed character generator ROM for text mode
 uint8_t character_rom[256 * 8];
 
-uint8_t main_memory[48 * 1024];
-uint8_t aux_memory[48 * 1024];
+// The lower 24K of main and aux memory (on IIe) where the video memory resides
+uint8_t main_memory[24 * 1024];
+uint8_t aux_memory[24 * 1024];
 
 
 uint8_t *text_mainmem_page1 = main_memory + 0x0400;

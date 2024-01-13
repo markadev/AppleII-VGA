@@ -8,7 +8,7 @@
 
 
 // Render a test pattern for testing the VGA output directly
-void __noinline __time_critical_func(render_vga_testpattern)() {
+void render_vga_testpattern() {
     vga_prepare_frame();
 
     for(uint line = 0; line < VGA_HEIGHT;) {

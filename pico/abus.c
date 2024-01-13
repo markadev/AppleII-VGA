@@ -1,10 +1,11 @@
 #include <string.h>
 #include <hardware/pio.h>
-#include "config.h"
 #include "abus.h"
 #include "abus.pio.h"
+#include "board_config.h"
 #include "buffers.h"
 #include "colors.h"
+#include "device_regs.h"
 
 
 #if CONFIG_PIN_APPLEBUS_PHI0 != PHI0_GPIO
@@ -20,7 +21,6 @@ typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_
 
 
 static int reset_detect_state = 0;
-static unsigned int char_write_offset;
 static shadow_handler softsw_handlers[128];
 
 
@@ -77,47 +77,47 @@ static void abus_main_setup(PIO pio, uint sm) {
 }
 
 
-static void __time_critical_func(shadow_softsw_00)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_00(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_80store = false;
 }
 
-static void __time_critical_func(shadow_softsw_01)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_01(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_80store = true;
 }
 
-static void __time_critical_func(shadow_softsw_04)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_04(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_ramwrt = false;
 }
 
-static void __time_critical_func(shadow_softsw_05)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_05(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_ramwrt = true;
 }
 
-static void __time_critical_func(shadow_softsw_0c)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_0c(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_80col = false;
 }
 
-static void __time_critical_func(shadow_softsw_0d)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_0d(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_80col = true;
 }
 
-static void __time_critical_func(shadow_softsw_0e)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_0e(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_altcharset = false;
 }
 
-static void __time_critical_func(shadow_softsw_0f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_0f(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write)
         soft_altcharset = true;
 }
 
-static void __time_critical_func(shadow_softsw_21)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_21(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(is_write) {
         if(data & 0x80) {
             soft_monochrom = true;
@@ -127,43 +127,43 @@ static void __time_critical_func(shadow_softsw_21)(bool is_write, uint_fast16_t 
     }
 }
 
-static void __time_critical_func(shadow_softsw_50)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_50(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
 }
 
-static void __time_critical_func(shadow_softsw_51)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_51(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches |= SOFTSW_TEXT_MODE;
 }
 
-static void __time_critical_func(shadow_softsw_52)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_52(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches &= ~((uint32_t)SOFTSW_MIX_MODE);
 }
 
-static void __time_critical_func(shadow_softsw_53)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_53(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches |= SOFTSW_MIX_MODE;
 }
 
-static void __time_critical_func(shadow_softsw_54)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_54(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches &= ~((uint32_t)SOFTSW_PAGE_2);
 }
 
-static void __time_critical_func(shadow_softsw_55)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_55(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches |= SOFTSW_PAGE_2;
 }
 
-static void __time_critical_func(shadow_softsw_56)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_56(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches &= ~((uint32_t)SOFTSW_HIRES_MODE);
 }
 
-static void __time_critical_func(shadow_softsw_57)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_57(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches |= SOFTSW_HIRES_MODE;
 }
 
-static void __time_critical_func(shadow_softsw_5e)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_5e(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_dhires = true;
 }
 
-static void __time_critical_func(shadow_softsw_5f)(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+static void shadow_softsw_5f(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     if(soft_dhires) {
         // This is the VIDEO7 Magic (Not documented by apple but by a patent US4631692)
         // Apple II has softswitches and also a special 2bit shift register (two flipflops basically)
@@ -210,44 +210,8 @@ void abus_init() {
 }
 
 
-// Handle a write to one of the registers on this device's slot
-static void __time_critical_func(device_write)(uint_fast8_t reg, uint_fast8_t data) {
-    switch(reg) {
-    case 0x00:
-        if(data & 0x01)
-            soft_scanline_emulation = true;
-        if(data & 0x02)
-            soft_scanline_emulation = false;
-        break;
-
-    // soft-monochrome color setting
-    case 0x01:
-        if(data & 0xf) {
-            mono_fg_color = mono_fg_colors[data & 0x3];
-        }
-        if(data & 0xf0) {
-            mono_bg_color = mono_bg_colors[(data >> 4) & 0x3];
-        }
-        break;
-
-    // character generator write offset
-    case 0x02:
-        char_write_offset = data << 3;
-        break;
-
-    // character generator write
-    case 0x03:
-        character_rom[char_write_offset] = data;
-        char_write_offset = (char_write_offset + 1) % sizeof(character_rom);
-        break;
-
-    default:;
-    }
-}
-
-
 // Shadow parts of the Apple's memory by observing the bus write cycles
-static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t address, uint32_t value) {
+static void shadow_memory(bool is_write, uint_fast16_t address, uint32_t value) {
     uint8_t *bank;
 
     switch((address & 0xfc00) >> 10) {
@@ -355,7 +319,7 @@ static void __time_critical_func(shadow_memory)(bool is_write, uint_fast16_t add
 }
 
 
-void __time_critical_func(abus_loop)() {
+void abus_loop() {
     while(1) {
         uint32_t value = pio_sm_get_blocking(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
 

@@ -12,12 +12,12 @@ static void render_dlores_line(uint line);
 #endif
 
 
-static inline uint __time_critical_func(lores_line_to_mem_offset)(uint line) {
+static inline uint lores_line_to_mem_offset(uint line) {
     return ((line & 0x7) << 7) + (((line >> 3) & 0x3) * 40);
 }
 
 
-void __time_critical_func(render_lores)() {
+void render_lores() {
     vga_prepare_frame();
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
@@ -37,7 +37,7 @@ void __time_critical_func(render_lores)() {
 }
 
 
-void __time_critical_func(render_mixed_lores)() {
+void render_mixed_lores() {
     vga_prepare_frame();
     // Skip 48 lines to center vertically
     vga_skip_lines(48);
@@ -61,7 +61,7 @@ void __time_critical_func(render_mixed_lores)() {
 }
 
 
-static void __time_critical_func(render_lores_line)(uint line) {
+static void render_lores_line(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
@@ -143,7 +143,7 @@ static void __time_critical_func(render_lores_line)(uint line) {
 
 
 #ifdef APPLE_MODEL_IIE
-static void __time_critical_func(render_dlores_line)(uint line) {
+static void render_dlores_line(uint line) {
     // Construct two scanlines for the two different colored cells at the same time
     struct vga_scanline *sl1 = vga_prepare_scanline();
     struct vga_scanline *sl2 = vga_prepare_scanline();
