@@ -1,7 +1,9 @@
 *.bin
+*.jar
 *.kicad_prl
 *.o
 .vscode
+AppleIIVGA-Config.dsk
 build
 fp-info-cache
 /.vs
