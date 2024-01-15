@@ -2,8 +2,8 @@
 #include <pico/platform.h>
 
 
-#ifdef APPLE_MODEL_IIPLUSLC
-const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
+// https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Interface%20Cards/80%20Column%20Cards/Videx%20Videoterm/ROM%20Images/ROM%20dump%20-%20Apple%202plus%20character%20generator%20-%20possibly%20Videx%20lowercase%20chip.bin
+const uint8_t __in_flash("chr_rom") textfont_iiplus_videx_lowercase1[256 * 8] = {
     //
     // Inverse alphabet Set
     //
@@ -2596,4 +2596,3 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00111110,
     0b00000000,
 };
-#endif

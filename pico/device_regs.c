@@ -4,7 +4,7 @@
 #include "buffers.h"
 #include "colors.h"
 #include "config.h"
-#include "textfont.h"
+#include "textfont/textfont.h"
 
 
 static unsigned int char_write_offset;
@@ -71,6 +71,10 @@ void execute_device_command(uint_fast8_t cmd) {
     case 0x02:
         // save the current configuration
         config_save();
+        break;
+    case 0x10 ... 0x1f:
+        // load a standard alternate character ROM
+        memcpy(character_rom, character_roms[cmd & 0xf], CHARACTER_ROM_SIZE);
         break;
     default:;
     }

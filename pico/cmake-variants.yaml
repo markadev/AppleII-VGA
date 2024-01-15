@@ -21,11 +21,6 @@ appleModel:
       long: Support Apple II and II+ video features
       settings:
         APPLE_MODEL: IIPLUS
-    iipluslc:
-      short: II+lc
-      long: Support Apple II and II+ video features with Videx Lowercase ROM characters
-      settings:
-        APPLE_MODEL: IIPLUSLC
     iie:
       short: IIe
       long: Support Apple IIe video features

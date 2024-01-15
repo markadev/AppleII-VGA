@@ -6,7 +6,7 @@
 #include <hardware/flash.h>
 #include "buffers.h"
 #include "colors.h"
-#include "textfont.h"
+#include "textfont/textfont.h"
 
 
 // A block of flash is reserved for storing configuration persistently across power cycles

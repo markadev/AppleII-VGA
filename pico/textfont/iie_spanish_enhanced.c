@@ -2,20 +2,20 @@
 #include <pico/platform.h>
 
 
-#ifdef APPLE_MODEL_IIE
-const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
+// https://mirrors.apple2.org.za/ftp.apple.asimov.net/emulators/rom_images/UPD2764D-SpanishIIcCharROM.BIN
+const uint8_t __in_flash("chr_rom") textfont_iie_spanish_enhanced[256 * 8] = {
     //
     // Inverse control (upper) Set
     //
 
     // Inverse control (upper) character 0x00
+    0b01000011,
+    0b01111101,
     0b01100011,
     0b01011101,
-    0b01010101,
-    0b01000101,
-    0b01100101,
-    0b01111101,
-    0b01000011,
+    0b01100011,
+    0b01011111,
+    0b01100001,
     0b01111111,
 
     // Inverse control (upper) character 0x01
@@ -279,34 +279,34 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
 
     // Inverse control (upper) character 0x1b
-    0b01000001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01000001,
     0b01111111,
+    0b01110111,
+    0b01111111,
+    0b01110111,
+    0b01110111,
+    0b01110111,
+    0b01110111,
+    0b01110111,
 
     // Inverse control (upper) character 0x1c
+    0b01010011,
+    0b01100101,
     0b01111111,
-    0b01111101,
-    0b01111011,
-    0b01110111,
-    0b01101111,
-    0b01011111,
-    0b01111111,
+    0b01011001,
+    0b01010101,
+    0b01001101,
+    0b01011101,
     0b01111111,
 
     // Inverse control (upper) character 0x1d
-    0b01000001,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01000001,
     0b01111111,
+    0b01110111,
+    0b01111111,
+    0b01110111,
+    0b01110111,
+    0b01111011,
+    0b01011101,
+    0b01100011,
 
     // Inverse control (upper) character 0x1e
     0b01111111,
@@ -363,13 +363,13 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
 
     // Inverse special character 0x23
-    0b01101011,
-    0b01101011,
-    0b01000001,
-    0b01101011,
-    0b01000001,
-    0b01101011,
-    0b01101011,
+    0b01100011,
+    0b01111101,
+    0b01111101,
+    0b01111000,
+    0b01111101,
+    0b01111101,
+    0b01000010,
     0b01111111,
 
     // Inverse special character 0x24
@@ -403,9 +403,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
 
     // Inverse special character 0x27
+    0b01101111,
     0b01110111,
-    0b01110111,
-    0b01110111,
+    0b01111011,
     0b01111111,
     0b01111111,
     0b01111111,
@@ -1251,34 +1251,34 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
 
     // Inverse lower character 0x7b
-    0b01000111,
-    0b01110011,
-    0b01110011,
-    0b01111001,
-    0b01110011,
-    0b01110011,
-    0b01000111,
+    0b01100011,
+    0b01011101,
+    0b01100011,
+    0b01111111,
+    0b01111111,
+    0b01111111,
+    0b01111111,
     0b01111111,
 
     // Inverse lower character 0x7c
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
+    0b01010011,
+    0b01100101,
+    0b01111111,
+    0b01100001,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01111111,
 
     // Inverse lower character 0x7d
-    0b01110001,
-    0b01100111,
-    0b01100111,
-    0b01001111,
-    0b01100111,
-    0b01100111,
-    0b01110001,
     0b01111111,
+    0b01111111,
+    0b01000011,
+    0b01111101,
+    0b01111101,
+    0b01000011,
+    0b01101111,
+    0b01110111,
 
     // Inverse lower character 0x7e
     0b01010011,
@@ -1305,13 +1305,13 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     //
 
     // Normal control (upper) character 0x80
+    0b00111100,
+    0b00000010,
     0b00011100,
     0b00100010,
-    0b00101010,
-    0b00111010,
-    0b00011010,
-    0b00000010,
-    0b00111100,
+    0b00011100,
+    0b00100000,
+    0b00011110,
     0b00000000,
 
     // Normal control (upper) character 0x81
@@ -1575,34 +1575,34 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal control (upper) character 0x9b
-    0b00111110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00111110,
     0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
 
     // Normal control (upper) character 0x9c
+    0b00101100,
+    0b00011010,
     0b00000000,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00000000,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
     0b00000000,
 
     // Normal control (upper) character 0x9d
-    0b00111110,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00111110,
     0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00000100,
+    0b00100010,
+    0b00011100,
 
     // Normal control (upper) character 0x9e
     0b00000000,
@@ -1659,13 +1659,13 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal special character 0xa3
-    0b00010100,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00010100,
+    0b00011100,
+    0b00000010,
+    0b00000010,
+    0b00000111,
+    0b00000010,
+    0b00000010,
+    0b00111101,
     0b00000000,
 
     // Normal special character 0xa4
@@ -1699,9 +1699,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal special character 0xa7
+    0b00010000,
     0b00001000,
-    0b00001000,
-    0b00001000,
+    0b00000100,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1953,13 +1953,13 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     //
 
     // Normal upper character 0xc0
+    0b00111100,
+    0b00000010,
     0b00011100,
     0b00100010,
-    0b00101010,
-    0b00111010,
-    0b00011010,
-    0b00000010,
-    0b00111100,
+    0b00011100,
+    0b00100000,
+    0b00011110,
     0b00000000,
 
     // Normal upper character 0xc1
@@ -2223,34 +2223,34 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal upper character 0xdb
-    0b00111110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00111110,
     0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
 
     // Normal upper character 0xdc
+    0b00101100,
+    0b00011010,
     0b00000000,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00000000,
+    0b00100110,
+    0b00101010,
+    0b00110010,
+    0b00100010,
     0b00000000,
 
     // Normal upper character 0xdd
-    0b00111110,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00111110,
     0b00000000,
+    0b00001000,
+    0b00000000,
+    0b00001000,
+    0b00001000,
+    0b00000100,
+    0b00100010,
+    0b00011100,
 
     // Normal upper character 0xde
     0b00000000,
@@ -2547,34 +2547,34 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal lower character 0xfb
-    0b00111000,
-    0b00001100,
-    0b00001100,
-    0b00000110,
-    0b00001100,
-    0b00001100,
-    0b00111000,
+    0b00011100,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
     0b00000000,
 
     // Normal lower character 0xfc
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
+    0b00101100,
+    0b00011010,
+    0b00000000,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
 
     // Normal lower character 0xfd
-    0b00001110,
-    0b00011000,
-    0b00011000,
-    0b00110000,
-    0b00011000,
-    0b00011000,
-    0b00001110,
     0b00000000,
+    0b00000000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00111100,
+    0b00010000,
+    0b00001000,
 
     // Normal lower character 0xfe
     0b00101100,
@@ -2596,4 +2596,3 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
 };
-#endif

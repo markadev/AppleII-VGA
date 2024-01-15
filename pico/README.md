@@ -40,18 +40,6 @@ $ ls *uf2
 applevga.uf2
 ```
 
-## Build the firmware for Apple II+ with lowercase character set support
-```shell
-cd /AppleII-VGA/pico
-mkdir build
-cd build
-cmake -DAPPLE_MODEL=IIPLUSLC -DCMAKE_BUILD_TYPE=Release ..
-make
-$ ls *uf2
-...
-applevga.uf2
-```
-
 ## Install the firmware
 Hold down the BOOTSEL button and connect the Raspberry Pi Pico to your PC via micro USB cable. Once Pico is
 connected release the BOOTSEL button. Pi Pico should be connected to PC with USB mass storage device mode.

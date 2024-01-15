@@ -3,7 +3,7 @@
 #include <pico/stdlib.h>
 #include "buffers.h"
 #include "colors.h"
-#include "textfont.h"
+#include "textfont/textfont.h"
 #include "vga.h"
 
 
@@ -39,7 +39,7 @@ static inline uint_fast8_t char_text_bits(uint_fast8_t ch, uint_fast8_t glyph_li
 
     uint_fast8_t bits = character_rom[((uint_fast16_t)ch << 3) + glyph_line];
 
-#if defined APPLE_MODEL_IIPLUS || defined APPLE_MODEL_IIPLUSLC
+#ifdef APPLE_MODEL_IIPLUS
     // For II+ characters:
     //  characters 0x00-0x7f: direct mapping to ROM address; when O7=1 then invert the output based on the flasher
     //  characters 0x80-0xff: direct mapping to ROM address

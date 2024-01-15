@@ -2,24 +2,23 @@
 #include <pico/platform.h>
 
 
-#ifdef APPLE_MODEL_IIPLUS
-const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
+// https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Chips/Videx%20Lower%20Case%20Chip/ROM%20Images/Videx%20Lower%20Case%20Chip%20ROM.bin
+const uint8_t __in_flash("chr_rom") textfont_iiplus_videx_lowercase2[256 * 8] = {
     //
     // Inverse alphabet Set
     //
 
     // Inverse alphabet character 0x00
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01010101,
-    0b01000101,
+    0b01010101,
     0b01100101,
     0b01111101,
     0b01000011,
+    0b01111111,
 
     // Inverse alphabet character 0x01
-    0b01111111,
     0b01110111,
     0b01101011,
     0b01011101,
@@ -27,39 +26,39 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01000001,
     0b01011101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x02
+    0b01100001,
+    0b01011101,
+    0b01011101,
+    0b01100001,
+    0b01011101,
+    0b01011101,
+    0b01100001,
     0b01111111,
-    0b01100001,
-    0b01011101,
-    0b01011101,
-    0b01100001,
-    0b01011101,
-    0b01011101,
-    0b01100001,
 
     // Inverse alphabet character 0x03
+    0b01100011,
+    0b01011101,
+    0b01111101,
+    0b01111101,
+    0b01111101,
+    0b01011101,
+    0b01100011,
     0b01111111,
-    0b01100011,
-    0b01011101,
-    0b01111101,
-    0b01111101,
-    0b01111101,
-    0b01011101,
-    0b01100011,
 
     // Inverse alphabet character 0x04
+    0b01100001,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01100001,
     0b01111111,
-    0b01100001,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01100001,
 
     // Inverse alphabet character 0x05
-    0b01111111,
     0b01000001,
     0b01111101,
     0b01111101,
@@ -67,9 +66,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111101,
     0b01111101,
     0b01000001,
+    0b01111111,
 
     // Inverse alphabet character 0x06
-    0b01111111,
     0b01000001,
     0b01111101,
     0b01111101,
@@ -77,19 +76,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111101,
     0b01111101,
     0b01111101,
+    0b01111111,
 
     // Inverse alphabet character 0x07
-    0b01111111,
     0b01000011,
-    0b01111101,
     0b01111101,
     0b01111101,
     0b01001101,
     0b01011101,
+    0b01011101,
     0b01000011,
+    0b01111111,
 
     // Inverse alphabet character 0x08
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01011101,
@@ -97,19 +96,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011101,
     0b01011101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x09
+    0b01100011,
+    0b01110111,
+    0b01110111,
+    0b01110111,
+    0b01110111,
+    0b01110111,
+    0b01100011,
     0b01111111,
-    0b01100011,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
-    0b01100011,
 
     // Inverse alphabet character 0x0a
-    0b01111111,
     0b01011111,
     0b01011111,
     0b01011111,
@@ -117,9 +116,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011111,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse alphabet character 0x0b
-    0b01111111,
     0b01011101,
     0b01101101,
     0b01110101,
@@ -127,9 +126,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110101,
     0b01101101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x0c
-    0b01111111,
     0b01111101,
     0b01111101,
     0b01111101,
@@ -137,9 +136,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111101,
     0b01111101,
     0b01000001,
+    0b01111111,
 
     // Inverse alphabet character 0x0d
-    0b01111111,
     0b01011101,
     0b01001001,
     0b01010101,
@@ -147,9 +146,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011101,
     0b01011101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x0e
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01011001,
@@ -157,29 +156,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01001101,
     0b01011101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x0f
+    0b01100011,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01011101,
+    0b01100011,
     0b01111111,
-    0b01100011,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01011101,
-    0b01100011,
 
     // Inverse alphabet character 0x10
+    0b01100001,
+    0b01011101,
+    0b01011101,
+    0b01100001,
+    0b01111101,
+    0b01111101,
+    0b01111101,
     0b01111111,
-    0b01100001,
-    0b01011101,
-    0b01011101,
-    0b01100001,
-    0b01111101,
-    0b01111101,
-    0b01111101,
 
     // Inverse alphabet character 0x11
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01011101,
@@ -187,9 +186,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01010101,
     0b01101101,
     0b01010011,
+    0b01111111,
 
     // Inverse alphabet character 0x12
-    0b01111111,
     0b01100001,
     0b01011101,
     0b01011101,
@@ -197,9 +196,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110101,
     0b01101101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x13
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01111101,
@@ -207,9 +206,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011111,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse alphabet character 0x14
-    0b01111111,
     0b01000001,
     0b01110111,
     0b01110111,
@@ -217,9 +216,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110111,
     0b01110111,
     0b01110111,
+    0b01111111,
 
     // Inverse alphabet character 0x15
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01011101,
@@ -227,9 +226,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011101,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse alphabet character 0x16
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01011101,
@@ -237,9 +236,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011101,
     0b01101011,
     0b01110111,
+    0b01111111,
 
     // Inverse alphabet character 0x17
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01011101,
@@ -247,9 +246,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01010101,
     0b01001001,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x18
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01101011,
@@ -257,9 +256,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01101011,
     0b01011101,
     0b01011101,
+    0b01111111,
 
     // Inverse alphabet character 0x19
-    0b01111111,
     0b01011101,
     0b01011101,
     0b01101011,
@@ -267,9 +266,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110111,
     0b01110111,
     0b01110111,
+    0b01111111,
 
     // Inverse alphabet character 0x1a
-    0b01111111,
     0b01000001,
     0b01011111,
     0b01101111,
@@ -277,44 +276,45 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111011,
     0b01111101,
     0b01000001,
+    0b01111111,
 
     // Inverse alphabet character 0x1b
+    0b01000001,
+    0b01111001,
+    0b01111001,
+    0b01111001,
+    0b01111001,
+    0b01111001,
+    0b01000001,
     0b01111111,
-    0b01000001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01111001,
-    0b01000001,
 
     // Inverse alphabet character 0x1c
     0b01111111,
-    0b01111111,
     0b01111101,
     0b01111011,
     0b01110111,
     0b01101111,
     0b01011111,
     0b01111111,
+    0b01111111,
 
     // Inverse alphabet character 0x1d
+    0b01000001,
+    0b01001111,
+    0b01001111,
+    0b01001111,
+    0b01001111,
+    0b01001111,
+    0b01000001,
     0b01111111,
-    0b01000001,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01001111,
-    0b01000001,
 
     // Inverse alphabet character 0x1e
-    0b01111111,
-    0b01111111,
-    0b01111111,
     0b01110111,
     0b01101011,
     0b01011101,
+    0b01111111,
+    0b01111111,
+    0b01111111,
     0b01111111,
     0b01111111,
 
@@ -325,8 +325,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
     0b01111111,
     0b01111111,
-    0b01111111,
     0b01000001,
+    0b01111111,
 
     //
     // Inverse symbols Set
@@ -343,7 +343,6 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
 
     // Inverse symbols character 0x21
-    0b01111111,
     0b01110111,
     0b01110111,
     0b01110111,
@@ -351,29 +350,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110111,
     0b01111111,
     0b01110111,
+    0b01111111,
 
     // Inverse symbols character 0x22
+    0b01101011,
+    0b01101011,
+    0b01101011,
     0b01111111,
-    0b01101011,
-    0b01101011,
-    0b01101011,
     0b01111111,
     0b01111111,
     0b01111111,
     0b01111111,
 
     // Inverse symbols character 0x23
+    0b01101011,
+    0b01101011,
+    0b01000001,
+    0b01101011,
+    0b01000001,
+    0b01101011,
+    0b01101011,
     0b01111111,
-    0b01101011,
-    0b01101011,
-    0b01000001,
-    0b01101011,
-    0b01000001,
-    0b01101011,
-    0b01101011,
 
     // Inverse symbols character 0x24
-    0b01111111,
     0b01110111,
     0b01000011,
     0b01110101,
@@ -381,75 +380,76 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01010111,
     0b01100001,
     0b01110111,
+    0b01111111,
 
     // Inverse symbols character 0x25
-    0b01111111,
-    0b01111001,
+    0b01011001,
     0b01011001,
     0b01101111,
     0b01110111,
     0b01111011,
     0b01001101,
-    0b01001111,
+    0b01001101,
+    0b01111111,
 
     // Inverse symbols character 0x26
-    0b01111111,
-    0b01111011,
-    0b01110101,
+    0b01110011,
+    0b01101101,
     0b01110101,
     0b01111011,
     0b01010101,
     0b01101101,
     0b01010011,
+    0b01111111,
 
     // Inverse symbols character 0x27
+    0b01110111,
+    0b01110111,
+    0b01110111,
     0b01111111,
-    0b01110111,
-    0b01110111,
-    0b01110111,
     0b01111111,
     0b01111111,
     0b01111111,
     0b01111111,
 
     // Inverse symbols character 0x28
+    0b01110111,
+    0b01111011,
+    0b01111101,
+    0b01111101,
+    0b01111101,
+    0b01111011,
+    0b01110111,
     0b01111111,
-    0b01110111,
-    0b01111011,
-    0b01111101,
-    0b01111101,
-    0b01111101,
-    0b01111011,
-    0b01110111,
 
     // Inverse symbols character 0x29
+    0b01110111,
+    0b01101111,
+    0b01011111,
+    0b01011111,
+    0b01011111,
+    0b01101111,
+    0b01110111,
     0b01111111,
-    0b01110111,
-    0b01101111,
-    0b01011111,
-    0b01011111,
-    0b01011111,
-    0b01101111,
-    0b01110111,
 
     // Inverse symbols character 0x2a
+    0b01110111,
+    0b01010101,
+    0b01100011,
+    0b01110111,
+    0b01100011,
+    0b01010101,
+    0b01110111,
     0b01111111,
-    0b01110111,
-    0b01010101,
-    0b01100011,
-    0b01110111,
-    0b01100011,
-    0b01010101,
-    0b01110111,
 
     // Inverse symbols character 0x2b
-    0b01111111,
     0b01111111,
     0b01110111,
     0b01110111,
     0b01000001,
     0b01110111,
     0b01110111,
+    0b01111111,
     0b01111111,
 
     // Inverse symbols character 0x2c
@@ -458,7 +458,7 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
     0b01111111,
     0b01111111,
-    0b01110111,
+    0b01110011,
     0b01110111,
     0b01111011,
 
@@ -466,8 +466,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
     0b01111111,
     0b01111111,
+    0b01100011,
     0b01111111,
-    0b01000001,
     0b01111111,
     0b01111111,
     0b01111111,
@@ -478,12 +478,11 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111111,
     0b01111111,
     0b01111111,
+    0b01110011,
+    0b01110011,
     0b01111111,
-    0b01111111,
-    0b01110111,
 
     // Inverse symbols character 0x2f
-    0b01111111,
     0b01111111,
     0b01011111,
     0b01101111,
@@ -491,9 +490,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111011,
     0b01111101,
     0b01111111,
+    0b01111111,
 
     // Inverse symbols character 0x30
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01001101,
@@ -501,9 +500,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011001,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse symbols character 0x31
-    0b01111111,
     0b01110111,
     0b01110011,
     0b01110111,
@@ -511,9 +510,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110111,
     0b01110111,
     0b01100011,
+    0b01111111,
 
     // Inverse symbols character 0x32
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01011111,
@@ -521,9 +520,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111011,
     0b01111101,
     0b01000001,
+    0b01111111,
 
     // Inverse symbols character 0x33
-    0b01111111,
     0b01000001,
     0b01011111,
     0b01101111,
@@ -531,9 +530,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011111,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse symbols character 0x34
-    0b01111111,
     0b01101111,
     0b01100111,
     0b01101011,
@@ -541,9 +540,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01000001,
     0b01101111,
     0b01101111,
+    0b01111111,
 
     // Inverse symbols character 0x35
-    0b01111111,
     0b01000001,
     0b01111101,
     0b01100001,
@@ -551,9 +550,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011111,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse symbols character 0x36
-    0b01111111,
     0b01000111,
     0b01111011,
     0b01111101,
@@ -561,9 +560,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011101,
     0b01011101,
     0b01100011,
+    0b01111111,
 
     // Inverse symbols character 0x37
-    0b01111111,
     0b01000001,
     0b01011111,
     0b01101111,
@@ -571,19 +570,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111011,
     0b01111011,
     0b01111011,
+    0b01111111,
 
     // Inverse symbols character 0x38
+    0b01100011,
+    0b01011101,
+    0b01011101,
+    0b01100011,
+    0b01011101,
+    0b01011101,
+    0b01100011,
     0b01111111,
-    0b01100011,
-    0b01011101,
-    0b01011101,
-    0b01100011,
-    0b01011101,
-    0b01011101,
-    0b01100011,
 
     // Inverse symbols character 0x39
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01011101,
@@ -591,29 +590,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01011111,
     0b01101111,
     0b01110001,
+    0b01111111,
 
     // Inverse symbols character 0x3a
     0b01111111,
     0b01111111,
+    0b01110011,
+    0b01110011,
     0b01111111,
-    0b01110111,
-    0b01111111,
-    0b01110111,
-    0b01111111,
+    0b01110011,
+    0b01110011,
     0b01111111,
 
     // Inverse symbols character 0x3b
     0b01111111,
     0b01111111,
+    0b01110011,
+    0b01110011,
     0b01111111,
-    0b01110111,
-    0b01111111,
-    0b01110111,
+    0b01110011,
     0b01110111,
     0b01111011,
 
     // Inverse symbols character 0x3c
-    0b01111111,
     0b01101111,
     0b01110111,
     0b01111011,
@@ -621,19 +620,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01111011,
     0b01110111,
     0b01101111,
+    0b01111111,
 
     // Inverse symbols character 0x3d
     0b01111111,
     0b01111111,
+    0b01100001,
     0b01111111,
-    0b01000001,
+    0b01100001,
     0b01111111,
-    0b01000001,
     0b01111111,
     0b01111111,
 
     // Inverse symbols character 0x3e
-    0b01111111,
     0b01111011,
     0b01110111,
     0b01101111,
@@ -641,9 +640,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01101111,
     0b01110111,
     0b01111011,
+    0b01111111,
 
     // Inverse symbols character 0x3f
-    0b01111111,
     0b01100011,
     0b01011101,
     0b01101111,
@@ -651,23 +650,23 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b01110111,
     0b01111111,
     0b01110111,
+    0b01111111,
 
     //
     // Flashing alphabet Set
     //
 
     // Flashing alphabet character 0x40
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10101010,
-    0b10111010,
+    0b10101010,
     0b10011010,
     0b10000010,
     0b10111100,
+    0b10000000,
 
     // Flashing alphabet character 0x41
-    0b10000000,
     0b10001000,
     0b10010100,
     0b10100010,
@@ -675,39 +674,39 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10111110,
     0b10100010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x42
+    0b10011110,
+    0b10100010,
+    0b10100010,
+    0b10011110,
+    0b10100010,
+    0b10100010,
+    0b10011110,
     0b10000000,
-    0b10011110,
-    0b10100010,
-    0b10100010,
-    0b10011110,
-    0b10100010,
-    0b10100010,
-    0b10011110,
 
     // Flashing alphabet character 0x43
+    0b10011100,
+    0b10100010,
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10100010,
+    0b10011100,
     0b10000000,
-    0b10011100,
-    0b10100010,
-    0b10000010,
-    0b10000010,
-    0b10000010,
-    0b10100010,
-    0b10011100,
 
     // Flashing alphabet character 0x44
+    0b10011110,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10011110,
     0b10000000,
-    0b10011110,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10011110,
 
     // Flashing alphabet character 0x45
-    0b10000000,
     0b10111110,
     0b10000010,
     0b10000010,
@@ -715,9 +714,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000010,
     0b10000010,
     0b10111110,
+    0b10000000,
 
     // Flashing alphabet character 0x46
-    0b10000000,
     0b10111110,
     0b10000010,
     0b10000010,
@@ -725,19 +724,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000010,
     0b10000010,
     0b10000010,
+    0b10000000,
 
     // Flashing alphabet character 0x47
-    0b10000000,
     0b10111100,
-    0b10000010,
     0b10000010,
     0b10000010,
     0b10110010,
     0b10100010,
+    0b10100010,
     0b10111100,
+    0b10000000,
 
     // Flashing alphabet character 0x48
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10100010,
@@ -745,19 +744,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100010,
     0b10100010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x49
+    0b10011100,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b10011100,
     0b10000000,
-    0b10011100,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
-    0b10011100,
 
     // Flashing alphabet character 0x4a
-    0b10000000,
     0b10100000,
     0b10100000,
     0b10100000,
@@ -765,9 +764,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100000,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing alphabet character 0x4b
-    0b10000000,
     0b10100010,
     0b10010010,
     0b10001010,
@@ -775,9 +774,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001010,
     0b10010010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x4c
-    0b10000000,
     0b10000010,
     0b10000010,
     0b10000010,
@@ -785,9 +784,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000010,
     0b10000010,
     0b10111110,
+    0b10000000,
 
     // Flashing alphabet character 0x4d
-    0b10000000,
     0b10100010,
     0b10110110,
     0b10101010,
@@ -795,9 +794,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100010,
     0b10100010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x4e
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10100110,
@@ -805,29 +804,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10110010,
     0b10100010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x4f
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10100010,
+    0b10011100,
     0b10000000,
-    0b10011100,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10100010,
-    0b10011100,
 
     // Flashing alphabet character 0x50
+    0b10011110,
+    0b10100010,
+    0b10100010,
+    0b10011110,
+    0b10000010,
+    0b10000010,
+    0b10000010,
     0b10000000,
-    0b10011110,
-    0b10100010,
-    0b10100010,
-    0b10011110,
-    0b10000010,
-    0b10000010,
-    0b10000010,
 
     // Flashing alphabet character 0x51
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10100010,
@@ -835,9 +834,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10101010,
     0b10010010,
     0b10101100,
+    0b10000000,
 
     // Flashing alphabet character 0x52
-    0b10000000,
     0b10011110,
     0b10100010,
     0b10100010,
@@ -845,9 +844,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001010,
     0b10010010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x53
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10000010,
@@ -855,9 +854,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100000,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing alphabet character 0x54
-    0b10000000,
     0b10111110,
     0b10001000,
     0b10001000,
@@ -865,9 +864,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001000,
     0b10001000,
     0b10001000,
+    0b10000000,
 
     // Flashing alphabet character 0x55
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10100010,
@@ -875,9 +874,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100010,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing alphabet character 0x56
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10100010,
@@ -885,9 +884,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100010,
     0b10010100,
     0b10001000,
+    0b10000000,
 
     // Flashing alphabet character 0x57
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10100010,
@@ -895,9 +894,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10101010,
     0b10110110,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x58
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10010100,
@@ -905,9 +904,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10010100,
     0b10100010,
     0b10100010,
+    0b10000000,
 
     // Flashing alphabet character 0x59
-    0b10000000,
     0b10100010,
     0b10100010,
     0b10010100,
@@ -915,9 +914,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001000,
     0b10001000,
     0b10001000,
+    0b10000000,
 
     // Flashing alphabet character 0x5a
-    0b10000000,
     0b10111110,
     0b10100000,
     0b10010000,
@@ -925,44 +924,45 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000100,
     0b10000010,
     0b10111110,
+    0b10000000,
 
     // Flashing alphabet character 0x5b
+    0b10111110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10000110,
+    0b10111110,
     0b10000000,
-    0b10111110,
-    0b10000110,
-    0b10000110,
-    0b10000110,
-    0b10000110,
-    0b10000110,
-    0b10111110,
 
     // Flashing alphabet character 0x5c
     0b10000000,
-    0b10000000,
     0b10000010,
     0b10000100,
     0b10001000,
     0b10010000,
     0b10100000,
     0b10000000,
+    0b10000000,
 
     // Flashing alphabet character 0x5d
+    0b10111110,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10110000,
+    0b10111110,
     0b10000000,
-    0b10111110,
-    0b10110000,
-    0b10110000,
-    0b10110000,
-    0b10110000,
-    0b10110000,
-    0b10111110,
 
     // Flashing alphabet character 0x5e
-    0b10000000,
-    0b10000000,
-    0b10000000,
     0b10001000,
     0b10010100,
     0b10100010,
+    0b10000000,
+    0b10000000,
+    0b10000000,
     0b10000000,
     0b10000000,
 
@@ -973,8 +973,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000000,
     0b10000000,
     0b10000000,
-    0b10000000,
     0b10111110,
+    0b10000000,
 
     //
     // Flashing symbols Set
@@ -991,7 +991,6 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000000,
 
     // Flashing symbols character 0x61
-    0b10000000,
     0b10001000,
     0b10001000,
     0b10001000,
@@ -999,29 +998,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001000,
     0b10000000,
     0b10001000,
+    0b10000000,
 
     // Flashing symbols character 0x62
+    0b10010100,
+    0b10010100,
+    0b10010100,
     0b10000000,
-    0b10010100,
-    0b10010100,
-    0b10010100,
     0b10000000,
     0b10000000,
     0b10000000,
     0b10000000,
 
     // Flashing symbols character 0x63
+    0b10010100,
+    0b10010100,
+    0b10111110,
+    0b10010100,
+    0b10111110,
+    0b10010100,
+    0b10010100,
     0b10000000,
-    0b10010100,
-    0b10010100,
-    0b10111110,
-    0b10010100,
-    0b10111110,
-    0b10010100,
-    0b10010100,
 
     // Flashing symbols character 0x64
-    0b10000000,
     0b10001000,
     0b10111100,
     0b10001010,
@@ -1029,75 +1028,76 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10101000,
     0b10011110,
     0b10001000,
+    0b10000000,
 
     // Flashing symbols character 0x65
-    0b10000000,
-    0b10000110,
+    0b10100110,
     0b10100110,
     0b10010000,
     0b10001000,
     0b10000100,
     0b10110010,
-    0b10110000,
+    0b10110010,
+    0b10000000,
 
     // Flashing symbols character 0x66
-    0b10000000,
-    0b10000100,
-    0b10001010,
+    0b10001100,
+    0b10010010,
     0b10001010,
     0b10000100,
     0b10101010,
     0b10010010,
     0b10101100,
+    0b10000000,
 
     // Flashing symbols character 0x67
+    0b10001000,
+    0b10001000,
+    0b10001000,
     0b10000000,
-    0b10001000,
-    0b10001000,
-    0b10001000,
     0b10000000,
     0b10000000,
     0b10000000,
     0b10000000,
 
     // Flashing symbols character 0x68
+    0b10001000,
+    0b10000100,
+    0b10000010,
+    0b10000010,
+    0b10000010,
+    0b10000100,
+    0b10001000,
     0b10000000,
-    0b10001000,
-    0b10000100,
-    0b10000010,
-    0b10000010,
-    0b10000010,
-    0b10000100,
-    0b10001000,
 
     // Flashing symbols character 0x69
+    0b10001000,
+    0b10010000,
+    0b10100000,
+    0b10100000,
+    0b10100000,
+    0b10010000,
+    0b10001000,
     0b10000000,
-    0b10001000,
-    0b10010000,
-    0b10100000,
-    0b10100000,
-    0b10100000,
-    0b10010000,
-    0b10001000,
 
     // Flashing symbols character 0x6a
+    0b10001000,
+    0b10101010,
+    0b10011100,
+    0b10001000,
+    0b10011100,
+    0b10101010,
+    0b10001000,
     0b10000000,
-    0b10001000,
-    0b10101010,
-    0b10011100,
-    0b10001000,
-    0b10011100,
-    0b10101010,
-    0b10001000,
 
     // Flashing symbols character 0x6b
-    0b10000000,
     0b10000000,
     0b10001000,
     0b10001000,
     0b10111110,
     0b10001000,
     0b10001000,
+    0b10000000,
     0b10000000,
 
     // Flashing symbols character 0x6c
@@ -1106,7 +1106,7 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000000,
     0b10000000,
     0b10000000,
-    0b10001000,
+    0b10001100,
     0b10001000,
     0b10000100,
 
@@ -1114,8 +1114,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000000,
     0b10000000,
     0b10000000,
+    0b10011100,
     0b10000000,
-    0b10111110,
     0b10000000,
     0b10000000,
     0b10000000,
@@ -1126,12 +1126,11 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000000,
     0b10000000,
     0b10000000,
+    0b10001100,
+    0b10001100,
     0b10000000,
-    0b10000000,
-    0b10001000,
 
     // Flashing symbols character 0x6f
-    0b10000000,
     0b10000000,
     0b10100000,
     0b10010000,
@@ -1139,9 +1138,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000100,
     0b10000010,
     0b10000000,
+    0b10000000,
 
     // Flashing symbols character 0x70
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10110010,
@@ -1149,9 +1148,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100110,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing symbols character 0x71
-    0b10000000,
     0b10001000,
     0b10001100,
     0b10001000,
@@ -1159,9 +1158,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001000,
     0b10001000,
     0b10011100,
+    0b10000000,
 
     // Flashing symbols character 0x72
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10100000,
@@ -1169,9 +1168,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000100,
     0b10000010,
     0b10111110,
+    0b10000000,
 
     // Flashing symbols character 0x73
-    0b10000000,
     0b10111110,
     0b10100000,
     0b10010000,
@@ -1179,9 +1178,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100000,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing symbols character 0x74
-    0b10000000,
     0b10010000,
     0b10011000,
     0b10010100,
@@ -1189,9 +1188,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10111110,
     0b10010000,
     0b10010000,
+    0b10000000,
 
     // Flashing symbols character 0x75
-    0b10000000,
     0b10111110,
     0b10000010,
     0b10011110,
@@ -1199,9 +1198,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100000,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing symbols character 0x76
-    0b10000000,
     0b10111000,
     0b10000100,
     0b10000010,
@@ -1209,9 +1208,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100010,
     0b10100010,
     0b10011100,
+    0b10000000,
 
     // Flashing symbols character 0x77
-    0b10000000,
     0b10111110,
     0b10100000,
     0b10010000,
@@ -1219,19 +1218,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000100,
     0b10000100,
     0b10000100,
+    0b10000000,
 
     // Flashing symbols character 0x78
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
+    0b10100010,
+    0b10100010,
+    0b10011100,
     0b10000000,
-    0b10011100,
-    0b10100010,
-    0b10100010,
-    0b10011100,
-    0b10100010,
-    0b10100010,
-    0b10011100,
 
     // Flashing symbols character 0x79
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10100010,
@@ -1239,29 +1238,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10100000,
     0b10010000,
     0b10001110,
+    0b10000000,
 
     // Flashing symbols character 0x7a
     0b10000000,
     0b10000000,
+    0b10001100,
+    0b10001100,
     0b10000000,
-    0b10001000,
-    0b10000000,
-    0b10001000,
-    0b10000000,
+    0b10001100,
+    0b10001100,
     0b10000000,
 
     // Flashing symbols character 0x7b
     0b10000000,
     0b10000000,
+    0b10001100,
+    0b10001100,
     0b10000000,
-    0b10001000,
-    0b10000000,
-    0b10001000,
+    0b10001100,
     0b10001000,
     0b10000100,
 
     // Flashing symbols character 0x7c
-    0b10000000,
     0b10010000,
     0b10001000,
     0b10000100,
@@ -1269,19 +1268,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10000100,
     0b10001000,
     0b10010000,
+    0b10000000,
 
     // Flashing symbols character 0x7d
     0b10000000,
     0b10000000,
+    0b10011110,
     0b10000000,
-    0b10111110,
+    0b10011110,
     0b10000000,
-    0b10111110,
     0b10000000,
     0b10000000,
 
     // Flashing symbols character 0x7e
-    0b10000000,
     0b10000100,
     0b10001000,
     0b10010000,
@@ -1289,9 +1288,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10010000,
     0b10001000,
     0b10000100,
+    0b10000000,
 
     // Flashing symbols character 0x7f
-    0b10000000,
     0b10011100,
     0b10100010,
     0b10010000,
@@ -1299,23 +1298,23 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b10001000,
     0b10000000,
     0b10001000,
+    0b10000000,
 
     //
     // Normal control Set
     //
 
     // Normal control character 0x80
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00101010,
-    0b00111010,
+    0b00101010,
     0b00011010,
     0b00000010,
     0b00111100,
+    0b00000000,
 
     // Normal control character 0x81
-    0b00000000,
     0b00001000,
     0b00010100,
     0b00100010,
@@ -1323,39 +1322,39 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00111110,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x82
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
 
     // Normal control character 0x83
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00000010,
-    0b00000010,
-    0b00000010,
-    0b00100010,
-    0b00011100,
 
     // Normal control character 0x84
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00011110,
 
     // Normal control character 0x85
-    0b00000000,
     0b00111110,
     0b00000010,
     0b00000010,
@@ -1363,9 +1362,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Normal control character 0x86
-    0b00000000,
     0b00111110,
     0b00000010,
     0b00000010,
@@ -1373,19 +1372,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00000010,
+    0b00000000,
 
     // Normal control character 0x87
-    0b00000000,
     0b00111100,
-    0b00000010,
     0b00000010,
     0b00000010,
     0b00110010,
     0b00100010,
+    0b00100010,
     0b00111100,
+    0b00000000,
 
     // Normal control character 0x88
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1393,19 +1392,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x89
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00011100,
 
     // Normal control character 0x8a
-    0b00000000,
     0b00100000,
     0b00100000,
     0b00100000,
@@ -1413,9 +1412,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal control character 0x8b
-    0b00000000,
     0b00100010,
     0b00010010,
     0b00001010,
@@ -1423,9 +1422,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001010,
     0b00010010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x8c
-    0b00000000,
     0b00000010,
     0b00000010,
     0b00000010,
@@ -1433,9 +1432,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Normal control character 0x8d
-    0b00000000,
     0b00100010,
     0b00110110,
     0b00101010,
@@ -1443,9 +1442,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x8e
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100110,
@@ -1453,29 +1452,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00110010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x8f
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
     // Normal control character 0x90
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000010,
+    0b00000010,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
-    0b00000010,
-    0b00000010,
-    0b00000010,
 
     // Normal control character 0x91
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00100010,
@@ -1483,9 +1482,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00101010,
     0b00010010,
     0b00101100,
+    0b00000000,
 
     // Normal control character 0x92
-    0b00000000,
     0b00011110,
     0b00100010,
     0b00100010,
@@ -1493,9 +1492,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001010,
     0b00010010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x93
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00000010,
@@ -1503,9 +1502,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal control character 0x94
-    0b00000000,
     0b00111110,
     0b00001000,
     0b00001000,
@@ -1513,9 +1512,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00000000,
 
     // Normal control character 0x95
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1523,9 +1522,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal control character 0x96
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1533,9 +1532,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00010100,
     0b00001000,
+    0b00000000,
 
     // Normal control character 0x97
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -1543,9 +1542,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00101010,
     0b00110110,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x98
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00010100,
@@ -1553,9 +1552,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00010100,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Normal control character 0x99
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00010100,
@@ -1563,9 +1562,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00000000,
 
     // Normal control character 0x9a
-    0b00000000,
     0b00111110,
     0b00100000,
     0b00010000,
@@ -1573,44 +1572,45 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Normal control character 0x9b
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
     0b00000000,
-    0b00111110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00111110,
 
     // Normal control character 0x9c
     0b00000000,
-    0b00000000,
     0b00000010,
     0b00000100,
     0b00001000,
     0b00010000,
     0b00100000,
     0b00000000,
+    0b00000000,
 
     // Normal control character 0x9d
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
     0b00000000,
-    0b00111110,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00111110,
 
     // Normal control character 0x9e
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00001000,
     0b00010100,
     0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
     0b00000000,
     0b00000000,
 
@@ -1621,8 +1621,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-    0b00000000,
     0b00111110,
+    0b00000000,
 
     //
     // Normal symbols Set
@@ -1639,7 +1639,6 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
 
     // Normal symbols character 0xa1
-    0b00000000,
     0b00001000,
     0b00001000,
     0b00001000,
@@ -1647,29 +1646,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00000000,
     0b00001000,
+    0b00000000,
 
     // Normal symbols character 0xa2
+    0b00010100,
+    0b00010100,
+    0b00010100,
     0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00010100,
     0b00000000,
     0b00000000,
     0b00000000,
     0b00000000,
 
     // Normal symbols character 0xa3
+    0b00010100,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00111110,
+    0b00010100,
+    0b00010100,
     0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00010100,
 
     // Normal symbols character 0xa4
-    0b00000000,
     0b00001000,
     0b00111100,
     0b00001010,
@@ -1677,75 +1676,76 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00101000,
     0b00011110,
     0b00001000,
+    0b00000000,
 
     // Normal symbols character 0xa5
-    0b00000000,
-    0b00000110,
+    0b00100110,
     0b00100110,
     0b00010000,
     0b00001000,
     0b00000100,
     0b00110010,
-    0b00110000,
+    0b00110010,
+    0b00000000,
 
     // Normal symbols character 0xa6
-    0b00000000,
-    0b00000100,
-    0b00001010,
+    0b00001100,
+    0b00010010,
     0b00001010,
     0b00000100,
     0b00101010,
     0b00010010,
     0b00101100,
+    0b00000000,
 
     // Normal symbols character 0xa7
+    0b00001000,
+    0b00001000,
+    0b00001000,
     0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
     0b00000000,
     0b00000000,
     0b00000000,
     0b00000000,
 
     // Normal symbols character 0xa8
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00000100,
+    0b00001000,
     0b00000000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000010,
-    0b00000010,
-    0b00000100,
-    0b00001000,
 
     // Normal symbols character 0xa9
+    0b00001000,
+    0b00010000,
+    0b00100000,
+    0b00100000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
     0b00000000,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00100000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
 
     // Normal symbols character 0xaa
+    0b00001000,
+    0b00101010,
+    0b00011100,
+    0b00001000,
+    0b00011100,
+    0b00101010,
+    0b00001000,
     0b00000000,
-    0b00001000,
-    0b00101010,
-    0b00011100,
-    0b00001000,
-    0b00011100,
-    0b00101010,
-    0b00001000,
 
     // Normal symbols character 0xab
-    0b00000000,
     0b00000000,
     0b00001000,
     0b00001000,
     0b00111110,
     0b00001000,
     0b00001000,
+    0b00000000,
     0b00000000,
 
     // Normal symbols character 0xac
@@ -1754,7 +1754,7 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-    0b00001000,
+    0b00001100,
     0b00001000,
     0b00000100,
 
@@ -1762,8 +1762,8 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
     0b00000000,
+    0b00011100,
     0b00000000,
-    0b00111110,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -1774,12 +1774,11 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
     0b00000000,
+    0b00001100,
+    0b00001100,
     0b00000000,
-    0b00000000,
-    0b00001000,
 
     // Normal symbols character 0xaf
-    0b00000000,
     0b00000000,
     0b00100000,
     0b00010000,
@@ -1787,9 +1786,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00000010,
     0b00000000,
+    0b00000000,
 
     // Normal symbols character 0xb0
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00110010,
@@ -1797,9 +1796,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100110,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal symbols character 0xb1
-    0b00000000,
     0b00001000,
     0b00001100,
     0b00001000,
@@ -1807,9 +1806,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00001000,
     0b00011100,
+    0b00000000,
 
     // Normal symbols character 0xb2
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00100000,
@@ -1817,9 +1816,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Normal symbols character 0xb3
-    0b00000000,
     0b00111110,
     0b00100000,
     0b00010000,
@@ -1827,9 +1826,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal symbols character 0xb4
-    0b00000000,
     0b00010000,
     0b00011000,
     0b00010100,
@@ -1837,9 +1836,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00111110,
     0b00010000,
     0b00010000,
+    0b00000000,
 
     // Normal symbols character 0xb5
-    0b00000000,
     0b00111110,
     0b00000010,
     0b00011110,
@@ -1847,9 +1846,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal symbols character 0xb6
-    0b00000000,
     0b00111000,
     0b00000100,
     0b00000010,
@@ -1857,9 +1856,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Normal symbols character 0xb7
-    0b00000000,
     0b00111110,
     0b00100000,
     0b00010000,
@@ -1867,19 +1866,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00000100,
     0b00000100,
+    0b00000000,
 
     // Normal symbols character 0xb8
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
     // Normal symbols character 0xb9
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00100010,
@@ -1887,29 +1886,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00010000,
     0b00001110,
+    0b00000000,
 
     // Normal symbols character 0xba
     0b00000000,
     0b00000000,
+    0b00001100,
+    0b00001100,
     0b00000000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
+    0b00001100,
+    0b00001100,
     0b00000000,
 
     // Normal symbols character 0xbb
     0b00000000,
     0b00000000,
+    0b00001100,
+    0b00001100,
     0b00000000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
+    0b00001100,
     0b00001000,
     0b00000100,
 
     // Normal symbols character 0xbc
-    0b00000000,
     0b00010000,
     0b00001000,
     0b00000100,
@@ -1917,19 +1916,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00001000,
     0b00010000,
+    0b00000000,
 
     // Normal symbols character 0xbd
     0b00000000,
     0b00000000,
+    0b00011110,
     0b00000000,
-    0b00111110,
+    0b00011110,
     0b00000000,
-    0b00111110,
     0b00000000,
     0b00000000,
 
     // Normal symbols character 0xbe
-    0b00000000,
     0b00000100,
     0b00001000,
     0b00010000,
@@ -1937,9 +1936,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00010000,
     0b00001000,
     0b00000100,
+    0b00000000,
 
     // Normal symbols character 0xbf
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00010000,
@@ -1947,23 +1946,23 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00000000,
     0b00001000,
+    0b00000000,
 
     //
     // Upper alpha Set
     //
 
     // Upper alpha character 0xc0
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00101010,
-    0b00111010,
+    0b00101010,
     0b00011010,
     0b00000010,
     0b00111100,
+    0b00000000,
 
     // Upper alpha character 0xc1
-    0b00000000,
     0b00001000,
     0b00010100,
     0b00100010,
@@ -1971,39 +1970,39 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00111110,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xc2
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
 
     // Upper alpha character 0xc3
+    0b00011100,
+    0b00100010,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00000010,
-    0b00000010,
-    0b00000010,
-    0b00100010,
-    0b00011100,
 
     // Upper alpha character 0xc4
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011110,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00011110,
 
     // Upper alpha character 0xc5
-    0b00000000,
     0b00111110,
     0b00000010,
     0b00000010,
@@ -2011,9 +2010,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Upper alpha character 0xc6
-    0b00000000,
     0b00111110,
     0b00000010,
     0b00000010,
@@ -2021,19 +2020,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00000010,
+    0b00000000,
 
     // Upper alpha character 0xc7
-    0b00000000,
     0b00111100,
-    0b00000010,
     0b00000010,
     0b00000010,
     0b00110010,
     0b00100010,
+    0b00100010,
     0b00111100,
+    0b00000000,
 
     // Upper alpha character 0xc8
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2041,19 +2040,19 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xc9
+    0b00011100,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00001000,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00011100,
 
     // Upper alpha character 0xca
-    0b00000000,
     0b00100000,
     0b00100000,
     0b00100000,
@@ -2061,9 +2060,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Upper alpha character 0xcb
-    0b00000000,
     0b00100010,
     0b00010010,
     0b00001010,
@@ -2071,9 +2070,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001010,
     0b00010010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xcc
-    0b00000000,
     0b00000010,
     0b00000010,
     0b00000010,
@@ -2081,9 +2080,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000010,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Upper alpha character 0xcd
-    0b00000000,
     0b00100010,
     0b00110110,
     0b00101010,
@@ -2091,9 +2090,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xce
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100110,
@@ -2101,29 +2100,29 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00110010,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xcf
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00100010,
-    0b00011100,
 
     // Upper alpha character 0xd0
+    0b00011110,
+    0b00100010,
+    0b00100010,
+    0b00011110,
+    0b00000010,
+    0b00000010,
+    0b00000010,
     0b00000000,
-    0b00011110,
-    0b00100010,
-    0b00100010,
-    0b00011110,
-    0b00000010,
-    0b00000010,
-    0b00000010,
 
     // Upper alpha character 0xd1
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00100010,
@@ -2131,9 +2130,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00101010,
     0b00010010,
     0b00101100,
+    0b00000000,
 
     // Upper alpha character 0xd2
-    0b00000000,
     0b00011110,
     0b00100010,
     0b00100010,
@@ -2141,9 +2140,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001010,
     0b00010010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xd3
-    0b00000000,
     0b00011100,
     0b00100010,
     0b00000010,
@@ -2151,9 +2150,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100000,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Upper alpha character 0xd4
-    0b00000000,
     0b00111110,
     0b00001000,
     0b00001000,
@@ -2161,9 +2160,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00000000,
 
     // Upper alpha character 0xd5
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2171,9 +2170,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00100010,
     0b00011100,
+    0b00000000,
 
     // Upper alpha character 0xd6
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2181,9 +2180,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00100010,
     0b00010100,
     0b00001000,
+    0b00000000,
 
     // Upper alpha character 0xd7
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00100010,
@@ -2191,9 +2190,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00101010,
     0b00110110,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xd8
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00010100,
@@ -2201,9 +2200,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00010100,
     0b00100010,
     0b00100010,
+    0b00000000,
 
     // Upper alpha character 0xd9
-    0b00000000,
     0b00100010,
     0b00100010,
     0b00010100,
@@ -2211,9 +2210,9 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00000000,
 
     // Upper alpha character 0xda
-    0b00000000,
     0b00111110,
     0b00100000,
     0b00010000,
@@ -2221,44 +2220,45 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000100,
     0b00000010,
     0b00111110,
+    0b00000000,
 
     // Upper alpha character 0xdb
+    0b00111110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00000110,
+    0b00111110,
     0b00000000,
-    0b00111110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00000110,
-    0b00111110,
 
     // Upper alpha character 0xdc
     0b00000000,
-    0b00000000,
     0b00000010,
     0b00000100,
     0b00001000,
     0b00010000,
     0b00100000,
     0b00000000,
+    0b00000000,
 
     // Upper alpha character 0xdd
+    0b00111110,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00110000,
+    0b00111110,
     0b00000000,
-    0b00111110,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00110000,
-    0b00111110,
 
     // Upper alpha character 0xde
-    0b00000000,
-    0b00000000,
-    0b00000000,
     0b00001000,
     0b00010100,
     0b00100010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
     0b00000000,
     0b00000000,
 
@@ -2269,17 +2269,17 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
     0b00000000,
     0b00000000,
     0b00000000,
-    0b00000000,
     0b00111110,
+    0b00000000,
 
     //
     // Lower alpha Set
     //
 
     // Lower alpha character 0xe0
-    0b00000000,
-    0b00000000,
-    0b00000000,
+    0b00000010,
+    0b00000100,
+    0b00001000,
     0b00000000,
     0b00000000,
     0b00000000,
@@ -2288,312 +2288,311 @@ const uint8_t __in_flash("chr_rom") default_character_rom[256 * 8] = {
 
     // Lower alpha character 0xe1
     0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
     0b00000000,
-    0b00001000,
+    0b00011100,
+    0b00100000,
+    0b00111100,
+    0b00100010,
+    0b00111100,
+    0b00000000,
 
     // Lower alpha character 0xe2
-    0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00010100,
-    0b00000000,
-    0b00000000,
-    0b00000000,
+    0b00000010,
+    0b00000010,
+    0b00011010,
+    0b00100110,
+    0b00100010,
+    0b00100110,
+    0b00011010,
     0b00000000,
 
     // Lower alpha character 0xe3
     0b00000000,
-    0b00010100,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00111110,
-    0b00010100,
-    0b00010100,
+    0b00000000,
+    0b00111100,
+    0b00000010,
+    0b00000010,
+    0b00000010,
+    0b00111100,
+    0b00000000,
 
     // Lower alpha character 0xe4
+    0b00100000,
+    0b00100000,
+    0b00101100,
+    0b00110010,
+    0b00100010,
+    0b00110010,
+    0b00101100,
     0b00000000,
-    0b00001000,
-    0b00111100,
-    0b00001010,
-    0b00011100,
-    0b00101000,
-    0b00011110,
-    0b00001000,
 
     // Lower alpha character 0xe5
     0b00000000,
-    0b00000110,
-    0b00100110,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00110010,
-    0b00110000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00111110,
+    0b00000010,
+    0b00011100,
+    0b00000000,
 
     // Lower alpha character 0xe6
+    0b00011000,
+    0b00100100,
+    0b00000100,
+    0b00001110,
+    0b00000100,
+    0b00000100,
+    0b00000100,
     0b00000000,
-    0b00000100,
-    0b00001010,
-    0b00001010,
-    0b00000100,
-    0b00101010,
-    0b00010010,
-    0b00101100,
 
     // Lower alpha character 0xe7
     0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
+    0b00100000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00111100,
+    0b00100000,
+    0b00011100,
 
     // Lower alpha character 0xe8
+    0b00000010,
+    0b00000010,
+    0b00011010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
     0b00000000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000010,
-    0b00000010,
-    0b00000100,
-    0b00001000,
 
     // Lower alpha character 0xe9
+    0b00001000,
     0b00000000,
+    0b00001100,
     0b00001000,
-    0b00010000,
-    0b00100000,
-    0b00100000,
-    0b00100000,
-    0b00010000,
     0b00001000,
+    0b00001000,
+    0b00011100,
+    0b00000000,
 
     // Lower alpha character 0xea
+    0b00010000,
     0b00000000,
-    0b00001000,
-    0b00101010,
-    0b00011100,
-    0b00001000,
-    0b00011100,
-    0b00101010,
-    0b00001000,
+    0b00011000,
+    0b00010000,
+    0b00010000,
+    0b00010000,
+    0b00010010,
+    0b00001100,
 
     // Lower alpha character 0xeb
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00111110,
-    0b00001000,
-    0b00001000,
+    0b00000010,
+    0b00000010,
+    0b00100010,
+    0b00010010,
+    0b00001110,
+    0b00010010,
+    0b00100010,
     0b00000000,
 
     // Lower alpha character 0xec
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00001000,
-    0b00000100,
-
-    // Lower alpha character 0xed
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-
-    // Lower alpha character 0xee
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-
-    // Lower alpha character 0xef
-    0b00000000,
-    0b00000000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000000,
-
-    // Lower alpha character 0xf0
-    0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00110010,
-    0b00101010,
-    0b00100110,
-    0b00100010,
-    0b00011100,
-
-    // Lower alpha character 0xf1
-    0b00000000,
-    0b00001000,
     0b00001100,
     0b00001000,
     0b00001000,
     0b00001000,
     0b00001000,
+    0b00001000,
     0b00011100,
+    0b00000000,
+
+    // Lower alpha character 0xed
+    0b00000000,
+    0b00000000,
+    0b00010110,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00000000,
+
+    // Lower alpha character 0xee
+    0b00000000,
+    0b00000000,
+    0b00011010,
+    0b00100110,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00000000,
+
+    // Lower alpha character 0xef
+    0b00000000,
+    0b00000000,
+    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00100010,
+    0b00011100,
+    0b00000000,
+
+    // Lower alpha character 0xf0
+    0b00000000,
+    0b00000000,
+    0b00011010,
+    0b00100110,
+    0b00100110,
+    0b00011010,
+    0b00000010,
+    0b00000010,
+
+    // Lower alpha character 0xf1
+    0b00000000,
+    0b00000000,
+    0b00101100,
+    0b00110010,
+    0b00110010,
+    0b00101100,
+    0b00100000,
+    0b00100000,
 
     // Lower alpha character 0xf2
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00100000,
-    0b00011000,
-    0b00000100,
+    0b00000000,
+    0b00011010,
+    0b00000110,
     0b00000010,
-    0b00111110,
+    0b00000010,
+    0b00000010,
+    0b00000000,
 
     // Lower alpha character 0xf3
     0b00000000,
-    0b00111110,
-    0b00100000,
-    0b00010000,
-    0b00011000,
-    0b00100000,
-    0b00100010,
+    0b00000000,
+    0b00111100,
+    0b00000010,
     0b00011100,
+    0b00100000,
+    0b00011110,
+    0b00000000,
 
     // Lower alpha character 0xf4
-    0b00000000,
-    0b00010000,
+    0b00000100,
+    0b00000100,
+    0b00001110,
+    0b00000100,
+    0b00000100,
+    0b00100100,
     0b00011000,
-    0b00010100,
-    0b00010010,
-    0b00111110,
-    0b00010000,
-    0b00010000,
+    0b00000000,
 
     // Lower alpha character 0xf5
     0b00000000,
-    0b00111110,
-    0b00000010,
-    0b00011110,
-    0b00100000,
-    0b00100000,
+    0b00000000,
     0b00100010,
-    0b00011100,
+    0b00100010,
+    0b00100010,
+    0b00110010,
+    0b00101100,
+    0b00000000,
 
     // Lower alpha character 0xf6
     0b00000000,
-    0b00111000,
-    0b00000100,
-    0b00000010,
-    0b00011110,
+    0b00000000,
     0b00100010,
     0b00100010,
-    0b00011100,
+    0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00000000,
 
     // Lower alpha character 0xf7
     0b00000000,
-    0b00111110,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00000100,
-    0b00000100,
+    0b00000000,
+    0b00100010,
+    0b00101010,
+    0b00101010,
+    0b00101010,
+    0b00010100,
+    0b00000000,
 
     // Lower alpha character 0xf8
     0b00000000,
-    0b00011100,
+    0b00000000,
     0b00100010,
+    0b00010100,
+    0b00001000,
+    0b00010100,
     0b00100010,
-    0b00011100,
-    0b00100010,
-    0b00100010,
-    0b00011100,
+    0b00000000,
 
     // Lower alpha character 0xf9
     0b00000000,
-    0b00011100,
+    0b00000000,
     0b00100010,
     0b00100010,
-    0b00111100,
+    0b00110010,
+    0b00101100,
     0b00100000,
-    0b00010000,
-    0b00001110,
+    0b00011100,
 
     // Lower alpha character 0xfa
     0b00000000,
     0b00000000,
-    0b00000000,
+    0b00111110,
+    0b00010000,
     0b00001000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
+    0b00000100,
+    0b00111110,
     0b00000000,
 
     // Lower alpha character 0xfb
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00001000,
-    0b00000000,
+    0b00110000,
     0b00001000,
     0b00001000,
-    0b00000100,
+    0b00000110,
+    0b00001000,
+    0b00001000,
+    0b00110000,
+    0b00000000,
 
     // Lower alpha character 0xfc
+    0b00001000,
+    0b00001000,
+    0b00001000,
     0b00000000,
-    0b00010000,
     0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000100,
     0b00001000,
-    0b00010000,
+    0b00001000,
+    0b00000000,
 
     // Lower alpha character 0xfd
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00111110,
-    0b00000000,
-    0b00111110,
-    0b00000000,
+    0b00000110,
+    0b00001000,
+    0b00001000,
+    0b00110000,
+    0b00001000,
+    0b00001000,
+    0b00000110,
     0b00000000,
 
     // Lower alpha character 0xfe
     0b00000000,
+    0b00000000,
     0b00000100,
-    0b00001000,
+    0b00101010,
     0b00010000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
 
     // Lower alpha character 0xff
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00010100,
+    0b00101010,
+    0b00010100,
+    0b00101010,
     0b00000000,
-    0b00011100,
-    0b00100010,
-    0b00010000,
-    0b00001000,
-    0b00001000,
-    0b00000000,
-    0b00001000,
 };
-#endif
