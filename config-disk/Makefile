@@ -1,5 +1,5 @@
 # Download AppleCommander from https://applecommander.github.io/install/
-AC ?= java -jar AppleCommander-ac-1.8.0.jar
+AC ?= java -jar AppleCommander-ac-1.9.0.jar
 
 BASIC_SRCS = STARTUP.bas
 
