@@ -18,6 +18,7 @@ export PICO_SDK_PATH=~/pico-sdk
 
 ## Build the firmware for Apple IIe
 ```shell
+git clone https://github.com/markadev/AppleII-VGA.git ~/AppleII-VGA
 cd ~/AppleII-VGA/pico
 mkdir build
 cd build
@@ -30,6 +31,7 @@ applevga.uf2
 
 ## Build the firmware for Apple II+
 ```shell
+git clone https://github.com/markadev/AppleII-VGA.git ~/AppleII-VGA
 cd /AppleII-VGA/pico
 mkdir build
 cd build
