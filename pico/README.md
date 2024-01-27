@@ -32,7 +32,7 @@ applevga.uf2
 ## Build the firmware for Apple II+
 ```shell
 git clone https://github.com/markadev/AppleII-VGA.git ~/AppleII-VGA
-cd /AppleII-VGA/pico
+cd ~/AppleII-VGA/pico
 mkdir build
 cd build
 cmake -DAPPLE_MODEL=IIPLUS -DCMAKE_BUILD_TYPE=Release ..
