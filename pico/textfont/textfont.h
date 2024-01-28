@@ -21,3 +21,5 @@ extern const uint8_t textfont_iiplus_videx_lowercase1[256 * 8];
 extern const uint8_t textfont_iiplus_videx_lowercase2[256 * 8];
 extern const uint8_t textfont_iiplus_pigfont[256 * 8];
 extern const uint8_t textfont_iiplus_jp_katakana[256 * 8];
+
+extern const uint8_t textfont_clone_pravetz_cyrillic[256 * 8];
