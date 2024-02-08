@@ -14,6 +14,8 @@ pico_sdk_init()
 
 add_compile_options(-Wall -Wextra -Wnull-dereference -Wno-unused-parameter -Wno-unused-function)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPICO_USE_MALLOC_MUTEX=1")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_SYSCLOCK=252 -DPICO_FLASH_SPI_CLKDIV=8 -DOVERCLOCKED=1")
 
 add_executable(applevga)
 pico_set_binary_type(applevga copy_to_ram)
@@ -28,7 +30,8 @@ file(GLOB TEXTFONT_SRC_FILES textfont/*.c)
 target_sources(applevga PUBLIC
     main.c
     abus.c
-    buffers.c
+	card_videx.c
+    buffers.c	
     colors.c
     config.c
     device_regs.c
@@ -37,6 +40,7 @@ target_sources(applevga PUBLIC
     render_lores.c
     render_testpat.c
     render_text.c
+    render_videx_text.c
     ${TEXTFONT_SRC_FILES}
     vga.c
 )

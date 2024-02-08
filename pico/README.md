@@ -1,3 +1,15 @@
+# What's new in this version
+
+* support for reading registers/data/firmware from the card (pio)
+* videx card on slot 3
+* overclocked to 252 mhz (like v2analog board) to sync i/o timing
+* videx text fonts - by default rom1 is normal font and rom 2 is inverse font
+
+# To do:
+
+* allow user to change/select fonts in rom1 and rom2
+* organize/standardize my code :)
+
 # Set Up Raspberry Pi Pico SDK and build the firmware
 
 ## Windows Subsystem for Linux (WSL)

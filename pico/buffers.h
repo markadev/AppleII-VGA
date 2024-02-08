@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
+#include "card_videx.h"
 
 enum {
     SOFTSW_TEXT_MODE = 0x01,
@@ -27,6 +27,9 @@ extern volatile bool soft_altcharset;
 extern volatile bool soft_dhires;
 extern volatile bool soft_monochrom;
 extern volatile bool soft_ramwrt;
+
+extern volatile bool card_videx_80col;
+extern volatile bool card_videx_mem_on;
 
 extern volatile bool soft_scanline_emulation;
 
