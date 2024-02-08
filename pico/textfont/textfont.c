@@ -22,6 +22,7 @@ const uint8_t *character_roms[16] = {
     DEFAULT_CHARACTER_ROM,
     DEFAULT_CHARACTER_ROM,
 };
+
 #endif
 
 #ifdef APPLE_MODEL_IIPLUS
@@ -45,4 +46,13 @@ const uint8_t *character_roms[16] = {
     DEFAULT_CHARACTER_ROM,
     DEFAULT_CHARACTER_ROM,
 };
+
+
+////////////////////////////
+
+#define DEFAULT_VIDEX_CHARACTER_ROM1 videx_normal
+#define DEFAULT_VIDEX_CHARACTER_ROM2 videx_inverse
+
+const uint8_t *default_videx_character_rom1 = DEFAULT_VIDEX_CHARACTER_ROM1;
+const uint8_t *default_videx_character_rom2 = DEFAULT_VIDEX_CHARACTER_ROM2;
 #endif

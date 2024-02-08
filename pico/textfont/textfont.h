@@ -23,3 +23,11 @@ extern const uint8_t textfont_iiplus_pigfont[256 * 8];
 extern const uint8_t textfont_iiplus_jp_katakana[256 * 8];
 
 extern const uint8_t textfont_clone_pravetz_cyrillic[256 * 8];
+
+/////////////////////////////////////////////////
+
+extern const uint8_t *default_videx_character_rom1;
+extern const uint8_t *default_videx_character_rom2;
+
+extern const uint8_t videx_normal[128 * 16];
+extern const uint8_t videx_inverse[128 * 16];
