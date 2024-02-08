@@ -77,6 +77,20 @@ _thanks to @swetland for [this idea](https://github.com/markadev/AppleII-VGA/dis
 ![Live action shot](docs/installed_in_iie.jpg)
 
 
+## 80 Columns support for AppleII+
+
+This code implements a videx card virtually mapped to slot 3. The Apple2Vga can be used in slot 7 and let slot 3 empty.
+
+I found out that the videx card is not compatible to grappler+ (printer interface) 'cos they share the same banking rom solution using I/O STB address. I had to remove my printer interface to have the videx running :D. 
+
+I decided to virtally map slot 3 directly from the memory in order to leave the devsel signal to change the character rom fonts. So the card can be used in slot 7 but it always maps videx card to slot 3.
+
+**AppleII+ running 80 Columms**
+![AppleII 80 Columms Mode 1](docs/apple2_80columms1.jpg)
+![AppleII 80 Columms Mode 2](docs/apple2_80columms2.jpg)
+![AppleII 80 Columms Mode 3](docs/apple2_80columms3.jpg)
+
+
 ## Comparisons
 
 Here are a few comparisons of the VGA card output vs composite video through
