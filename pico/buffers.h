@@ -28,6 +28,9 @@ extern volatile bool soft_dhires;
 extern volatile bool soft_monochrom;
 extern volatile bool soft_ramwrt;
 
+extern volatile bool card_videx_80col;
+extern volatile bool card_videx_mem_on;
+
 extern volatile bool soft_scanline_emulation;
 
 #define CHARACTER_ROM_SIZE 2048

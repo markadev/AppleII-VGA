@@ -20,3 +20,7 @@ extern void render_mixed_lores();
 
 extern void generate_hires_tables();
 extern void render_hires(bool mixed);
+
+extern void update_videx_text_flasher();
+extern void render_videx_text();
+extern void render_videx_text_line(unsigned int line);
