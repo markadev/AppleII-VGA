@@ -85,7 +85,15 @@ I found out that the videx card is not compatible to grappler+ (printer interfac
 
 I decided to virtally map slot 3 directly from the memory in order to leave the devsel signal to change the character rom fonts. So the card can be used in slot 7 but it always maps videx card to slot 3.
 
-**AppleII+ running 80 Columms**
+**AppleII+ running 80 Columms Videos**
+
+
+[![AppleII Videx Videoterm 80 Columns card Demo running at AppleIIVga by Markadev](http://img.youtube.com/vi/jKAShbG-p9Y/0.jpg)](https://www.youtube.com/watch?v=jKAShbG-p9Y "Apple][+ Videx Videoterm 80 Columns card Demo running at AppleIIVga by Markadev")
+
+[![AppleII Accessing BBS using Videx Videoterm 80 Columns card running at AppleIIVga by Markadev](http://img.youtube.com/vi/D4BjUacbDPo/0.jpg)](https://www.youtube.com/watch?v=D4BjUacbDPo "Apple][+ Accessing BBS using Videx Videoterm 80 Columns card running at AppleIIVga by Markade")
+
+**AppleII+ running 80 Columms Examples**
+
 ![AppleII 80 Columms Mode 1](docs/apple2_80columms1.jpg)
 ![AppleII 80 Columms Mode 2](docs/apple2_80columms2.jpg)
 ![AppleII 80 Columms Mode 3](docs/apple2_80columms3.jpg)
