@@ -167,6 +167,7 @@ static void shadow_softsw_57(bool is_write, uint_fast16_t address, uint_fast8_t 
 }
 
 
+#ifdef APPLE_MODEL_IIPLUS
 // To turn on/off 80 columns mode:
 // Write at 0xC058 or 0xC059 
 static void shadow_softsw_58(bool is_write, uint_fast16_t address, uint_fast8_t data) {
@@ -176,6 +177,7 @@ static void shadow_softsw_58(bool is_write, uint_fast16_t address, uint_fast8_t 
 static void shadow_softsw_59(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     card_videx_80col = true;
 }
+#endif
 
 static void shadow_softsw_5e(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_dhires = true;
@@ -197,7 +199,9 @@ static void shadow_softsw_5f(bool is_write, uint_fast16_t address, uint_fast8_t 
 
 void abus_init() {
 
+#ifdef APPLE_MODEL_IIPLUS
     card_videx_card_videx_init();
+#endif    
 
     // Init states
     soft_switches = SOFTSW_TEXT_MODE;
@@ -356,6 +360,7 @@ void abus_loop() {
         const bool is_write = ((value & (1u << (CONFIG_PIN_APPLEBUS_RW - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
 
 
+    #ifdef APPLE_MODEL_IIPLUS
         // Handle shadowing of the videx in the range 0xc000 - 0xc07f
         // To Control the card:
         //
@@ -428,6 +433,8 @@ void abus_loop() {
             card_videx_mem_on = false;            
             continue;
         }
+
+    #endif
 
         const bool is_devsel = ((value & (1u << (CONFIG_PIN_APPLEBUS_DEVSEL - CONFIG_PIN_APPLEBUS_DATA_BASE))) == 0);
 
