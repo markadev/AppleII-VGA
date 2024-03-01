@@ -104,11 +104,11 @@ extern uint8_t videx_blink_mode, videx_blink_cursor;
 //    STA $C0B1
 //*******************************************************
 
+void videx_shadow_register(bool is_write, uint_fast16_t address, uint_fast8_t data);
+
 // 0x0400 at C800-CBFF
 int card_videx_getC0SLOTX(int adr);
 
-// 0x0400 at C800-CBFF
-void card_videx_putC0SLOTX(int adr, int value);
 
 // IOSEL READS ROM
 // when reading using iosel, adds bit at A9

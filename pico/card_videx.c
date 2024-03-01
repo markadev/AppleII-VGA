@@ -77,35 +77,28 @@ int card_videx_getC0SLOTX(int adr)  // 0x0400 at C800-CBFF
 }
 
 
-void card_videx_putC0SLOTX(int adr, int value)  // 0x0400 at C800-CBFF
-{
+// Shadow accesses to card registers in $C0n0 - $C0nF range
+void videx_shadow_register(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     // define current memory bank
-    videx_bankSLOT = (adr & 0x000c) >> 2;
+    videx_bankSLOT = (address & 0x000c) >> 2;
 
-    if(adr & 0x0001) {
+    if(!is_write)
+        return;
+
+    if(address & 0x0001) {
         // set current register value
-        videx_regSLOT[videx_regvalSLOT] = value;
+        videx_regSLOT[videx_regvalSLOT] = data;
 
-        // 10:0A Cursor upper //11:0B Cursor lower
-        if((videx_regvalSLOT == 10) || (videx_regvalSLOT == 11))
+        // 10: Cursor upper, 11: Cursor lower
+        if((videx_regvalSLOT == 10) || (videx_regvalSLOT == 11)) {
             card_videx_modifySLOT();
-
-        /*
-        //14:0E Cursor Hi //15:0F Cursor Lo
-        if ((videx_regvalSLOT == 14) || (videx_regvalSLOT == 15))
-                cursorSLOT();
-
-        //13:0D Startpos Lo
-        if (videx_regvalSLOT == 13)
-                redrawSLOT();
-
-        //12:0C Startpos Hi
-        */
-
-    } else
+        }
+    } else {
         // define current register
-        videx_regvalSLOT = value;
+        videx_regvalSLOT = data;
+    }
 }
+
 
 // IOSEL READS ROM
 // when reading using iosel, adds bit at A9
@@ -166,8 +159,6 @@ void card_videx_putSLOTC8XX(int adr, int value) {
 
 
 void card_videx_card_videx_init() {
-    int i;
-
     // initializing registers
     videx_bankSLOT = 0;
     videx_regvalSLOT = 0;

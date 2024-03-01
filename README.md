@@ -25,6 +25,7 @@ These features are currently supported:
    (thanks to @dkgrizzly and @Paco1979)
  * Soft-monochrome mode to force display as if on a monochrome monitor
  * Some Video-7 RGB card extended graphical modes are implemented
+ * Compatibility with Videx VideoTerm modes on Apple II+ (thanks to @abaffa)
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -77,28 +78,6 @@ _thanks to @swetland for [this idea](https://github.com/markadev/AppleII-VGA/dis
 ![Live action shot](docs/installed_in_iie.jpg)
 
 
-## 80 Columns support for AppleII+
-
-This code implements a videx card virtually mapped to slot 3. The Apple2Vga can be used in slot 7 and let slot 3 empty.
-
-I found out that the videx card is not compatible to grappler+ (printer interface) 'cos they share the same banking rom solution using I/O STB address. I had to remove my printer interface to have the videx running :D. 
-
-I decided to virtally map slot 3 directly from the memory in order to leave the devsel signal to change the character rom fonts. So the card can be used in slot 7 but it always maps videx card to slot 3.
-
-**AppleII+ running 80 Columms Videos**
-
-
-[![AppleII Videx Videoterm 80 Columns card Demo running at AppleIIVga by Markadev](http://img.youtube.com/vi/jKAShbG-p9Y/0.jpg)](https://www.youtube.com/watch?v=jKAShbG-p9Y "Apple][+ Videx Videoterm 80 Columns card Demo running at AppleIIVga by Markadev")
-
-[![AppleII Accessing BBS using Videx Videoterm 80 Columns card running at AppleIIVga by Markadev](http://img.youtube.com/vi/D4BjUacbDPo/0.jpg)](https://www.youtube.com/watch?v=D4BjUacbDPo "Apple][+ Accessing BBS using Videx Videoterm 80 Columns card running at AppleIIVga by Markade")
-
-**AppleII+ running 80 Columms Examples**
-
-![AppleII 80 Columms Mode 1](docs/apple2plus_videx_80columns1.jpg)
-![AppleII 80 Columms Mode 2](docs/apple2plus_videx_80columns1.jpg)
-![AppleII 80 Columms Mode 3](docs/apple2plus_videx_80columns1.jpg)
-
-
 ## Comparisons
 
 Here are a few comparisons of the VGA card output vs composite video through
@@ -116,8 +95,22 @@ a cheap composite -> HDMI adapter
 **DHires**
 ![DHires Mode](docs/composite_vs_vga_dhires.jpg)
 
-**80 Columms**
-![80 Columms Mode](docs/composite_vs_vga_80columms.jpg)
+**80 Columns**
+![80 Columns Mode](docs/composite_vs_vga_80columms.jpg)
+
+
+## 80 Column support for the Apple II+
+
+The firmware implements Videx VideoTerm compatibility when there's a VideoTerm card installed
+in slot 3. It's not enabled by default but if you have a Videx VideoTerm card in slot 3
+then you can enable 80 column VGA support using the Configuration Disk image. The VGA card
+can still be installed in any slot.
+
+**Apple II+ running 80 Columns Examples**
+
+![AppleII 80 Columms Mode 1](docs/apple2plus_videx_80columns1.jpg)
+![AppleII 80 Columms Mode 2](docs/apple2plus_videx_80columns2.jpg)
+![AppleII 80 Columms Mode 3](docs/apple2plus_videx_80columns3.jpg)
 
 
 ## Future work
