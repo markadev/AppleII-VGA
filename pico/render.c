@@ -1,5 +1,8 @@
 #include "render.h"
 #include "buffers.h"
+#ifdef APPLE_MODEL_IIPLUS
+#include "videx_vterm.h"
+#endif
 
 
 void render_init() {
@@ -34,7 +37,7 @@ void render_loop() {
             break;
         default:
 #ifdef APPLE_MODEL_IIPLUS
-            if(card_videx_80col) {
+            if(videx_vterm_80col_enabled) {
                 render_videx_text();
             } else
 #endif

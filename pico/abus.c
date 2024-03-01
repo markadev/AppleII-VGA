@@ -4,9 +4,11 @@
 #include "abus.pio.h"
 #include "board_config.h"
 #include "buffers.h"
-#include "card_videx.h"
 #include "colors.h"
 #include "device_regs.h"
+#ifdef APPLE_MODEL_IIPLUS
+#include "videx_vterm.h"
+#endif
 
 
 #if CONFIG_PIN_APPLEBUS_PHI0 != PHI0_GPIO
@@ -162,13 +164,13 @@ static void shadow_softsw_57(bool is_write, uint_fast16_t address, uint_fast8_t 
 
 static void shadow_softsw_58(bool is_write, uint_fast16_t address, uint_fast8_t data) {
 #ifdef APPLE_MODEL_IIPLUS
-    card_videx_80col = false;
+    videx_vterm_80col_enabled = false;
 #endif
 }
 
 static void shadow_softsw_59(bool is_write, uint_fast16_t address, uint_fast8_t data) {
 #ifdef APPLE_MODEL_IIPLUS
-    card_videx_80col = true;
+    videx_vterm_80col_enabled = true;
 #endif
 }
 
@@ -195,7 +197,7 @@ void abus_init() {
     soft_switches = SOFTSW_TEXT_MODE;
 
 #ifdef APPLE_MODEL_IIPLUS
-    card_videx_card_videx_init();
+    videx_vterm_init();
 #endif
 
     // Setup soft-switch handlers for the Apple model
@@ -225,7 +227,7 @@ void abus_init() {
 #ifdef APPLE_MODEL_IIPLUS
     // slot 3 device registers
     for(uint i = 0xb0; i < 0xc0; i++) {
-        softsw_handlers[i] = videx_shadow_register;
+        softsw_handlers[i] = videx_vterm_shadow_register;
     }
 #endif
 
@@ -308,28 +310,19 @@ static void shadow_memory(bool is_write, uint_fast16_t address, uint32_t value) 
 #ifdef APPLE_MODEL_IIPLUS
         else if((address >= 0xc300) && (address < 0xc400)) {
             // slot 3 access
-            card_videx_mem_on = true;
+            videx_vterm_mem_selected = true;
         }
 #endif
         break;
 
-#ifdef APPLE_MODEL_IIPLUS
     case 0xc800 >> 10:
     case 0xcc00 >> 10:
         // expansion slot memory space $C800-$CFFF
         reset_detect_state = 0;
-        if(!card_videx_mem_on)
-            break;
-
-        if(address < 0xce00) {
-            if(is_write) {
-                card_videx_putSLOTC8XX(address, value);
-            }
-        } else {
-            card_videx_mem_on = false;
-        }
-        break;
+#ifdef APPLE_MODEL_IIPLUS
+        videx_vterm_shadow_c8xx(is_write, address, value);
 #endif
+        break;
 
     case 0x0000 >> 10:
     case 0xfc00 >> 10:
@@ -355,7 +348,7 @@ static void shadow_memory(bool is_write, uint_fast16_t address, uint32_t value) 
             soft_altcharset = false;
             soft_ramwrt = false;
 #ifdef APPLE_MODEL_IIPLUS
-            card_videx_80col = false;
+            videx_vterm_80col_enabled = false;
 #endif
 
             reset_detect_state = 0;

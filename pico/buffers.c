@@ -10,10 +10,6 @@ volatile bool soft_dhires;
 volatile bool soft_monochrom;
 volatile bool soft_ramwrt;
 
-// activate videx appleii+
-volatile bool card_videx_80col;
-volatile bool card_videx_mem_on;
-
 // Custom device soft-switches
 volatile bool soft_scanline_emulation;
 
