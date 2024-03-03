@@ -40,10 +40,6 @@ static uint_fast32_t videx_cursor_mask = 0;
 static uint64_t videx_next_flash_tick = 0;
 
 
-#define CURSOR_LINE_START (videx_crtc_regs[10] & 0xf)
-#define CURSOR_LINE_END (videx_crtc_regs[11] & 0xf)
-
-
 void videx_vterm_init() {
     // initializing registers
     videx_banknum = 0;
@@ -145,7 +141,7 @@ static inline uint_fast16_t char_videx_text_bits(uint_fast8_t ch, uint_fast8_t g
         bits = videx_inverse[((uint_fast16_t)(ch & 0x7f) << 4) + glyph_line];
     }
 
-    if(has_cursor && glyph_line >= CURSOR_LINE_START && glyph_line <= CURSOR_LINE_END) {
+    if(has_cursor) {
         bits ^= videx_cursor_mask;
     }
 
@@ -153,18 +149,18 @@ static inline uint_fast16_t char_videx_text_bits(uint_fast8_t ch, uint_fast8_t g
 }
 
 
-static void render_videx_text_line(unsigned int line) {
+static void render_videx_text_line(unsigned int line, uint text_base_addr, uint cursor_addr) {
     const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
     const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
-    uint32_t bits_to_pixelpair[4] = {
+    const uint32_t bits_to_pixelpair[4] = {
         (bg_color << 16) | bg_color,
         (bg_color << 16) | fg_color,
         (fg_color << 16) | bg_color,
         (fg_color << 16) | fg_color,
     };
-
-    const uint vstart = ((videx_crtc_regs[12] & 0x3f) << 8) | videx_crtc_regs[13];
-    const uint vcursor = ((videx_crtc_regs[14] & 0x3f) << 8) | videx_crtc_regs[15];
+    const uint cursor_line_start = videx_crtc_regs[10] & 0xf;
+    const uint cursor_line_end = videx_crtc_regs[11] & 0xf;
+    const uint crtc_mem_offset_of_line = text_base_addr + (line * 80);
 
     for(uint glyph_line = 0; glyph_line < 9; glyph_line++) {
         struct vga_scanline *sl = vga_prepare_scanline();
@@ -175,11 +171,10 @@ static void render_videx_text_line(unsigned int line) {
 
         for(uint col = 0; col < 80; col++) {
             // Grab 8 pixels from the next character
-            uint crtc_mem_offset = ((line * 80) + col) + vstart;
-            bool has_cursor = (vcursor == crtc_mem_offset);
-            uint_fast8_t ch = videx_vram[crtc_mem_offset % sizeof(videx_vram)];
-
-            uint_fast16_t bits = char_videx_text_bits(ch, glyph_line, has_cursor);
+            const uint crtc_mem_offset = crtc_mem_offset_of_line + col;
+            const bool has_cursor =
+                (crtc_mem_offset == cursor_addr) && (glyph_line >= cursor_line_start) && (glyph_line <= cursor_line_end);
+            uint_fast16_t bits = char_videx_text_bits(videx_vram[crtc_mem_offset % sizeof(videx_vram)], glyph_line, has_cursor);
 
             // Render each pair of bits into a pair of pixels, least significant bit first
             for(int i = 0; i < 4; i++) {
@@ -206,7 +201,11 @@ void render_videx_text() {
     // Skip 25 lines to center vertically
     vga_skip_lines(25);
 
+    // Compute these once at the start of the frame
+    const uint text_base_addr = ((videx_crtc_regs[12] & 0x3f) << 8) | videx_crtc_regs[13];
+    const uint cursor_addr = ((videx_crtc_regs[14] & 0x3f) << 8) | videx_crtc_regs[15];
+
     for(int line = 0; line < 24; line++) {
-        render_videx_text_line(line);
+        render_videx_text_line(line, text_base_addr, cursor_addr);
     }
 }
