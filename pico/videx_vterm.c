@@ -7,71 +7,82 @@
 #include "vga.h"
 
 
-volatile bool videx_vterm_80col_enabled;
-volatile bool videx_vterm_mem_selected;
+volatile bool videx_vterm_80col_enabled;  // true -> the annunciator to enable 80-columns is on
+volatile bool videx_vterm_mem_selected;   // true -> videx memory is accessible at $C800-$CFFF
+volatile uint8_t videx_vram[2048];
 
-static uint8_t videx_vram[2048];
-static uint8_t videx_bankSLOT;     // selected memory bank
-static uint8_t videx_regvalSLOT;   // selected CRTC register
-static uint8_t videx_regSLOT[17];  // registers of the CRT-controller
+static uint8_t videx_banknum;   // selected memory bank
+static uint8_t videx_crtc_idx;  // selected CRTC register
 
-static uint8_t videx_upperSLOT, videx_lowerSLOT;  // cursor size
-static uint8_t videx_blink_mode, videx_blink_cursor;
+// CRT controller registers (Ref. MC6845 datasheet):
+//   register  r/w     name
+//     00       w      Horiz. Total
+//     01       w      Horiz. Displayed
+//     02       w      Horiz. Sync Position
+//     03       w      Horiz. Sync Width
+//     04       w      Vert. Total
+//     05       w      Vert. Total Adjust
+//     06       w      Vert. Displayed
+//     07       w      Vert. Sync Position
+//     08       w      Interlace Mode
+//     09       w      Max Scan Line Address
+//     10       w      Cursor Start
+//     11       w      Cursor End
+//     12       w      Start Address (H)
+//     13       w      Start Address (L)
+//     14      r/w     Cursor (H)
+//     15      r/w     Cursor (L)
+//     16       r      Light Pen (H)
+//     17       r      Light Pen (L)
+static volatile uint8_t videx_crtc_regs[17];
 
-static uint_fast32_t videx_text_flasher_mask = 0;
+static uint_fast32_t videx_cursor_mask = 0;
 static uint64_t videx_next_flash_tick = 0;
 
 
-static void card_videx_modifySLOT();
+#define CURSOR_LINE_START (videx_crtc_regs[10] & 0xf)
+#define CURSOR_LINE_END (videx_crtc_regs[11] & 0xf)
 
 
 void videx_vterm_init() {
     // initializing registers
-    videx_bankSLOT = 0;
-    videx_regvalSLOT = 0;
-    videx_regSLOT[0] = 0x7b;
-    videx_regSLOT[1] = 0x50;
-    videx_regSLOT[2] = 0x62;
-    videx_regSLOT[3] = 0x29;
-    videx_regSLOT[4] = 0x1b;
-    videx_regSLOT[5] = 0x08;
-    videx_regSLOT[6] = 0x18;
-    videx_regSLOT[7] = 0x19;
-    videx_regSLOT[8] = 0x00;
-    videx_regSLOT[9] = 0x08;
-    videx_regSLOT[10] = 0xc0;
-    videx_regSLOT[11] = 0x08;
-    videx_regSLOT[12] = 0x00;
-    videx_regSLOT[13] = 0x00;
-    videx_regSLOT[14] = 0x00;
-    videx_regSLOT[15] = 0x00;
-    videx_regSLOT[16] = 0x00;
-    videx_upperSLOT = 0;
-    videx_lowerSLOT = 8;
-
-    card_videx_modifySLOT();
+    videx_banknum = 0;
+    videx_crtc_idx = 0;
+    videx_crtc_regs[0] = 0x7b;
+    videx_crtc_regs[1] = 0x50;
+    videx_crtc_regs[2] = 0x62;
+    videx_crtc_regs[3] = 0x29;
+    videx_crtc_regs[4] = 0x1b;
+    videx_crtc_regs[5] = 0x08;
+    videx_crtc_regs[6] = 0x18;
+    videx_crtc_regs[7] = 0x19;
+    videx_crtc_regs[8] = 0x00;
+    videx_crtc_regs[9] = 0x08;
+    videx_crtc_regs[10] = 0xc0;
+    videx_crtc_regs[11] = 0x08;
+    videx_crtc_regs[12] = 0x00;
+    videx_crtc_regs[13] = 0x00;
+    videx_crtc_regs[14] = 0x00;
+    videx_crtc_regs[15] = 0x00;
 }
 
 
 // Shadow accesses to card registers in $C0n0 - $C0nF range
 void videx_vterm_shadow_register(bool is_write, uint_fast16_t address, uint_fast8_t data) {
-    // define current memory bank
-    videx_bankSLOT = (address & 0x000c) >> 2;
+    // select the video memory bank
+    videx_banknum = (address & 0x000c) >> 2;
 
     if(!is_write)
         return;
 
     if(address & 0x0001) {
         // set current register value
-        videx_regSLOT[videx_regvalSLOT] = data;
-
-        // 10: Cursor upper, 11: Cursor lower
-        if((videx_regvalSLOT == 10) || (videx_regvalSLOT == 11)) {
-            card_videx_modifySLOT();
+        if(videx_crtc_idx < sizeof(videx_crtc_regs)) {
+            videx_crtc_regs[videx_crtc_idx] = data;
         }
     } else {
-        // define current register
-        videx_regvalSLOT = data;
+        // set the crtc register being accessed
+        videx_crtc_idx = data;
     }
 }
 
@@ -87,7 +98,7 @@ void videx_vterm_shadow_c8xx(bool is_write, uint_fast16_t address, uint_fast8_t 
     if(address < 0xce00) {
         // this is the window into the card's video RAM
         if(is_write) {
-            unsigned int vaddr = ((unsigned int)videx_bankSLOT << 9) + (address & 0x01ff);
+            unsigned int vaddr = ((unsigned int)videx_banknum << 9) + (address & 0x01ff);
             videx_vram[vaddr] = value;
         }
     } else {
@@ -97,50 +108,31 @@ void videx_vterm_shadow_c8xx(bool is_write, uint_fast16_t address, uint_fast8_t 
 }
 
 
-static void card_videx_modifySLOT() {
-    videx_blink_cursor = (videx_regSLOT[10] & 0x40) > 0;
-    videx_blink_mode = (videx_regSLOT[10] & 0x20) > 0;
-
-    // If videx_blink_cursor is false then
-    // videx_blink_mode determines if there is a cursor displayed (false) or not (true).
-
-    // If videx_blink_cursor is true then
-    // videx_blink_mode determines blink rate
-    //  - false = 1/16th field rate blink
-    //  - true = 1/32th field rate blink
-
-    // glyph start
-    videx_upperSLOT = videx_regSLOT[10] & 0xf;
-    if(videx_upperSLOT > 11)
-        videx_upperSLOT = 11;
-
-    // glyph end
-    videx_lowerSLOT = videx_regSLOT[11] & 0xf;
-    if(videx_lowerSLOT > 11)
-        videx_lowerSLOT = 11;
-
-    // if the setting is ridiculous
-    if(videx_upperSLOT >= videx_lowerSLOT) {
-        videx_upperSLOT = 0;
-        videx_lowerSLOT = 11;
-    }
-}
-
-
-void update_videx_text_flasher() {
+void videx_vterm_update_flasher() {
     uint64_t now = time_us_64();
     if(now > videx_next_flash_tick) {
-        videx_text_flasher_mask ^= 0xff;
-
-        // If videx_blink_cursor is true then
-        // videx_blink_mode determines blink rate
-        //  - false = 1/16th field rate blink 62500u
-        //  - true = 1/32th field rate blink 31250u
-
-        if(videx_blink_mode)
+        switch((videx_crtc_regs[10] >> 5) & 0x03) {
+        case 0:
+            // non-blinking cursor
+            videx_cursor_mask = 0xff;
             videx_next_flash_tick = now + 312500u;
-        else
+            break;
+        case 1:
+            // no cursor
+            videx_cursor_mask = 0;
+            videx_next_flash_tick = now + 312500u;
+            break;
+        case 2:
+            // blink, 1/16th field rate
+            videx_cursor_mask ^= 0xff;
             videx_next_flash_tick = now + 625000u;
+            break;
+        case 3:
+            // blink, 1/32th field rate
+            videx_cursor_mask ^= 0xff;
+            videx_next_flash_tick = now + 312500u;
+            break;
+        }
     }
 }
 
@@ -153,20 +145,8 @@ static inline uint_fast16_t char_videx_text_bits(uint_fast8_t ch, uint_fast8_t g
         bits = videx_inverse[((uint_fast16_t)(ch & 0x7f) << 4) + glyph_line];
     }
 
-    // If videx_blink_cursor is false then
-    // videx_blink_mode determines if there is a cursor displayed (false) or not (true).
-
-    // If videx_blink_cursor is true then
-    // videx_blink_mode determines blink rate
-    //  - false = 1/16th field rate blink
-    //  - true = 1/32th field rate blink
-    if(has_cursor && videx_upperSLOT <= glyph_line && videx_lowerSLOT >= glyph_line) {
-        // flashing character
-        if(videx_blink_cursor) {
-            bits ^= videx_text_flasher_mask;
-        } else if(!videx_blink_mode) {
-            bits ^= 0xff;
-        }
+    if(has_cursor && glyph_line >= CURSOR_LINE_START && glyph_line <= CURSOR_LINE_END) {
+        bits ^= videx_cursor_mask;
     }
 
     return bits;
@@ -183,8 +163,8 @@ static void render_videx_text_line(unsigned int line) {
         (fg_color << 16) | fg_color,
     };
 
-    const uint vstart = ((videx_regSLOT[12] << 8) | videx_regSLOT[13]);
-    const uint vcursor = ((videx_regSLOT[14] << 8) | videx_regSLOT[15]);
+    const uint vstart = ((videx_crtc_regs[12] & 0x3f) << 8) | videx_crtc_regs[13];
+    const uint vcursor = ((videx_crtc_regs[14] & 0x3f) << 8) | videx_crtc_regs[15];
 
     for(uint glyph_line = 0; glyph_line < 9; glyph_line++) {
         struct vga_scanline *sl = vga_prepare_scanline();
@@ -195,10 +175,9 @@ static void render_videx_text_line(unsigned int line) {
 
         for(uint col = 0; col < 80; col++) {
             // Grab 8 pixels from the next character
-            uint line_offset = ((line * 80) + col) + vstart;
-            uint vram_offset = line_offset % sizeof(videx_vram);
-            bool has_cursor = (vcursor == line_offset);
-            uint_fast8_t ch = videx_vram[vram_offset];
+            uint crtc_mem_offset = ((line * 80) + col) + vstart;
+            bool has_cursor = (vcursor == crtc_mem_offset);
+            uint_fast8_t ch = videx_vram[crtc_mem_offset % sizeof(videx_vram)];
 
             uint_fast16_t bits = char_videx_text_bits(ch, glyph_line, has_cursor);
 

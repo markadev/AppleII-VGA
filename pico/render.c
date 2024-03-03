@@ -19,7 +19,7 @@ void render_loop() {
     while(1) {
         update_text_flasher();
 #ifdef APPLE_MODEL_IIPLUS
-        update_videx_text_flasher();
+        videx_vterm_update_flasher();
 #endif
 
         switch(soft_switches & SOFTSW_MODE_MASK) {
