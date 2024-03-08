@@ -7,6 +7,7 @@
 #include "vga.h"
 
 
+volatile bool videx_vterm_enabled;        // true -> the videx card is enabled
 volatile bool videx_vterm_80col_enabled;  // true -> the annunciator to enable 80-columns is on
 volatile bool videx_vterm_mem_selected;   // true -> videx memory is accessible at $C800-$CFFF
 volatile uint8_t videx_vram[2048];
@@ -40,8 +41,10 @@ static uint_fast32_t videx_cursor_mask = 0;
 static uint64_t videx_next_flash_tick = 0;
 
 
+// Initialize VideoTerm state
+//
+// Only called from the abus core
 void videx_vterm_init() {
-    // initializing registers
     videx_banknum = 0;
     videx_crtc_idx = 0;
     videx_crtc_regs[0] = 0x7b;
@@ -63,8 +66,29 @@ void videx_vterm_init() {
 }
 
 
+// Enable the VideoTerm support
+//
+// Only called from the abus core
+void videx_vterm_enable() {
+    videx_vterm_enabled = true;
+}
+
+
+// Disable the VideoTerm support
+//
+// Only called from the abus core
+void videx_vterm_disable() {
+    videx_vterm_enabled = false;
+}
+
+
 // Shadow accesses to card registers in $C0n0 - $C0nF range
+//
+// Only called from the abus core
 void videx_vterm_shadow_register(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+    if(!videx_vterm_enabled)
+        return;
+
     // select the video memory bank
     videx_banknum = (address & 0x000c) >> 2;
 
@@ -84,7 +108,12 @@ void videx_vterm_shadow_register(bool is_write, uint_fast16_t address, uint_fast
 
 
 // Shadow bus accesses to the $C800-$CFFF memory space
+//
+// Only called from the abus core
 void videx_vterm_shadow_c8xx(bool is_write, uint_fast16_t address, uint_fast8_t value) {
+    if(!videx_vterm_enabled)
+        return;
+
     if(!videx_vterm_mem_selected)
         return;
 
@@ -104,6 +133,9 @@ void videx_vterm_shadow_c8xx(bool is_write, uint_fast16_t address, uint_fast8_t 
 }
 
 
+// Update the internal VideoTerm flashing state
+//
+// Only called from the render core
 void videx_vterm_update_flasher() {
     uint64_t now = time_us_64();
     if(now > videx_next_flash_tick) {
@@ -196,6 +228,9 @@ static void render_videx_text_line(unsigned int line, uint text_base_addr, uint 
 }
 
 
+// Render a screen of VideoTerm text mode
+//
+// Only called from the render core
 void render_videx_text() {
     vga_prepare_frame();
     // Skip 25 lines to center vertically

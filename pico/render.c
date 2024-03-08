@@ -37,7 +37,7 @@ void render_loop() {
             break;
         default:
 #ifdef APPLE_MODEL_IIPLUS
-            if(videx_vterm_80col_enabled) {
+            if(videx_vterm_enabled && videx_vterm_80col_enabled) {
                 render_videx_text();
             } else
 #endif

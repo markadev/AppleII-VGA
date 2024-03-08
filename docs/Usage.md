@@ -4,6 +4,9 @@ After you load on the firmware for your respective Apple II system (II+ or IIe)
 the VGA card is generally plug-and-play. Plug it in, power on your Apple II
 and that's it.
 
+There are some optional features and other controls that can be changed using the
+menu-based Configuration disk or by directly using `POKE` commands.
+
 
 ## Soft Monochrome Mode
 
@@ -56,7 +59,9 @@ This register controls enablement of some features of the card
 
 | bit(s) | Description
 | ------ | -----------
-|  7:2   | reserved
+|  7:4   | reserved
+|   3    | Setting to 1 will disable Videx VideoTerm support (II+ only)
+|   2    | Setting to 1 will enable Videx VideoTerm support (II+ only)
 |   1    | Setting to 1 will disable simulated scanline rendering
 |   0    | Setting to 1 will enable simulated scanline rendering
 
