@@ -6,6 +6,9 @@
 #include "buffers.h"
 #include "colors.h"
 #include "device_regs.h"
+#ifdef APPLE_MODEL_IIPLUS
+#include "videx_vterm.h"
+#endif
 
 
 #if CONFIG_PIN_APPLEBUS_PHI0 != PHI0_GPIO
@@ -21,7 +24,7 @@ typedef void (*shadow_handler)(bool is_write, uint_fast16_t address, uint_fast8_
 
 
 static int reset_detect_state = 0;
-static shadow_handler softsw_handlers[128];
+static shadow_handler softsw_handlers[256];
 
 
 static void abus_main_setup(PIO pio, uint sm) {
@@ -159,6 +162,18 @@ static void shadow_softsw_57(bool is_write, uint_fast16_t address, uint_fast8_t 
     soft_switches |= SOFTSW_HIRES_MODE;
 }
 
+static void shadow_softsw_58(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+#ifdef APPLE_MODEL_IIPLUS
+    videx_vterm_80col_enabled = false;
+#endif
+}
+
+static void shadow_softsw_59(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+#ifdef APPLE_MODEL_IIPLUS
+    videx_vterm_80col_enabled = true;
+#endif
+}
+
 static void shadow_softsw_5e(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_dhires = true;
 }
@@ -181,6 +196,10 @@ void abus_init() {
     // Init states
     soft_switches = SOFTSW_TEXT_MODE;
 
+#ifdef APPLE_MODEL_IIPLUS
+    videx_vterm_init();
+#endif
+
     // Setup soft-switch handlers for the Apple model
     softsw_handlers[0x21] = shadow_softsw_21;
     softsw_handlers[0x50] = shadow_softsw_50;
@@ -191,6 +210,8 @@ void abus_init() {
     softsw_handlers[0x55] = shadow_softsw_55;
     softsw_handlers[0x56] = shadow_softsw_56;
     softsw_handlers[0x57] = shadow_softsw_57;
+    softsw_handlers[0x58] = shadow_softsw_58;
+    softsw_handlers[0x59] = shadow_softsw_59;
 #ifdef APPLE_MODEL_IIE
     softsw_handlers[0x00] = shadow_softsw_00;
     softsw_handlers[0x01] = shadow_softsw_01;
@@ -202,6 +223,12 @@ void abus_init() {
     softsw_handlers[0x0f] = shadow_softsw_0f;
     softsw_handlers[0x5e] = shadow_softsw_5e;
     softsw_handlers[0x5f] = shadow_softsw_5f;
+#endif
+#ifdef APPLE_MODEL_IIPLUS
+    // slot 3 device registers
+    for(uint i = 0xb0; i < 0xc0; i++) {
+        softsw_handlers[i] = videx_vterm_shadow_register;
+    }
 #endif
 
     abus_main_setup(CONFIG_ABUS_PIO, ABUS_MAIN_SM);
@@ -273,13 +300,28 @@ static void shadow_memory(bool is_write, uint_fast16_t address, uint32_t value) 
     case 0xc000 >> 10:
         reset_detect_state = 0;
 
-        // Handle shadowing of the soft switches in the range 0xc000 - 0xc07f
-        if(address < 0xc080) {
-            shadow_handler h = softsw_handlers[address & 0x7f];
+        // Handle shadowing of the soft switches and I/O in the range $C000 - $C0FF
+        if(address < 0xc100) {
+            shadow_handler h = softsw_handlers[address & 0xff];
             if(h) {
                 h(is_write, address, value & 0xff);
             }
         }
+#ifdef APPLE_MODEL_IIPLUS
+        else if((address >= 0xc300) && (address < 0xc400)) {
+            // slot 3 access
+            videx_vterm_mem_selected = true;
+        }
+#endif
+        break;
+
+    case 0xc800 >> 10:
+    case 0xcc00 >> 10:
+        // expansion slot memory space $C800-$CFFF
+        reset_detect_state = 0;
+#ifdef APPLE_MODEL_IIPLUS
+        videx_vterm_shadow_c8xx(is_write, address, value);
+#endif
         break;
 
     case 0x0000 >> 10:
@@ -305,6 +347,9 @@ static void shadow_memory(bool is_write, uint_fast16_t address, uint32_t value) 
             soft_80store = false;
             soft_altcharset = false;
             soft_ramwrt = false;
+#ifdef APPLE_MODEL_IIPLUS
+            videx_vterm_80col_enabled = false;
+#endif
 
             reset_detect_state = 0;
         } else {

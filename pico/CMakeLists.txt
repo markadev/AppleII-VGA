@@ -39,6 +39,7 @@ target_sources(applevga PUBLIC
     render_text.c
     ${TEXTFONT_SRC_FILES}
     vga.c
+    videx_vterm.c
 )
 target_include_directories(applevga PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(applevga PUBLIC

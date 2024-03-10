@@ -25,6 +25,7 @@ These features are currently supported:
    (thanks to @dkgrizzly and @Paco1979)
  * Soft-monochrome mode to force display as if on a monochrome monitor
  * Some Video-7 RGB card extended graphical modes are implemented
+ * Compatibility with Videx VideoTerm modes on Apple II+ (thanks to @abaffa)
 
 I had these goals in mind during design:
  * Generate video out to a more modern display - I don't have any old CRTs for
@@ -94,8 +95,22 @@ a cheap composite -> HDMI adapter
 **DHires**
 ![DHires Mode](docs/composite_vs_vga_dhires.jpg)
 
-**80 Columms**
-![80 Columms Mode](docs/composite_vs_vga_80columms.jpg)
+**80 Columns**
+![80 Columns Mode](docs/composite_vs_vga_80columms.jpg)
+
+
+## 80 Column support for the Apple II+
+
+The firmware implements Videx VideoTerm compatibility when there's a VideoTerm card installed
+in slot 3. It's not enabled by default but if you have a Videx VideoTerm card in slot 3
+then you can enable 80 column VGA support using the Configuration Disk image. The VGA card
+can still be installed in any slot.
+
+**Apple II+ running 80 Columns Examples**
+
+![AppleII 80 Columms Mode 1](docs/apple2plus_videx_80columns1.jpg)
+![AppleII 80 Columms Mode 2](docs/apple2plus_videx_80columns2.jpg)
+![AppleII 80 Columms Mode 3](docs/apple2plus_videx_80columns3.jpg)
 
 
 ## Future work

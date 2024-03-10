@@ -7,6 +7,9 @@
 #include "buffers.h"
 #include "colors.h"
 #include "textfont/textfont.h"
+#ifdef APPLE_MODEL_IIPLUS
+#include "videx_vterm.h"
+#endif
 
 
 // A block of flash is reserved for storing configuration persistently across power cycles
@@ -32,10 +35,17 @@ struct config {
 
     // magic word determines if the stored configuration is valid
     uint32_t magic_word;
+
+    // Add new fields after here. When reading the config use the IS_STORED_IN_CONFIG macro
+    // to determine if the field you're looking for is actually present in the stored config.
+
+    uint8_t videx_vterm_enabled;
 };
 
 // This is a compile-time check to ensure the size of the config struct fits within one flash erase sector
 typedef char config_struct_size_check[(sizeof(struct config) <= FLASH_SECTOR_SIZE) - 1];
+
+#define IS_STORED_IN_CONFIG(cfg, field) ((offsetof(struct config, field) + sizeof((cfg)->field)) <= (cfg)->size)
 
 
 extern uint8_t __persistent_data_start[];
@@ -54,6 +64,14 @@ void config_load() {
     mono_bg_color = cfg->mono_bg_color;
     mono_fg_color = cfg->mono_fg_color;
     memcpy(character_rom, cfg->character_rom, CHARACTER_ROM_SIZE);
+
+#ifdef APPLE_MODEL_IIPLUS
+    if(IS_STORED_IN_CONFIG(cfg, videx_vterm_enabled) && cfg->videx_vterm_enabled) {
+        videx_vterm_enable();
+    } else {
+        videx_vterm_disable();
+    }
+#endif
 }
 
 
@@ -63,6 +81,9 @@ void config_load_defaults() {
     mono_bg_color = mono_bg_colors[1];
     mono_fg_color = mono_fg_colors[1];
     memcpy(character_rom, default_character_rom, CHARACTER_ROM_SIZE);
+#ifdef APPLE_MODEL_IIPLUS
+    videx_vterm_disable();
+#endif
 }
 
 
@@ -71,6 +92,7 @@ void config_save() {
     const int new_config_size = (sizeof(struct config) + FLASH_PAGE_SIZE - 1) & -FLASH_PAGE_SIZE;
     struct config *new_config = malloc(new_config_size);
     memset(new_config, 0xff, new_config_size);
+    memset(new_config, 0, sizeof(struct config));
 
     new_config->size = sizeof(struct config);
     new_config->scanline_emulation = soft_scanline_emulation;
@@ -79,6 +101,9 @@ void config_save() {
     new_config->mono_fg_color = mono_fg_color;
     memcpy(new_config->character_rom, character_rom, CHARACTER_ROM_SIZE);
     new_config->magic_word = MAGIC_WORD_VALUE;
+#ifdef APPLE_MODEL_IIPLUS
+    new_config->videx_vterm_enabled = videx_vterm_enabled;
+#endif
 
     const uint32_t flash_offset = (uint32_t)cfg - XIP_BASE;
     flash_range_erase(flash_offset, FLASH_SECTOR_SIZE);

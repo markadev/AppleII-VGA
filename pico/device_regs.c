@@ -5,6 +5,9 @@
 #include "colors.h"
 #include "config.h"
 #include "textfont/textfont.h"
+#ifdef APPLE_MODEL_IIPLUS
+#include "videx_vterm.h"
+#endif
 
 
 static unsigned int char_write_offset;
@@ -18,6 +21,12 @@ void device_write(uint_fast8_t reg, uint_fast8_t data) {
             soft_scanline_emulation = true;
         if(data & 0x02)
             soft_scanline_emulation = false;
+#ifdef APPLE_MODEL_IIPLUS
+        if(data & 0x04)
+            videx_vterm_enable();
+        if(data & 0x08)
+            videx_vterm_disable();
+#endif
         break;
 
     // soft-monochrome color setting
@@ -55,7 +64,7 @@ void device_write(uint_fast8_t reg, uint_fast8_t data) {
 // command value.
 //
 // Note: some of these commands could take a long time (relative to 6502 bus cycles) so
-// some bus activity may be missed. Other projects like the Analog-V2 delegate this execution
+// some bus activity may be missed. Other projects like the V2-Analog delegate this execution
 // to the other (VGA) core to avoid this. Maybe do this if the missed bus cycles become a noticable
 // issue; I only expect it would happen when some config is being saved, which is not done often.
 void execute_device_command(uint_fast8_t cmd) {
