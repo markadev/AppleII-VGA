@@ -1,7 +1,10 @@
+*.bak
 *.bin
 *.jar
 *.kicad_prl
+*.lck
 *.o
+*-backups
 .vscode
 AppleIIVGA-Config.dsk
 build
