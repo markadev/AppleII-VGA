@@ -70,7 +70,7 @@ void render_hires(bool mixed) {
 
     if(mixed) {
         for(uint line = 20; line < 24; line++) {
-            render_text_line(line);
+            render_text_line(line, false);
         }
     } else {
         for(uint line = 160; line < 192; line++) {

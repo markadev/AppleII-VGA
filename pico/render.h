@@ -13,7 +13,7 @@ extern void render_vga_testpattern();
 
 extern void update_text_flasher();
 extern void render_text();
-extern void render_text_line(unsigned int line);
+extern void render_text_line(unsigned int line, bool force_monocolor);
 
 extern void render_lores();
 extern void render_mixed_lores();

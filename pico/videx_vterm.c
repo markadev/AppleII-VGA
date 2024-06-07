@@ -182,8 +182,9 @@ static inline uint_fast16_t char_videx_text_bits(uint_fast8_t ch, uint_fast8_t g
 
 
 static void render_videx_text_line(unsigned int line, uint text_base_addr, uint cursor_addr) {
-    const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
-    const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
+    const bool use_monocolor = (soft_monochrom | soft_force_alt_textcolor);
+    const uint32_t bg_color = use_monocolor ? mono_bg_color : ntsc_palette[0];
+    const uint32_t fg_color = use_monocolor ? mono_fg_color : ntsc_palette[15];
     const uint32_t bits_to_pixelpair[4] = {
         (bg_color << 16) | bg_color,
         (bg_color << 16) | fg_color,

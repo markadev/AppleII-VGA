@@ -40,6 +40,7 @@ struct config {
     // to determine if the field you're looking for is actually present in the stored config.
 
     uint8_t videx_vterm_enabled;
+    uint8_t force_alt_textcolor;
 };
 
 // This is a compile-time check to ensure the size of the config struct fits within one flash erase sector
@@ -72,6 +73,8 @@ void config_load() {
         videx_vterm_disable();
     }
 #endif
+
+    soft_force_alt_textcolor = IS_STORED_IN_CONFIG(cfg, force_alt_textcolor) ? cfg->force_alt_textcolor : false;
 }
 
 
@@ -84,6 +87,7 @@ void config_load_defaults() {
 #ifdef APPLE_MODEL_IIPLUS
     videx_vterm_disable();
 #endif
+    soft_force_alt_textcolor = false;
 }
 
 
@@ -104,6 +108,7 @@ void config_save() {
 #ifdef APPLE_MODEL_IIPLUS
     new_config->videx_vterm_enabled = videx_vterm_enabled;
 #endif
+    new_config->force_alt_textcolor = soft_force_alt_textcolor;
 
     const uint32_t flash_offset = (uint32_t)cfg - XIP_BASE;
     flash_range_erase(flash_offset, FLASH_SECTOR_SIZE);

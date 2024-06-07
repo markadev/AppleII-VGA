@@ -56,7 +56,7 @@ void render_mixed_lores() {
     }
 
     for(uint line = 20; line < 24; line++) {
-        render_text_line(line);
+        render_text_line(line, false);
     }
 }
 
