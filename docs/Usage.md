@@ -73,7 +73,8 @@ This register controls the output color when soft-monochrome mode is enabled
 
 | bit(s) | Description
 | ------ | -----------
-|  7:6   | reserved
+|   7    | Setting to 1 will disable forcing the use of the monochrome color in text modes.
+|   6    | Setting to 1 will force the use of the chosen monochrome color in text modes, even when soft-monochrome mode is not enabled.
 |  5:4   | Setting non-zero will choose a background color (1=black, 2=green, 3=amber)
 |  3:2   | reserved
 |  1:0   | Setting non-zero will choose a foreground color (1=white, 2=green, 3=amber)

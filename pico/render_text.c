@@ -59,14 +59,14 @@ void render_text() {
     vga_skip_lines(48);
 
     for(int line = 0; line < 24; line++) {
-        render_text_line(line);
+        render_text_line(line, soft_force_alt_textcolor);
     }
 }
 
 
-void render_text_line(unsigned int line) {
-    const uint32_t bg_color = soft_monochrom ? mono_bg_color : ntsc_palette[0];
-    const uint32_t fg_color = soft_monochrom ? mono_fg_color : ntsc_palette[15];
+void render_text_line(unsigned int line, bool force_monocolor) {
+    const uint32_t bg_color = (soft_monochrom | force_monocolor) ? mono_bg_color : ntsc_palette[0];
+    const uint32_t fg_color = (soft_monochrom | force_monocolor) ? mono_fg_color : ntsc_palette[15];
     uint32_t bits_to_pixelpair[4] = {
         (bg_color << 16) | bg_color,
         (bg_color << 16) | fg_color,

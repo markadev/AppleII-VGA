@@ -29,6 +29,7 @@ extern volatile bool soft_monochrom;
 extern volatile bool soft_ramwrt;
 
 extern volatile bool soft_scanline_emulation;
+extern volatile bool soft_force_alt_textcolor;
 
 #define CHARACTER_ROM_SIZE 2048
 
