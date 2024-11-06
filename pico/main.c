@@ -1,5 +1,6 @@
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
+#include <hardware/clocks.h>
 #include "abus.h"
 #include "board_config.h"
 #include "config.h"
