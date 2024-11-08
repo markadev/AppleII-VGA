@@ -1,5 +1,5 @@
 #include "textfont.h"
-#include <pico/platform.h>
+#include <pico.h>
 
 
 // https://mirrors.apple2.org.za/ftp.apple.asimov.net/emulators/rom_images/2764_APPLE-IIe-0341-0162-A_PAL_SWE_FIN.bin

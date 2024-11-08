@@ -1,5 +1,5 @@
 #include "textfont.h"
-#include <pico/platform.h>
+#include <pico.h>
 
 
 // https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Chips/Videx%20Lower%20Case%20Chip/ROM%20Images/Videx%20Lower%20Case%20Chip%20ROM.bin

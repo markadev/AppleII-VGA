@@ -1,5 +1,5 @@
 #include "textfont.h"
-#include <pico/platform.h>
+#include <pico.h>
 
 
 const uint8_t __in_flash("chr_rom") videx_normal[128 * 16] = {
