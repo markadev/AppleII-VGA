@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# filtering demo for Apple II composite signal
 
 import numpy as np
 import pygame
@@ -6,26 +7,9 @@ import pygame
 from color import *
 
 
-PRIMARY_COLORS = [
-    (0x00,0x00,0x00),   # 0000 black
-    (0x93,0x0b,0x7c),   # 0001 magenta
-    (0x1f,0x35,0xd3),   # 0010 d.blue
-    (0xcc,0x36,0xee),   # 0011 h.violet
-    (0x00,0x76,0x0c),   # 0100 d.green
-    (0x88,0x88,0x88),   # 0101 gray1
-    (0x00,0xbe,0xf0),   # 0110 h.blue
-    (0x9d,0xac,0xff),   # 0111 l.blue
-    (0x62,0x4c,0x00),   # 1000 brown
-    (0xff,0x90,0x10),   # 1001 h.orange
-    (0x88,0x88,0x88),   # 1010 gray2
-    (0xff,0x81,0xec),   # 1011 pink
-    (0x43,0xc8,0x00),   # 1100 h.green
-    (0xee,0xee,0x33),   # 1101 yellow
-    (0x55,0xee,0xaa),   # 1110 aqua
-    (0xff,0xff,0xff),   # 1111 white
-]
-decoder = DiscreteColorDecoder(PRIMARY_COLORS)
-YIQ_WEIGHTS = [ 1.0, 1.0, 1.0 ]
+decoder = SimpleAnalogColorDecoder()
+
+YIQ_WEIGHTS = [ 1.35, 1.0, 1.0 ]
 palette = QuantizedYIQPalette(weights=YIQ_WEIGHTS)
 
 
@@ -114,8 +98,6 @@ def game_loop():
                 elif event.key == pygame.K_MINUS:
                     if pix_width > 1:
                         pix_width //= 2
-                elif event.key == pygame.K_SPACE:
-                    decoder.smooth = not decoder.smooth
                 elif event.key == pygame.K_KP7:
                     YIQ_WEIGHTS[0] += 0.05
                     print(f"YIQ_WEIGHTS={YIQ_WEIGHTS}")

@@ -3,8 +3,9 @@
 #include <pico/stdlib.h>
 #include "buffers.h"
 #include "colors.h"
-#include "hires_rgb_color_patterns.h"
 #include "hires_dot_patterns.h"
+#include "hires_ntsc_color_patterns.h"
+#include "hires_rgb_color_patterns.h"
 #include "vga.h"
 
 
@@ -143,6 +144,7 @@ static void render_hires_line(uint line) {
             }
         }
     } else {
+        const uint32_t *color_patterns = soft_smooth_hires ? hires_ntsc_color_patterns : hires_rgb_color_patterns;
         uint color_phase = 0;
 
         // Load the first 14 dots
@@ -161,7 +163,7 @@ static void render_hires_line(uint line) {
 
             // Render the next 14 dots
             for(uint j = 0; j < 7; j++) {
-                sl->data[sl_pos] = hires_rgb_color_patterns[color_phase | (dots & 0xff)];
+                sl->data[sl_pos] = color_patterns[color_phase | (dots & 0xff)];
                 sl_pos++;
                 dots >>= 2;
                 color_phase ^= 0x100;
@@ -195,13 +197,6 @@ static void render_dhires_line(uint line) {
 
     struct vga_scanline *sl = vga_prepare_scanline();
 
-    // Pad 40 pixels on the left to center horizontally
-    if(mode != VIDEO7_MODE_160x192) {
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
-        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
-    }
-
     if(mode == VIDEO7_MODE_560x192) {
         // 560x192 monochrome mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.1 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
@@ -215,6 +210,11 @@ static void render_dhires_line(uint line) {
             (fg_color << 16) | bg_color,
             (fg_color << 16) | fg_color,
         };
+
+        // Pad 40 pixels on the left to center horizontally
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
 
         for(uint i = 0; i < 40; i++) {
             // Extract 14 bits from the next 2 display bytes
@@ -230,6 +230,8 @@ static void render_dhires_line(uint line) {
     } else if(mode == VIDEO7_MODE_160x192) {
         // 160x192 16-color mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.3 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card but not documented in the manual
+        //
+        // Note: no left padding is done in this mode
         for(uint i = 0; i < 40; i++) {
             // Each video memory byte contains the color of two pixels - no weird bit alignment in this mode!
             uint_fast8_t b = line_aux[i];
@@ -247,6 +249,11 @@ static void render_dhires_line(uint line) {
     } else if(mode == VIDEO7_MODE_MIX) {
         // 160x192 mixed color/mono mode - Ref: Video-7 RGB-SL7 User's Manual section 7.6.4 and US Patent 4631692
         // Supported by the Extended 80-column text/AppleColor adapter card
+
+        // Pad 40 pixels on the left to center horizontally
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
 
         for(uint i = 0; i < 40; i += 2) {
             // Load in 28 dots from the next 4 video data bytes. Also load in the 'mode' for each 7 bit
@@ -318,10 +325,54 @@ static void render_dhires_line(uint line) {
                 dots >>= 4;
             }
         }
+    } else if(soft_smooth_hires) {
+        // Standard 140x192 16-color double-hires mode with smooth NTSC color artifacting
+        //
+        // Rendering works similar to hires mode by looking up the video dot patterns in a pre-generated table
+        // with all the color information.
+        uint color_phase = 0;
+
+        // Pad 39 pixels on the left to center horizontally
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_2) << 16);  // 7 pixels
+
+        // Load the first 14 dots. We also insert one (more) dot at the beginning because double-hires rendering
+        // starts 1 bit (1/4 color cycle) earlier than hires and the color lookup table is aligned to work with
+        // hires color cycles. This does mean that an extra black pixel is rendered on the left and right sides
+        // of the line.
+        uint32_t dots = ((uint32_t)(line_aux[0] & 0x7f) << 4) | ((uint32_t)(line_main[0] & 0x7f) << 11);
+
+        // Render the first 2 dots, the extra dots added as described above
+        sl->data[sl_pos] = hires_ntsc_color_patterns[color_phase | (dots & 0xff)];
+        sl_pos++;
+        dots >>= 2;
+        color_phase ^= 0x100;
+
+        for(uint i = 1; i < 41; i++) {
+            if(i < 40) {
+                // Load in 14 more dots from the next 2 video data bytes
+                dots |= ((uint32_t)(line_aux[i] & 0x7f) << 16);
+                dots |= ((uint32_t)(line_main[i] & 0x7f) << 23);
+            }
+
+            // Render the next 14 dots
+            for(uint j = 0; j < 7; j++) {
+                sl->data[sl_pos] = hires_ntsc_color_patterns[color_phase | (dots & 0xff)];
+                sl_pos++;
+                dots >>= 2;
+                color_phase ^= 0x100;
+            }
+        }
     } else {
-        // Standard 140x192 16-color double-hires mode
+        // Standard 140x192 16-color double-hires mode with hard RGB pixels
         uint32_t dots = 0;
         uint_fast8_t dotc = 0;
+
+        // Pad 40 pixels on the left to center horizontally
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_7) | ((0 | THEN_EXTEND_7) << 16);  // 16 pixels
+        sl->data[sl_pos++] = (0 | THEN_EXTEND_3) | ((0 | THEN_EXTEND_3) << 16);  // 8 pixels
 
         for(uint i = 0; i < 40; i++) {
             // Load in 14 more bits from the next 2 video data bytes

@@ -57,11 +57,11 @@ def scale_to_int(arr, upper_bound):
     return np.floor(arr * float(upper_bound)).astype(int).clip(0, int(upper_bound) - 1)
 
 
-
 class AnalogColorDecoder:
     def __init__(self, luma_bandlimit=2_300_000, luma_lag=0,
                  chroma_bandwidth=2_400_00, chroma_lag=0,
-                 color_adjustment=0.0, color_saturation=1.0, contrast=1.0):
+                 color_adjustment=0.0, color_saturation=1.0,
+                 brightness=0.0, contrast=1.0, gamma=1.0):
         self.luma_bandlimit = luma_bandlimit
         self.luma_lag = int(luma_lag)
         self.chroma_bandwidth = chroma_bandwidth
@@ -69,7 +69,9 @@ class AnalogColorDecoder:
 
         self.color_adjustment = float(color_adjustment)
         self.color_saturation = float(color_saturation)
+        self.brightness = float(brightness)
         self.contrast = float(contrast)
+        self.gamma = float(gamma)
 
     def decode(self, sig, color_phase=0.0):
         # Resample the incoming signal at a higher rate for smoother filtering
@@ -95,10 +97,51 @@ class AnalogColorDecoder:
 
         i *= self.color_saturation
         q *= self.color_saturation
-        luma *= self.contrast
+        luma = (luma ** self.gamma) * self.contrast + self.brightness
 
         # downsample back to the original number of samples
         return np.array([downsample(luma), downsample(i), downsample(q)])
+
+
+class SimpleAnalogColorDecoder:
+    def __init__(self, color_adjustment=0.0, color_saturation=1.3,
+                 brightness=0.0, contrast=1.15, gamma=1.0):
+        self.color_adjustment = float(color_adjustment)
+        self.color_saturation = float(color_saturation)
+        self.brightness = float(brightness)
+        self.contrast = float(contrast)
+        self.gamma = float(gamma)
+        self.sharpness = 1.0
+
+    def decode_one(self, dots, color_phase_deg=0.0):
+        assert dots.shape[0] >= 7
+        dots = dots[0:7]
+
+        # adjust phase so the color reference aligns at bit 3 instead of bit 0
+        color_phase_deg -= (3 * 90)
+
+        luma_l = np.average(dots, weights=[1, 1, 1, 1, 0, 0, 0])
+        luma_r = np.average(dots, weights=[0, 0, 0, 1, 1, 1, 1])
+        if luma_l > 0 and luma_r > 0:
+            luma = np.average(dots, weights=[0, 1, 2, 2, 2, 1, 0])
+        elif luma_r == 0:
+            assert dots[4] == 0
+            luma = (0.125/self.sharpness)*dots[2] * np.sum(dots[0:3])
+        elif luma_l == 0:
+            assert dots[2] == 0
+            luma = (0.125/self.sharpness)*dots[4] * np.sum(dots[4:7])
+
+        luma = ((luma ** self.gamma) * self.contrast + self.brightness).clip(0.0, 1.0)
+
+        rads = np.tile(np.linspace(0, 2*pi, 4, endpoint=False), (len(dots) // 4) + 1)[:len(dots)]
+        rads += radians(self.color_adjustment + color_phase_deg + 45)
+        ref_sin = np.sin(rads)
+        ref_cos = np.cos(rads)
+
+        i = np.average(dots * ref_cos, weights=[1,2,3,4,3,2,1]) * self.color_saturation
+        q = np.average(dots * ref_sin, weights=[1,2,3,4,3,2,1]) * self.color_saturation
+
+        return np.array([luma, i, q])
 
 
 class DiscreteColorDecoder:
@@ -168,10 +211,13 @@ class QuantizedYIQPalette:
         assert yiq.shape[0] == 3
 
         y, i, q = yiq
-
         y = np.array([y]).transpose()
         i = np.array([i]).transpose()
         q = np.array([q]).transpose()
+        for x in range(len(y)):
+            if y[x] == 0.0:
+                i[x] = 0.0
+                q[x] = 0.0
 
         # dy[n] = abs(y - yiq[n][0])
         dy = np.abs(y - self.yiq[0]) * self.weights[0]

@@ -36,11 +36,12 @@ struct config {
     // magic word determines if the stored configuration is valid
     uint32_t magic_word;
 
-    // Add new fields after here. When reading the config use the IS_STORED_IN_CONFIG macro
-    // to determine if the field you're looking for is actually present in the stored config.
-
     uint8_t videx_vterm_enabled;
     uint8_t force_alt_textcolor;
+    uint8_t smooth_hires;
+
+    // Add new fields at the end of the struct. When reading the config use the IS_STORED_IN_CONFIG macro
+    // to determine if the field you're looking for is actually present in the stored config.
 };
 
 // This is a compile-time check to ensure the size of the config struct fits within one flash erase sector
@@ -75,6 +76,7 @@ void config_load() {
 #endif
 
     soft_force_alt_textcolor = IS_STORED_IN_CONFIG(cfg, force_alt_textcolor) ? cfg->force_alt_textcolor : false;
+    soft_smooth_hires = IS_STORED_IN_CONFIG(cfg, smooth_hires) ? cfg->smooth_hires : false;
 }
 
 
@@ -88,6 +90,7 @@ void config_load_defaults() {
     videx_vterm_disable();
 #endif
     soft_force_alt_textcolor = false;
+    soft_smooth_hires = false;
 }
 
 
@@ -109,6 +112,7 @@ void config_save() {
     new_config->videx_vterm_enabled = videx_vterm_enabled;
 #endif
     new_config->force_alt_textcolor = soft_force_alt_textcolor;
+    new_config->smooth_hires = soft_smooth_hires;
 
     const uint32_t flash_offset = (uint32_t)cfg - XIP_BASE;
     flash_range_erase(flash_offset, FLASH_SECTOR_SIZE);

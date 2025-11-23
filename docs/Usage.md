@@ -30,6 +30,33 @@ When enabled this will:
 This setting will be saved across power-cycles if the "Save" command is executed.
 
 
+## Hires mode smoothing
+
+By default the VGA card will output hard pixel transitions in hires and double hires modes that is more
+consistent with how an RGB card of the era would look. However, some software is designed to work best
+on composite video monitors that will have smooth artifact coloring instead of discrete RGB pixels.
+
+In this case the VGA card can emulate smoother NTSC video processing for the hires and double hires
+video modes.
+
+This can be changed by writing to bit 7 of soft-switch at address `$c02a`. From Applesoft Basic:
+
+    REM ENABLE SMOOTH HIRES
+    POKE 49194, 128
+
+    REM DISABLE SMOOTH HIRES
+    POKE 49194, 0
+
+When enabled:
+ * hires mode will have softer edges on pixel transitions across a scanline and softer color transitions
+   resulting in more artifact color bleed
+ * double-hires mode will switch from rendering discrete RGB pixels to filtering the video signal through
+   the same filter as hires mode, resulting in softer edges between color changes and more accurate rendering
+   of software that originally required the use of a composite monitor
+
+This setting will be saved across power-cycles if the "Save" command is executed.
+
+
 ## Device Registers
 
 The card's device registers can be written to change some settings. These settings persist across
