@@ -3,7 +3,7 @@
 #include <pico/stdlib.h>
 #include "buffers.h"
 #include "colors.h"
-#include "hires_color_patterns.h"
+#include "hires_rgb_color_patterns.h"
 #include "hires_dot_patterns.h"
 #include "vga.h"
 
@@ -96,68 +96,75 @@ static void render_hires_line(uint line) {
     // That is represented here by 14 'dots' to precisely describe the half-pixel
     // positioning.
     //
-    // For each pixel, inspect a window of 8 dots around the pixel to determine the
-    // precise dot locations and colors.
+    // For colored pixels, inspect a window of 7 dots around the pixel to determine the
+    // precise dot locations and colors from a pre-computed lookup table.
     //
-    // Dots would be scanned out to the CRT from MSB to LSB (left to right here):
+    // Dots would be scanned out to the CRT from LSB to MSB (right to left here):
     //
-    //            previous   |        next
-    //              dots     |        dots
-    //        +-------------------+--------------------------------------------------+
-    // dots:  | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | ... | 14 | 13 | 12 | ...
-    //        |              |         |              |
-    //        \______________|_________|______________/
-    //                       |         |
-    //                       \_________/
-    //                         current
-    //                          pixel
-
-    // Load in the first 14 dots
-    uint32_t dots = (uint32_t)hires_dot_patterns[line_mem[0]] << 15;
+    //                          next                  |         |   previous
+    //                          dots                  |         |     dots
+    //        +----------------------------------------------------------------+
+    // dots:   ... | 11 | 10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+    //                                 |              |         |              |
+    //                                 \______________|_________|______________/
+    //                                                |         |
+    //                                                \_________/
+    //                                                  current
+    //                                                   pixel
 
     if(soft_monochrom) {
-        // translate bits to rendered pixels (MSB first)
+        // translate bits to rendered pixels (LSB first)
         const uint32_t bits_to_pixels[4] = {
             ((uint32_t)mono_bg_color << 16) | mono_bg_color,
-            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
             ((uint32_t)mono_bg_color << 16) | mono_fg_color,
+            ((uint32_t)mono_fg_color << 16) | mono_bg_color,
             ((uint32_t)mono_fg_color << 16) | mono_fg_color,
         };
 
-        for(uint i = 1; i < 41; i++) {
-            // Load in the next 14 dots
-            uint b = (i < 40) ? line_mem[i] : 0;
-            if(b & 0x80) {
-                // Extend the last bit from the previous byte
-                dots |= (dots & (1u << 15)) >> 1;
-            }
-            dots |= (uint32_t)hires_dot_patterns[b] << 1;
+        // Load the first 14 dots
+        uint32_t dots = (uint32_t)hires_dot_patterns[line_mem[0]];
 
-            // Render the next 14 pixels
+        for(uint i = 1; i < 41; i++) {
+            if(i < 40) {
+                // Load in 14 more dots from the next video data byte
+                uint b = line_mem[i];
+                if(b & 0x80) {
+                    // Extend the last bit from the previous byte
+                    dots |= (dots & (1u << 13)) << 1;
+                }
+                dots |= (uint32_t)hires_dot_patterns[b] << 14;
+            }
+
+            // Render the next 14 dots
             for(uint j = 0; j < 7; j++) {
-                sl->data[sl_pos] = bits_to_pixels[((dots >> 27) & 0x3)];
+                sl->data[sl_pos] = bits_to_pixels[dots & 0x3];
                 sl_pos++;
-                dots <<= 2;
+                dots >>= 2;
             }
         }
     } else {
-        uint oddness = 0;
-        for(uint i = 1; i < 41; i++) {
-            // Load in the next 14 dots
-            uint b = (i < 40) ? line_mem[i] : 0;
-            if(b & 0x80) {
-                // Extend the last bit from the previous byte
-                dots |= (dots & (1u << 15)) >> 1;
-            }
-            dots |= (uint32_t)hires_dot_patterns[b] << 1;
+        uint color_phase = 0;
 
-            // Consume 14 dots
+        // Load the first 14 dots
+        uint32_t dots = (uint32_t)hires_dot_patterns[line_mem[0]] << 3;
+
+        for(uint i = 1; i < 41; i++) {
+            if(i < 40) {
+                // Load in 14 more dots from the next video data byte
+                uint b = line_mem[i];
+                if(b & 0x80) {
+                    // Extend the last bit from the previous byte (bit 16 into bit 17)
+                    dots |= (dots & (1u << 16)) << 1;
+                }
+                dots |= (uint32_t)hires_dot_patterns[b] << 17;
+            }
+
+            // Render the next 14 dots
             for(uint j = 0; j < 7; j++) {
-                uint dot_pattern = oddness | ((dots >> 24) & 0xff);
-                sl->data[sl_pos] = hires_color_patterns[dot_pattern];
+                sl->data[sl_pos] = hires_rgb_color_patterns[color_phase | (dots & 0xff)];
                 sl_pos++;
-                dots <<= 2;
-                oddness ^= 0x100;
+                dots >>= 2;
+                color_phase ^= 0x100;
             }
         }
     }
