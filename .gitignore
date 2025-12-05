@@ -6,6 +6,7 @@
 *.o
 *-backups
 .vscode
+__pycache__
 AppleIIVGA-Config.dsk
 build
 fp-info-cache

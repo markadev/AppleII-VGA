@@ -130,6 +130,12 @@ static void shadow_softsw_21(bool is_write, uint_fast16_t address, uint_fast8_t 
     }
 }
 
+static void shadow_softsw_2a(bool is_write, uint_fast16_t address, uint_fast8_t data) {
+    if(is_write) {
+        soft_smooth_hires = (bool)(data & 0x80);
+    }
+}
+
 static void shadow_softsw_50(bool is_write, uint_fast16_t address, uint_fast8_t data) {
     soft_switches &= ~((uint32_t)SOFTSW_TEXT_MODE);
 }
@@ -202,6 +208,7 @@ void abus_init() {
 
     // Setup soft-switch handlers for the Apple model
     softsw_handlers[0x21] = shadow_softsw_21;
+    softsw_handlers[0x2a] = shadow_softsw_2a;
     softsw_handlers[0x50] = shadow_softsw_50;
     softsw_handlers[0x51] = shadow_softsw_51;
     softsw_handlers[0x52] = shadow_softsw_52;

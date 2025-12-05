@@ -13,6 +13,7 @@ volatile bool soft_ramwrt;
 // Custom device soft-switches
 volatile bool soft_scanline_emulation;
 volatile bool soft_force_alt_textcolor;
+volatile bool soft_smooth_hires;
 
 
 // The currently programmed character generator ROM for text mode
